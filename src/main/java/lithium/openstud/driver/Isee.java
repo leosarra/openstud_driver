@@ -17,6 +17,9 @@ public class Isee {
         this.isEditable=isEditable;
     }
 
+    public Isee() {
+    }
+
     public double getValue() {
         return value;
     }
@@ -35,6 +38,26 @@ public class Isee {
 
     public boolean isEditable() {
         return isEditable;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public void setDateOperation(Date dateOperation) {
+        this.dateOperation = dateOperation;
+    }
+
+    public void setDateDeclaration(Date dateDeclaration) {
+        this.dateDeclaration = dateDeclaration;
+    }
+
+    public void setEditable(boolean editable) {
+        isEditable = editable;
     }
 
     @Override
