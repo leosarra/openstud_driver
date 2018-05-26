@@ -18,6 +18,7 @@ public class OpenstudTest
     public void testGetIsee() throws OpenstudInvalidUserException, OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidSetupException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
-        assertTrue(osb.getIsee().isValid());
+        Isee res=osb.getIsee();
+        assertTrue(res!=null && res.isValid());
     }
 }
