@@ -116,7 +116,7 @@ public class Openstud {
                 break;
             } catch (OpenstudConnectionException e) {
                 if (++count == maxTries) throw e;
-                refreshToken();
+                if (refreshToken()==-1) throw e;
             }
         }
         return isee;
@@ -143,7 +143,7 @@ public class Openstud {
             if (response.has("modificabile")) isEditable=response.getInt("modificabile");
             if (response.has("dataOperazione")) {
                 String dt=response.getString("dataOperazione");
-                if (!(dt.isEmpty() || dt ==null)) {
+                if (!(dt ==null || dt.isEmpty())) {
                     try {
                         dateOperation=formatter.parse(response.getString("dataOperazione"));
                     } catch (ParseException e) {
