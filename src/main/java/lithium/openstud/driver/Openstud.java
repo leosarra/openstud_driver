@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 
 public class Openstud {
     private int maxTries;
@@ -35,6 +36,33 @@ public class Openstud {
 
     public boolean isReady(){
         return isReady;
+    }
+
+    private int refreshToken(){
+        try {
+            Unirest.setTimeouts(connectionTimeout,socketTimeout);
+            HttpResponse<JsonNode> jsonResponse = Unirest.post(endpointAPI+"/autenticazione").header("Accept","application/json")
+                    .header("Content-Type","application/x-www-form-urlencoded")
+                    .field("key","r4g4zz3tt1").field("matricola",studentID).field("stringaAutenticazione",studentPassword).asJson();
+            JSONObject response = new JSONObject(jsonResponse.getBody());
+            if (!response.has("object")) return -1;
+            response=response.getJSONObject("object");
+            if (!response.has("output")) return -1;
+            setToken(response.getString("output"));
+            if (response.has("esito")) {
+                switch (response.getJSONObject("esito").getInt("flagEsito")) {
+                    case -4:
+                        return -1;
+                    case -1:
+                        return -1;
+                    default:
+                        return 0;
+                }
+            }
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public void login() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudInvalidUserException, OpenstudConnectionException {
@@ -79,33 +107,6 @@ public class Openstud {
         isReady=true;
     }
 
-    private int refreshToken(){
-        try {
-            Unirest.setTimeouts(connectionTimeout,socketTimeout);
-            HttpResponse<JsonNode> jsonResponse = Unirest.post(endpointAPI+"/autenticazione").header("Accept","application/json")
-                    .header("Content-Type","application/x-www-form-urlencoded")
-                    .field("key","r4g4zz3tt1").field("matricola",studentID).field("stringaAutenticazione",studentPassword).asJson();
-            JSONObject response = new JSONObject(jsonResponse.getBody());
-            if (!response.has("object")) return -1;
-            response=response.getJSONObject("object");
-            if (!response.has("output")) return -1;
-            setToken(response.getString("output"));
-            if (response.has("esito")) {
-                switch (response.getJSONObject("esito").getInt("flagEsito")) {
-                    case -4:
-                        return -1;
-                    case -1:
-                        return -1;
-                    default:
-                        return 0;
-                }
-            }
-        } catch (UnirestException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
     public Isee getIsee() throws OpenstudInvalidSetupException, OpenstudEndpointNotReadyException, OpenstudConnectionException {
         if (!isReady()) throw new OpenstudInvalidSetupException("OpenStud is not ready. Remember to call login() first!");
         int count=0;
@@ -122,7 +123,6 @@ public class Openstud {
         return isee;
     }
 
-
     private Isee _getIsee() throws OpenstudConnectionException, OpenstudEndpointNotReadyException {
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI+"/contabilita/"+studentID+"/isee?ingresso="+token).asJson();
@@ -131,37 +131,44 @@ public class Openstud {
             response=response.getJSONObject("object");
             if(!response.has("risultato")) return null;
             response=response.getJSONObject("risultato");
-
-            double value = 0;
-            int isEditable = 0;
-            String protocol="";
-            Date dateOperation = null;
-            Date dateDeclaration = null;
+            Isee res = new Isee();
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            if (response.has("value")) value=response.getDouble("value");
-            if (response.has("protocollo")) protocol=response.getString("protocollo");
-            if (response.has("modificabile")) isEditable=response.getInt("modificabile");
-            if (response.has("dataOperazione")) {
-                String dt=response.getString("dataOperazione");
-                if (!(dt ==null || dt.isEmpty())) {
-                    try {
-                        dateOperation=formatter.parse(response.getString("dataOperazione"));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+            for(String element : (Set<String>) response.keySet()) {
+                switch (element) {
+                    case "value":
+                        res.setValue(response.getDouble("value"));
+                        break;
+                    case "protocollo":
+                        String protocol = response.getString("protocollo");
+                        if (protocol == null || protocol.isEmpty()) return null;
+                        res.setProtocol(response.getString("protocollo"));
+                        break;
+                    case "modificabile":
+                        res.setEditable(response.getInt("modificabile")==1);
+                        break;
+                    case "dataOperazione":
+                        String dateOperation = response.getString("dataOperazione");
+                        if (!(dateOperation == null || dateOperation.isEmpty())) {
+                            try {
+                                res.setDateOperation(formatter.parse(response.getString("dataOperazione")));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        break;
+                    case "data":
+                        String dateDeclaration = response.getString("data");
+                        if (!(dateDeclaration == null || dateDeclaration.isEmpty())) {
+                            try {
+                                res.setDateDeclaration(formatter.parse(response.getString("data")));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        break;
                 }
             }
-            if (response.has("data")) {
-                String dt=response.getString("data");
-                if (!(dt==null || dt.isEmpty())) {
-                    try {
-                        dateDeclaration=formatter.parse(response.getString("data"));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            return new Isee(value,protocol,dateOperation, dateDeclaration,isEditable==1);
+            return  res;
         } catch (UnirestException e) {
             e.printStackTrace();
             throw new OpenstudConnectionException("Unirest library can't get isee, check internet connection.");
