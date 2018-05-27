@@ -429,4 +429,128 @@ public class Openstud {
         }
     }
 
+    public List<ExamReservation> getActiveReservations() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        if (!isReady()) return null;
+        int count=0;
+        List<ExamReservation> reservations;
+        while(true){
+            try {
+                reservations=_getActiveReservations();
+                break;
+            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+                if (++count == maxTries) throw e;
+                if (refreshToken()==-1) throw e;
+            }
+        }
+        return reservations;
+    }
+
+    private List<ExamReservation> _getActiveReservations() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        try {
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/studente/" + studentID + "/prenotazioni?ingresso=" + token).asJson();
+            JSONObject response = new JSONObject(jsonResponse.getBody());
+            if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            response = response.getJSONObject("object");
+            if (!response.has("ritorno"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            response = response.getJSONObject("ritorno");
+            List<ExamReservation> list = new LinkedList<>();
+            if (!response.has("appelli")) return null;
+            JSONArray array = response.getJSONArray("appelli");
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                ExamReservation res = new ExamReservation();
+                for (String element : obj.keySet()) {
+                    switch (element) {
+                        case "codIdenVerb":
+                            res.setReportID(obj.getInt("codIdenVerb"));
+                            break;
+                        case "codAppe":
+                            res.setSessionID(obj.getInt("codAppe"));
+                            break;
+                        case "codCorsoStud":
+                            res.setSessionID(Integer.parseInt(obj.getString("codCorsoStud")));
+                            break;
+                        case "descrizione":
+                            res.setExamSubject(obj.getString("descrizione"));
+                            break;
+                        case "descCorsoStud":
+                            res.setCourseDescription(obj.getString("descCorsoStud"));
+                            break;
+                        case "crediti":
+                            res.setCfu(obj.getInt("crediti"));
+                            break;
+                        case "docente":
+                            res.setTeacher(obj.getString("docente"));
+                            break;
+                        case "annoAcca":
+                            res.setYearCourse(obj.getString("annoAcca"));
+                            break;
+                        case "facolta":
+                            res.setDepartment(obj.getString("facolta"));
+                            break;
+                        case "numeroPrenotazione":
+                            res.setReservationNumber(obj.getInt("numeroPrenotazione"));
+                            break;
+                        case "ssd":
+                            res.setSsd(obj.getString("ssd"));
+                            break;
+                        case "dataprenotazione":
+                            String reservationDate = obj.getString("dataprenotazione");
+                            if (!(reservationDate == null || reservationDate.isEmpty())) {
+                                try {
+                                    res.setReservationDate(formatter.parse(reservationDate));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            break;
+                        case "note":
+                            res.setNote(obj.getString("note"));
+                            break;
+                        case "dataAppe":
+                            String examDate = obj.getString("dataAppe");
+                            if (!(examDate == null || examDate.isEmpty())) {
+                                try {
+                                    res.setExamDate(formatter.parse(examDate));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            break;
+                        case "dataInizioPrenotazione":
+                            if(obj.isNull("dataInizioPrenotazione")) break;
+                            String startDate = obj.getString("dataInizioPrenotazione");
+                            if (!(startDate == null || startDate.isEmpty())) {
+                                try {
+                                    res.setStartDate(formatter.parse(startDate));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            break;
+                        case "dataFinePrenotazione":
+                            if(obj.isNull("dataFinePrenotazione")) break;
+                            String endDate = obj.getString("dataFinePrenotazione");
+                            if (!(endDate == null || endDate.isEmpty())) {
+                                try {
+                                    res.setEndDate(formatter.parse(endDate));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            break;
+                    }
+                }
+                list.add(res);
+            }
+            return list;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            throw new OpenstudConnectionException(e);
+        }
+    }
+
+
 }
