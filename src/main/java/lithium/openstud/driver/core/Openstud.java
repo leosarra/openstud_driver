@@ -584,7 +584,6 @@ public class Openstud {
             HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/appello/ricerca?ingresso=" + token+ "&tipoRicerca="+4+"&criterio="+exam.getModuleCode()+
                             "&codiceCorso="+exam.getCourseCode()+"&annoAccaAuto="+student.getAcademicYearCourse()).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
-            System.out.println(response);
             if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             response = response.getJSONObject("object");
             if (!response.has("ritorno")) throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
