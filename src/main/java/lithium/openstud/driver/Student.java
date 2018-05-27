@@ -8,6 +8,7 @@ public class Student {
     private String lastName;
     private Date birthDate;
     private String birthCity;
+    private String birthPlace;
     private String courseYear;
     private String firstEnrollment;
     private String lastEnrollment;
@@ -17,6 +18,7 @@ public class Student {
     private String email;
     private String citizenship;
     private String gender;
+    private String studentStatus;
     private int academicYear;
     private int academicYearCourse;
     private int studentID;
@@ -26,6 +28,22 @@ public class Student {
     private boolean isErasmus;
 
     protected void Student(){
+    }
+
+    public String getStudentStatus() {
+        return studentStatus;
+    }
+
+    public void setStudentStatus(String studentStatus) {
+        this.studentStatus = studentStatus;
+    }
+
+    public String getBirthPlace() {
+        return birthPlace;
+    }
+
+    public void setBirthPlace(String birthPlace) {
+        this.birthPlace = birthPlace;
     }
 
     public String getCitizenship() {
@@ -204,6 +222,7 @@ public class Student {
                 ", lastName='" + lastName + '\'' +
                 ", birthDate=" + birthDate +
                 ", birthCity='" + birthCity + '\'' +
+                ", birthPlace='" + birthPlace + '\'' +
                 ", courseYear='" + courseYear + '\'' +
                 ", firstEnrollment='" + firstEnrollment + '\'' +
                 ", lastEnrollment='" + lastEnrollment + '\'' +
@@ -213,6 +232,7 @@ public class Student {
                 ", email='" + email + '\'' +
                 ", citizenship='" + citizenship + '\'' +
                 ", gender='" + gender + '\'' +
+                ", studentStatus='" + studentStatus + '\'' +
                 ", academicYear=" + academicYear +
                 ", academicYearCourse=" + academicYearCourse +
                 ", studentID=" + studentID +
