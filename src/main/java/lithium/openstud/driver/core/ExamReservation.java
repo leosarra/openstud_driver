@@ -1,4 +1,4 @@
-package lithium.openstud.driver.data;
+package lithium.openstud.driver.core;
 
 import java.util.Date;
 
@@ -25,7 +25,7 @@ public class ExamReservation {
         return examDate;
     }
 
-    public void setExamDate(Date examDate) {
+    protected void setExamDate(Date examDate) {
         this.examDate = examDate;
     }
 
@@ -33,7 +33,7 @@ public class ExamReservation {
         return courseDescription;
     }
 
-    public void setCourseDescription(String courseDescription) {
+    protected void setCourseDescription(String courseDescription) {
         this.courseDescription = courseDescription;
     }
 
@@ -41,7 +41,7 @@ public class ExamReservation {
         return reportID;
     }
 
-    public void setReportID(int reportID) {
+    protected void setReportID(int reportID) {
         this.reportID = reportID;
     }
 
@@ -49,7 +49,7 @@ public class ExamReservation {
         return sessionID;
     }
 
-    public void setSessionID(int sessionID) {
+    protected void setSessionID(int sessionID) {
         this.sessionID = sessionID;
     }
 
@@ -57,7 +57,7 @@ public class ExamReservation {
         return courseCode;
     }
 
-    public void setCourseCode(int courseCode) {
+    protected void setCourseCode(int courseCode) {
         this.courseCode = courseCode;
     }
 
@@ -65,7 +65,7 @@ public class ExamReservation {
         return cfu;
     }
 
-    public void setCfu(int cfu) {
+    protected void setCfu(int cfu) {
         this.cfu = cfu;
     }
 
@@ -73,7 +73,7 @@ public class ExamReservation {
         return yearCourse;
     }
 
-    public void setYearCourse(String yearCourse) {
+    protected void setYearCourse(String yearCourse) {
         this.yearCourse = yearCourse;
     }
 
@@ -81,7 +81,7 @@ public class ExamReservation {
         return reservationNumber;
     }
 
-    public void setReservationNumber(int reservationNumber) {
+    protected void setReservationNumber(int reservationNumber) {
         this.reservationNumber = reservationNumber;
     }
 
@@ -89,7 +89,7 @@ public class ExamReservation {
         return examSubject;
     }
 
-    public void setExamSubject(String examSubject) {
+    protected void setExamSubject(String examSubject) {
         this.examSubject = examSubject;
     }
 
@@ -97,7 +97,7 @@ public class ExamReservation {
         return teacher;
     }
 
-    public void setTeacher(String teacher) {
+    protected void setTeacher(String teacher) {
         this.teacher = teacher;
     }
 
@@ -105,7 +105,7 @@ public class ExamReservation {
         return department;
     }
 
-    public void setDepartment(String department) {
+    protected void setDepartment(String department) {
         this.department = department;
     }
 
@@ -113,7 +113,7 @@ public class ExamReservation {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    protected void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
@@ -121,7 +121,7 @@ public class ExamReservation {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    protected void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
@@ -129,7 +129,7 @@ public class ExamReservation {
         return reservationDate;
     }
 
-    public void setReservationDate(Date reservationDate) {
+    protected void setReservationDate(Date reservationDate) {
         this.reservationDate = reservationDate;
     }
 
@@ -137,7 +137,7 @@ public class ExamReservation {
         return note;
     }
 
-    public void setNote(String note) {
+    protected void setNote(String note) {
         this.note = note;
     }
 
@@ -145,7 +145,7 @@ public class ExamReservation {
         return ssd;
     }
 
-    public void setSsd(String ssd) {
+    protected void setSsd(String ssd) {
         this.ssd = ssd;
     }
 
@@ -153,7 +153,7 @@ public class ExamReservation {
         return module;
     }
 
-    public void setModule(String module) {
+    protected void setModule(String module) {
         this.module = module;
     }
 

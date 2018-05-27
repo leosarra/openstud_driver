@@ -1,4 +1,4 @@
-package lithium.openstud.driver;
+package lithium.openstud.driver.core;
 
 public class OpenstudBuilder {
     private int retryCounter=3;

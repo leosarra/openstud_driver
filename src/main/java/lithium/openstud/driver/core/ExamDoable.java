@@ -1,4 +1,4 @@
-package lithium.openstud.driver.data;
+package lithium.openstud.driver.core;
 
 public class ExamDoable extends Exam {
     private String courseCode;
@@ -8,7 +8,7 @@ public class ExamDoable extends Exam {
         return courseCode;
     }
 
-    public void setCourseCode(String courseCode) {
+    protected void setCourseCode(String courseCode) {
         this.courseCode = courseCode;
     }
 
@@ -16,7 +16,7 @@ public class ExamDoable extends Exam {
         return moduleCode;
     }
 
-    public void setModuleCode(String moduleCode) {
+    protected void setModuleCode(String moduleCode) {
         this.moduleCode = moduleCode;
     }
 

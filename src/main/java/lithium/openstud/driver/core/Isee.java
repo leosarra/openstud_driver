@@ -1,4 +1,4 @@
-package lithium.openstud.driver.data;
+package lithium.openstud.driver.core;
 
 import java.util.Date;
 
@@ -29,23 +29,23 @@ public class Isee {
         return isEditable;
     }
 
-    public void setValue(double value) {
+    protected void setValue(double value) {
         this.value = value;
     }
 
-    public void setProtocol(String protocol) {
+    protected void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 
-    public void setDateOperation(Date dateOperation) {
+    protected void setDateOperation(Date dateOperation) {
         this.dateOperation = dateOperation;
     }
 
-    public void setDateDeclaration(Date dateDeclaration) {
+    protected void setDateDeclaration(Date dateDeclaration) {
         this.dateDeclaration = dateDeclaration;
     }
 
-    public void setEditable(boolean editable) {
+    protected void setEditable(boolean editable) {
         isEditable = editable;
     }
 

@@ -1,10 +1,10 @@
-package lithium.openstud.driver;
+package lithium.openstud.driver.core;
 
 import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.JsonNode;
 import io.github.openunirest.http.Unirest;
 import io.github.openunirest.http.exceptions.UnirestException;
-import lithium.openstud.driver.data.*;
+import lithium.openstud.driver.core.*;
 import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudEndpointNotReadyException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidPasswordException;
@@ -480,7 +480,7 @@ public class Openstud {
                         res.setSessionID(obj.getInt("codAppe"));
                         break;
                     case "codCorsoStud":
-                        res.setSessionID(Integer.parseInt(obj.getString("codCorsoStud")));
+                        res.setCourseCode(Integer.parseInt(obj.getString("codCorsoStud")));
                         break;
                     case "descrizione":
                         res.setExamSubject(obj.getString("descrizione"));
@@ -553,6 +553,9 @@ public class Openstud {
                                 e.printStackTrace();
                             }
                         }
+                        break;
+                    case "SiglaModuloDidattico":
+                        if(obj.isNull("SiglaModuloDidattico")) res.setModule(obj.getString("SiglaModuloDidattico"));
                         break;
                 }
             }

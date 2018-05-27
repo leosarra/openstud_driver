@@ -1,4 +1,4 @@
-package lithium.openstud.driver.data;
+package lithium.openstud.driver.core;
 
 import java.util.Date;
 
@@ -12,7 +12,7 @@ public class ExamPassed extends Exam {
         return date;
     }
 
-    public void setDate(Date date) {
+    protected void setDate(Date date) {
         this.date = date;
     }
 
@@ -20,7 +20,7 @@ public class ExamPassed extends Exam {
         return year;
     }
 
-    public void setYear(int year) {
+    protected void setYear(int year) {
         this.year = year;
     }
 
@@ -28,7 +28,7 @@ public class ExamPassed extends Exam {
         return nominalResult;
     }
 
-    public void setNominalResult(String nominalResult) {
+    protected void setNominalResult(String nominalResult) {
         this.nominalResult = nominalResult;
     }
 
@@ -36,7 +36,7 @@ public class ExamPassed extends Exam {
         return result;
     }
 
-    public void setResult(int result) {
+    protected void setResult(int result) {
         this.result = result;
     }
 
