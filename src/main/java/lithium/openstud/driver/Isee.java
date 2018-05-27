@@ -17,7 +17,7 @@ public class Isee {
         this.isEditable=isEditable;
     }
 
-    public Isee() {
+    protected Isee() {
     }
 
     public double getValue() {

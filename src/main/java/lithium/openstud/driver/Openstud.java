@@ -21,7 +21,7 @@ public class Openstud {
     private int studentID;
     private boolean isReady;
 
-    public Openstud(String webEndpoint, int studentID, String studentPassword, int retryCounter, int connectionTimeout, int socketTimeout) {
+    protected Openstud(String webEndpoint, int studentID, String studentPassword, int retryCounter, int connectionTimeout, int socketTimeout) {
         this.maxTries=retryCounter;
         this.endpointAPI=webEndpoint;
         this.connectionTimeout=connectionTimeout;
@@ -65,7 +65,7 @@ public class Openstud {
         return 0;
     }
 
-    public void login() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudInvalidUserException, OpenstudConnectionException {
+    public void login() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUnexpectedServerResponseException {
         int count=0;
         while(true){
             try {
@@ -77,21 +77,21 @@ public class Openstud {
         }
     }
 
-    private void _login() throws OpenstudInvalidPasswordException, OpenstudInvalidUserException, OpenstudEndpointNotReadyException, OpenstudConnectionException {
+    private void _login() throws OpenstudInvalidPasswordException, OpenstudEndpointNotReadyException, OpenstudConnectionException, OpenstudUnexpectedServerResponseException {
         try {
             Unirest.setTimeouts(connectionTimeout,socketTimeout);
             HttpResponse<JsonNode> jsonResponse = Unirest.post(endpointAPI+"/autenticazione").header("Accept","application/json")
                     .header("Content-Type","application/x-www-form-urlencoded")
                     .field("key","r4g4zz3tt1").field("matricola",studentID).field("stringaAutenticazione",studentPassword).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
-            if (!response.has("object")) throw new OpenstudEndpointNotReadyException("Infostud answer is not valid");
+            if (!response.has("object")) throw new OpenstudUnexpectedServerResponseException("Infostud response is not valid");
             response=response.getJSONObject("object");
-            if (!response.has("output")) throw new OpenstudEndpointNotReadyException("Infostud answer is not valid");
+            if (!response.has("output")) throw new OpenstudUnexpectedServerResponseException("Infostud answer is not valid");
             setToken(response.getString("output"));
             if (response.has("esito")) {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
                     case -4:
-                        throw new OpenstudInvalidUserException("User is not enabled to use Infostud service.");
+                        throw new OpenstudUnexpectedServerResponseException("User is not enabled to use Infostud service.");
                     case -1:
                         throw new OpenstudInvalidPasswordException("Password not valid");
                     case 0:
@@ -107,7 +107,7 @@ public class Openstud {
         isReady=true;
     }
 
-    public Isee getIsee() throws OpenstudInvalidSetupException, OpenstudEndpointNotReadyException, OpenstudConnectionException {
+    public Isee getIsee() throws OpenstudInvalidSetupException, OpenstudConnectionException, OpenstudUnexpectedServerResponseException {
         if (!isReady()) throw new OpenstudInvalidSetupException("OpenStud is not ready. Remember to call login() first!");
         int count=0;
         Isee isee;
@@ -115,7 +115,7 @@ public class Openstud {
             try {
                 isee=_getIsee();
                 break;
-            } catch (OpenstudConnectionException e) {
+            } catch (OpenstudConnectionException|OpenstudUnexpectedServerResponseException e) {
                 if (++count == maxTries) throw e;
                 if (refreshToken()==-1) throw e;
             }
@@ -123,13 +123,13 @@ public class Openstud {
         return isee;
     }
 
-    private Isee _getIsee() throws OpenstudConnectionException, OpenstudEndpointNotReadyException {
+    private Isee _getIsee() throws OpenstudConnectionException, OpenstudUnexpectedServerResponseException {
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI+"/contabilita/"+studentID+"/isee?ingresso="+token).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
-            if (!response.has("object")) throw new OpenstudEndpointNotReadyException("Infostud answer is not valid");
+            if (!response.has("object")) throw new OpenstudUnexpectedServerResponseException("Infostud response is not valid");
             response=response.getJSONObject("object");
-            if(!response.has("risultato")) return null;
+            if(!response.has("risultato")) throw new OpenstudUnexpectedServerResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response=response.getJSONObject("risultato");
             Isee res = new Isee();
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -169,6 +169,111 @@ public class Openstud {
                 }
             }
             return  res;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            throw new OpenstudConnectionException("Unirest library can't get isee, check internet connection.");
+        }
+    }
+
+
+    public Student getInfoStudent() throws OpenstudInvalidSetupException, OpenstudConnectionException, OpenstudUnexpectedServerResponseException {
+        if (!isReady()) throw new OpenstudInvalidSetupException("OpenStud is not ready. Remember to call login() first!");
+        int count=0;
+        Student st=null;
+        while(true){
+            try {
+                st=_getInfoStudent();
+                break;
+            } catch (OpenstudConnectionException|OpenstudUnexpectedServerResponseException e) {
+                if (++count == maxTries) throw e;
+                if (refreshToken()==-1) throw e;
+            }
+        }
+        return st;
+    }
+
+    private Student _getInfoStudent() throws OpenstudConnectionException, OpenstudUnexpectedServerResponseException {
+        try {
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI+"/studente/"+studentID+"?ingresso="+token).asJson();
+            JSONObject response = new JSONObject(jsonResponse.getBody());
+            if (!response.has("object")) throw new OpenstudUnexpectedServerResponseException("Infostud answer is not valid");
+            response=response.getJSONObject("object");
+            if(!response.has("ritorno")) throw new OpenstudUnexpectedServerResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            response=response.getJSONObject("ritorno");
+            Student st = new Student();
+            st.setStudentID(studentID);
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            for(String element : (Set<String>) response.keySet()) {
+                switch (element) {
+                    case "codiceFiscale":
+                        st.setCF(response.getString("codiceFiscale"));
+                        break;
+                    case "cognome":
+                        st.setLastName(response.getString("cognome"));
+                        break;
+                    case "nome":
+                        st.setFirstName(response.getString("nome"));
+                        break;
+                    case "dataDiNascita":
+                        String dateBirth = response.getString("dataDiNascita");
+                        if (!(dateBirth == null || dateBirth.isEmpty())) {
+                            try {
+                                st.setBirthDate(formatter.parse(response.getString("dataDiNascita")));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        break;
+                    case "luogoDiNascita":
+                        st.setBirthCity(response.getString("comuneDiNasciata"));
+                        break;
+                    case "annoCorso":
+                        st.setCourseYear(response.getString("annoCorso"));
+                        break;
+                    case "primaIscr":
+                        st.setFirstEnrollment(response.getString("primaIscr"));
+                        break;
+                    case "ultIscr":
+                        st.setLastEnrollment(response.getString("ultIscr"));
+                        break;
+                    case "facolta":
+                        st.setDepartmentName(response.getString("facolta"));
+                        break;
+                    case "nomeCorso":
+                        st.setCourseName(response.getString("nomeCorso"));
+                        break;
+                    case "annoAccaAtt":
+                        st.setAcademicYear(response.getInt("annoAccaAtt"));
+                        break;
+                    case "codCorso":
+                        st.setCodeCourse(response.getInt("codCorso"));
+                        break;
+                    case "tipoStudente":
+                        st.setTypeStudent(response.getInt("tipoStudente"));
+                        break;
+                    case "isErasmus":
+                        st.setErasmus(response.getBoolean("isErasmus"));
+                        break;
+                    case "nazioneNascita":
+                        st.setNation(response.getString("nazioneNascita"));
+                        break;
+                    case "creditiTotali":
+                        st.setCfu(response.getInt("creditiTotali"));
+                        break;
+                    case "indiMailIstituzionale":
+                        st.setEmail(response.getString("indiMailIstituzionale"));
+                    case "sesso":
+                        st.setGender(response.getString("sesso"));
+                        break;
+                    case "annoAccaCors":
+                        st.setAcademicYearCourse(response.getInt("annoAccaCors"));
+                        break;
+                    case "cittadinanza":
+                        st.setCitizenship(response.getString("cittadinanza"));
+                        break;
+                }
+            }
+            return  st;
         } catch (UnirestException e) {
             e.printStackTrace();
             throw new OpenstudConnectionException("Unirest library can't get isee, check internet connection.");
