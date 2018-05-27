@@ -8,10 +8,13 @@ import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudEndpointNotReadyException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidPasswordException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Openstud {
     private int maxTries;
@@ -287,4 +290,70 @@ public class Openstud {
             throw new OpenstudConnectionException("Unirest library can't get isee, check internet connection.");
         }
     }
+
+
+    public List<ExamDoable> getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        if (!isReady()) return null;
+        int count=0;
+        List<ExamDoable> exams;
+        while(true){
+            try {
+                exams=_getExamsDoable();
+                break;
+            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+                if (++count == maxTries) throw e;
+                if (refreshToken()==-1) throw e;
+            }
+        }
+        return exams;
+    }
+
+    private List<ExamDoable> _getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        try {
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/studente/" + studentID + "/insegnamentisostenibili?ingresso=" + token).asJson();
+            JSONObject response = new JSONObject(jsonResponse.getBody());
+            if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            response = response.getJSONObject("object");
+            if (!response.has("ritorno"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            response = response.getJSONObject("ritorno");
+            List<ExamDoable> list = new LinkedList<>();
+            if (!response.has("esami")) return null;
+            JSONArray array = response.getJSONArray("esami");
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                ExamDoable exam = new ExamDoable();
+                for (String element : obj.keySet()) {
+                    switch (element) {
+                        case "codiceInsegnamento":
+                            exam.setSubjectCode(obj.getString("codiceInsegnamento"));
+                            break;
+                        case "codiceModuloDidattico":
+                            exam.setModuleCode(obj.getString("codiceModuloDidattico"));
+                            break;
+                        case "codiceCorsoInsegnamento":
+                            exam.setCourseCode(obj.getString("codiceCorsoInsegnamento"));
+                            break;
+                        case "cfu":
+                            exam.setCfu(obj.getInt("cfu"));
+                            break;
+                        case "descrizione":
+                            exam.setDescription(obj.getString("descrizione"));
+                            break;
+                        case "ssd":
+                            exam.setSsd(obj.getString("ssd"));
+                            break;
+                    }
+                }
+                list.add(exam);
+            }
+            return list;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            throw new OpenstudConnectionException(e);
+        }
+    }
+
+
 }
