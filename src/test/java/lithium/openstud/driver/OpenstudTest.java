@@ -8,14 +8,14 @@ import org.junit.Test;
 public class OpenstudTest
 {
     @Test
-    public void testLogin() throws OpenstudInvalidUserException, OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException {
+    public void testLogin() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUnexpectedServerResponseException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         assertTrue( osb.isReady() );
     }
 
     @Test
-    public void testGetIsee() throws OpenstudInvalidUserException, OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidSetupException {
+    public void testGetIsee() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidSetupException, OpenstudUnexpectedServerResponseException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         Isee res=osb.getIsee();
