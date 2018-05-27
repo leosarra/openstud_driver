@@ -327,7 +327,7 @@ public class Openstud {
                 for (String element : obj.keySet()) {
                     switch (element) {
                         case "codiceInsegnamento":
-                            exam.setSubjectCode(obj.getString("codiceInsegnamento"));
+                            exam.setExamCode(obj.getString("codiceInsegnamento"));
                             break;
                         case "codiceModuloDidattico":
                             exam.setModuleCode(obj.getString("codiceModuloDidattico"));
