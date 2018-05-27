@@ -2,6 +2,10 @@ package lithium.openstud.driver;
 
 import static org.junit.Assert.assertTrue;
 
+import lithium.openstud.driver.exceptions.OpenstudConnectionException;
+import lithium.openstud.driver.exceptions.OpenstudEndpointNotReadyException;
+import lithium.openstud.driver.exceptions.OpenstudInvalidPasswordException;
+import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 import org.junit.Test;
 
 
