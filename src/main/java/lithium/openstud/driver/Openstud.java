@@ -68,8 +68,8 @@ public class Openstud {
         int count=0;
         while(true){
             try {
-             _login();
-             break;
+                _login();
+                break;
             } catch (OpenstudEndpointNotReadyException |OpenstudConnectionException e) {
                 if (++count == maxTries) throw e;
             }
@@ -223,8 +223,11 @@ public class Openstud {
                             }
                         }
                         break;
-                    case "luogoDiNascita":
+                    case "comuneDiNasciata":
                         st.setBirthCity(response.getString("comuneDiNasciata"));
+                        break;
+                    case "luogoDiNascita":
+                        st.setBirthPlace(response.getString("luogoDiNascita"));
                         break;
                     case "annoCorso":
                         st.setCourseYear(response.getString("annoCorso"));
@@ -249,6 +252,9 @@ public class Openstud {
                         break;
                     case "tipoStudente":
                         st.setTypeStudent(response.getInt("tipoStudente"));
+                        break;
+                    case "tipoIscrizione":
+                        st.setStudentStatus(response.getString("tipoIscrizione"));
                         break;
                     case "isErasmus":
                         st.setErasmus(response.getBoolean("isErasmus"));
