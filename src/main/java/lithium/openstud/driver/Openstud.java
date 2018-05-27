@@ -320,7 +320,6 @@ public class Openstud {
             List<ExamDoable> list = new LinkedList<>();
             if (!response.has("esami")) return null;
             JSONArray array = response.getJSONArray("esami");
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
                 ExamDoable exam = new ExamDoable();
@@ -355,5 +354,79 @@ public class Openstud {
         }
     }
 
+    public List<ExamPassed> getExamsPassed() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        if (!isReady()) return null;
+        int count=0;
+        List<ExamPassed> exams;
+        while(true){
+            try {
+                exams=_getExamsPassed();
+                break;
+            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+                if (++count == maxTries) throw e;
+                if (refreshToken()==-1) throw e;
+            }
+        }
+        return exams;
+    }
+
+    private List<ExamPassed> _getExamsPassed() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        try {
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/studente/" + studentID + "/esami?ingresso=" + token).asJson();
+            JSONObject response = new JSONObject(jsonResponse.getBody());
+            if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            response = response.getJSONObject("object");
+            if (!response.has("ritorno"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            response = response.getJSONObject("ritorno");
+            List<ExamPassed> list = new LinkedList<>();
+            if (!response.has("esami")) return null;
+            JSONArray array = response.getJSONArray("esami");
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                ExamPassed exam = new ExamPassed();
+                for (String element : obj.keySet()) {
+                    switch (element) {
+                        case "codiceInsegnamento":
+                            exam.setExamCode(obj.getString("codiceInsegnamento"));
+                            break;
+                        case "cfu":
+                            exam.setCfu(obj.getInt("cfu"));
+                            break;
+                        case "descrizione":
+                            exam.setDescription(obj.getString("descrizione"));
+                            break;
+                        case "ssd":
+                            exam.setSsd(obj.getString("ssd"));
+                            break;
+                        case "data":
+                            String dateBirth = obj.getString("data");
+                            if (!(dateBirth == null || dateBirth.isEmpty())) {
+                                try {
+                                    exam.setDate(formatter.parse(dateBirth));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            break;
+                        case "annoAcca":
+                            exam.setYear(obj.getInt("annoAcca"));
+                            break;
+                        case "esito":
+                            JSONObject esito=obj.getJSONObject("esito");
+                            if(esito.has("valoreNominale")) exam.setNominalResult(esito.getString("valoreNominale"));
+                            if(esito.has("valoreNonNominale") && !esito.isNull("valoreNonNominale")) exam.setResult(esito.getInt("valoreNonNominale"));
+                            break;
+                    }
+                }
+                list.add(exam);
+            }
+            return list;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            throw new OpenstudConnectionException(e);
+        }
+    }
 
 }
