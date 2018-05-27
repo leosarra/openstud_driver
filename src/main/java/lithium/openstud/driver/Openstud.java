@@ -1,9 +1,9 @@
 package lithium.openstud.driver;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.JsonNode;
+import io.github.openunirest.http.Unirest;
+import io.github.openunirest.http.exceptions.UnirestException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
@@ -132,7 +132,7 @@ public class Openstud {
             response=response.getJSONObject("risultato");
             Isee res = new Isee();
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            for(String element : (Set<String>) response.keySet()) {
+            for(String element : response.keySet()) {
                 switch (element) {
                     case "value":
                         res.setValue(response.getDouble("value"));
@@ -178,7 +178,7 @@ public class Openstud {
     public Student getInfoStudent() throws OpenstudInvalidSetupException, OpenstudConnectionException, OpenstudInvalidResponseException {
         if (!isReady()) throw new OpenstudInvalidSetupException("OpenStud is not ready. Remember to call login() first!");
         int count=0;
-        Student st=null;
+        Student st;
         while(true){
             try {
                 st=_getInfoStudent();
@@ -202,7 +202,7 @@ public class Openstud {
             Student st = new Student();
             st.setStudentID(studentID);
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            for(String element : (Set<String>) response.keySet()) {
+            for(String element : response.keySet()) {
                 switch (element) {
                     case "codiceFiscale":
                         st.setCF(response.getString("codiceFiscale"));
