@@ -563,13 +563,13 @@ public class Openstud {
         }
     }
 
-    public List<ExamReservation> getAvaiableReservations(ExamDoable exam, Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public List<ExamReservation> getAvailableReservations(ExamDoable exam, Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException {
         if (!isReady()) return null;
         int count=0;
         List<ExamReservation> reservations;
         while(true){
             try {
-                reservations=_getAvaiableReservations(exam, student);
+                reservations=_getAvailableReservations(exam, student);
                 break;
             } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
                 if (++count == maxTries) throw e;
@@ -579,7 +579,7 @@ public class Openstud {
         return reservations;
     }
 
-    private List<ExamReservation> _getAvaiableReservations(ExamDoable exam, Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    private List<ExamReservation> _getAvailableReservations(ExamDoable exam, Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/appello/ricerca?ingresso=" + token+ "&tipoRicerca="+4+"&criterio="+exam.getModuleCode()+
                             "&codiceCorso="+exam.getCourseCode()+"&annoAccaAuto="+student.getAcademicYearCourse()).asJson();
