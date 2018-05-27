@@ -573,14 +573,12 @@ public class Openstud {
             HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI+"/prenotazione/"+res.getReportID()+"/"+res.getSessionID()+"/"
                             +studentID+"/pdf?ingresso="+token).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
-            System.out.println(response);
             if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             JSONObject obj=response.getJSONObject("object");
             if(!obj.has("risultato") || obj.isNull("risultato")) return null;
             obj=obj.getJSONObject("risultato");
             if(!obj.has("byte") || obj.isNull("byte")) return null;
             JSONArray byteArray= obj.getJSONArray("byte");
-            System.out.println(byteArray);
             byte[] pdf = new byte[byteArray.length()];
             for(int i=0;i<byteArray.length();i++) pdf[i] = (byte) byteArray.getInt(i);
             return  pdf;
