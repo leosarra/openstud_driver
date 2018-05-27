@@ -1,4 +1,4 @@
-package lithium.openstud.driver;
+package lithium.openstud.driver.data;
 
 import java.util.Date;
 
@@ -26,9 +26,6 @@ public class Student {
     private int typeStudent;
     private int cfu;
     private boolean isErasmus;
-
-    protected void Student(){
-    }
 
     public String getStudentStatus() {
         return studentStatus;

@@ -1,4 +1,4 @@
-package lithium.openstud.driver;
+package lithium.openstud.driver.data;
 
 public class ExamDoable extends Exam {
     private String courseCode;

@@ -1,4 +1,4 @@
-package lithium.openstud.driver;
+package lithium.openstud.driver.data;
 
 import java.util.Date;
 
@@ -20,10 +20,6 @@ public class ExamReservation {
     private String note;
     private String ssd;
     private String module;
-
-    protected ExamReservation(){
-
-    }
 
     public Date getExamDate() {
         return examDate;

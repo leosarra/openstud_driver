@@ -1,4 +1,4 @@
-package lithium.openstud.driver;
+package lithium.openstud.driver.data;
 
 import java.util.Date;
 
@@ -8,17 +8,6 @@ public class Isee {
     private Date dateOperation;
     private Date dateDeclaration;
     private boolean isEditable;
-
-    public Isee(double value, String protocol, Date dateOperation, Date dateDeclaration, boolean isEditable){
-        this.value=value;
-        this.protocol=protocol;
-        this.dateDeclaration=dateDeclaration;
-        this.dateOperation=dateOperation;
-        this.isEditable=isEditable;
-    }
-
-    protected Isee() {
-    }
 
     public double getValue() {
         return value;
@@ -72,7 +61,6 @@ public class Isee {
     }
 
     public boolean isValid(){
-        if (protocol==null || protocol.isEmpty()) return false;
-        else return true;
+        return protocol != null && !protocol.isEmpty();
     }
 }
