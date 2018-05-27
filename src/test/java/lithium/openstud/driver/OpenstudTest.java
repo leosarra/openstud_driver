@@ -21,4 +21,12 @@ public class OpenstudTest
         Isee res=osb.getIsee();
         assertTrue(res!=null && res.isValid());
     }
+
+    @Test
+    public void testGetInfoStudent() throws OpenstudEndpointNotReadyException, OpenstudUnexpectedServerResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidSetupException {
+        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
+        osb.login();
+        Student st=osb.getInfoStudent();
+        assertTrue(st!=null && st.getStudentID()!=0);
+    }
 }
