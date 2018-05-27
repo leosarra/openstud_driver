@@ -106,8 +106,8 @@ public class Openstud {
         isReady=true;
     }
 
-    public Isee getIsee() throws OpenstudInvalidSetupException, OpenstudConnectionException, OpenstudInvalidResponseException {
-        if (!isReady()) throw new OpenstudInvalidSetupException("OpenStud is not ready. Remember to call login() first!");
+    public Isee getIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        if (!isReady()) return null;
         int count=0;
         Isee isee;
         while(true){
@@ -175,8 +175,8 @@ public class Openstud {
     }
 
 
-    public Student getInfoStudent() throws OpenstudInvalidSetupException, OpenstudConnectionException, OpenstudInvalidResponseException {
-        if (!isReady()) throw new OpenstudInvalidSetupException("OpenStud is not ready. Remember to call login() first!");
+    public Student getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        if (!isReady()) return null;
         int count=0;
         Student st;
         while(true){
