@@ -4,7 +4,6 @@ import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.JsonNode;
 import io.github.openunirest.http.Unirest;
 import io.github.openunirest.http.exceptions.UnirestException;
-import lithium.openstud.driver.core.*;
 import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudEndpointNotReadyException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidPasswordException;
@@ -595,6 +594,82 @@ public class Openstud {
             extractReservations(list, array, formatter);
             return list;
         } catch (UnirestException e) {
+            e.printStackTrace();
+            throw new OpenstudConnectionException(e);
+        }
+    }
+
+    /**
+    public Pair<Integer,String> insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        if (!isReady()) return null;
+        int count=0;
+        Pair<Integer,String> pr=null;
+        while(true){
+            try {
+                pr =_insertReservation(res);
+                break;
+            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+                if (++count == maxTries) throw e;
+                if (refreshToken()==-1) throw e;
+            }
+        }
+        return pr;
+    }
+
+    public Pair<Integer,String> _insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        try {
+            HttpResponse<JsonNode> jsonResponse = Unirest.post(endpointAPI + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID()
+                    + "/" + res.getCourseCode() + "?ingresso=" + token).asJson();
+            JSONObject response = new JSONObject(jsonResponse.getBody());
+            String url = null;
+            int flag = -1;
+            if (response.has("esito")) {
+                if (response.getJSONObject("esito").has("flagEsito")) {
+                    flag = response.getJSONObject("esito").getInt("flagEsito");
+                }
+            }
+            if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            response = response.getJSONObject("object");
+            if (response.isNull("url") && response.has("url")) url = response.getString("url");
+            return new Pair<>(flag, url);
+        } catch (UnirestException e){
+            e.printStackTrace();
+            throw new OpenstudConnectionException(e);
+        }
+    }
+     **/
+
+    public int deleteReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        if (!isReady() || res.getReservationNumber()==-1) return -1;
+        int count=0;
+        int ret;
+        while(true){
+            try {
+                ret =_deleteReservation(res);
+                break;
+            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+                if (++count == maxTries) throw e;
+                if (refreshToken()==-1) throw e;
+            }
+        }
+        return ret;
+    }
+
+    private int _deleteReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        try {
+            HttpResponse<JsonNode> jsonResponse = Unirest.delete(endpointAPI + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID()
+                    + "/" + studentID + "/"+res.getReservationNumber()+"?ingresso=" + token).asJson();
+            JSONObject response = new JSONObject(jsonResponse.getBody());
+            System.out.println(response);
+            int flag = -1;
+            if (response.has("esito")) {
+                if (response.getJSONObject("esito").has("flagEsito")) {
+                    flag = response.getJSONObject("esito").getInt("flagEsito");
+                }
+            }
+            else throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            return flag;
+        } catch (UnirestException e){
             e.printStackTrace();
             throw new OpenstudConnectionException(e);
         }

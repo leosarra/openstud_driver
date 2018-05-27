@@ -7,7 +7,7 @@ public class ExamReservation {
     private int sessionID;
     private int courseCode;
     private int cfu;
-    private int reservationNumber;
+    private int reservationNumber = -1;
     private String yearCourse;
     private String courseDescription;
     private String examSubject;
