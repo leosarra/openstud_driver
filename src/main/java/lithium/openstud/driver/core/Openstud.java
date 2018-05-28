@@ -25,12 +25,11 @@ public class Openstud {
     private String endpointAPI;
     private int connectionTimeout;
     private int socketTimeout;
-    private String token;
+    private volatile String token;
     private String studentPassword;
     private int studentID;
     private boolean isReady;
     private Logger logger;
-
     Openstud(String webEndpoint, int studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int socketTimeout) {
         this.maxTries=retryCounter;
         this.endpointAPI=webEndpoint;
@@ -41,8 +40,12 @@ public class Openstud {
         this.logger=logger;
     }
 
-    private synchronized void setToken(String token){
+    private void setToken(String token){
         this.token=token;
+    }
+
+    private String getToken(){
+        return this.token;
     }
 
     private void log(Level lvl, String str){
@@ -157,7 +160,7 @@ public class Openstud {
 
     private Isee _getIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI+"/contabilita/"+studentID+"/isee?ingresso="+token).asJson();
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI+"/contabilita/"+studentID+"/isee?ingresso="+getToken()).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
             log(Level.INFO,response);
             if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud response is not valid");
@@ -233,7 +236,7 @@ public class Openstud {
 
     private Student _getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI+"/studente/"+studentID+"?ingresso="+token).asJson();
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI+"/studente/"+studentID+"?ingresso="+getToken()).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
             log(Level.INFO,response);
             if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
@@ -351,7 +354,7 @@ public class Openstud {
 
     private List<ExamDoable> _getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/studente/" + studentID + "/insegnamentisostenibili?ingresso=" + token).asJson();
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/studente/" + studentID + "/insegnamentisostenibili?ingresso=" + getToken()).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
             log(Level.INFO,response);
             if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
@@ -420,7 +423,7 @@ public class Openstud {
 
     private List<ExamPassed> _getExamsPassed() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/studente/" + studentID + "/esami?ingresso=" + token).asJson();
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/studente/" + studentID + "/esami?ingresso=" + getToken()).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
             log(Level.INFO,response);
             if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
@@ -502,7 +505,7 @@ public class Openstud {
 
     private List<ExamReservation> _getActiveReservations() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/studente/" + studentID + "/prenotazioni?ingresso=" + token).asJson();
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/studente/" + studentID + "/prenotazioni?ingresso=" + getToken()).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
             log(Level.INFO,response);
             if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
@@ -642,7 +645,7 @@ public class Openstud {
 
     private List<ExamReservation> _getAvailableReservations(ExamDoable exam, Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/appello/ricerca?ingresso=" + token+ "&tipoRicerca="+4+"&criterio="+exam.getModuleCode()+
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI + "/appello/ricerca?ingresso=" + getToken()+ "&tipoRicerca="+4+"&criterio="+exam.getModuleCode()+
                             "&codiceCorso="+exam.getCourseCode()+"&annoAccaAuto="+student.getAcademicYearCourse()).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
             log(Level.INFO,response);
@@ -691,7 +694,7 @@ public class Openstud {
     private ImmutablePair<Integer,String> _insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.post(endpointAPI + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID()
-                    + "/" + res.getCourseCode() + "?ingresso=" + token).asJson();
+                    + "/" + res.getCourseCode() + "?ingresso=" + getToken()).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
             log(Level.INFO,response);
             String url = null;
@@ -737,7 +740,7 @@ public class Openstud {
     private int _deleteReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.delete(endpointAPI + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID()
-                    + "/" + studentID + "/"+res.getReservationNumber()+"?ingresso=" + token).asJson();
+                    + "/" + studentID + "/"+res.getReservationNumber()+"?ingresso=" + getToken()).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
             log(Level.INFO,response);
             int flag = -1;
@@ -781,7 +784,7 @@ public class Openstud {
     private byte[] _getPdf(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.get(endpointAPI+"/prenotazione/"+res.getReportID()+"/"+res.getSessionID()+"/"
-                            +studentID+"/pdf?ingresso="+token).asJson();
+                            +studentID+"/pdf?ingresso="+getToken()).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
             if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             JSONObject obj=response.getJSONObject("object");
