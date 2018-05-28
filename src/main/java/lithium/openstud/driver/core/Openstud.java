@@ -28,7 +28,7 @@ public class Openstud {
     private int studentID;
     private boolean isReady;
 
-    protected Openstud(String webEndpoint, int studentID, String studentPassword, int retryCounter, int connectionTimeout, int socketTimeout) {
+    Openstud(String webEndpoint, int studentID, String studentPassword, int retryCounter, int connectionTimeout, int socketTimeout) {
         this.maxTries=retryCounter;
         this.endpointAPI=webEndpoint;
         this.connectionTimeout=connectionTimeout;
@@ -614,6 +614,7 @@ public class Openstud {
                 if (refreshToken()==-1) throw e;
             }
         }
+        if(((ImmutablePair<Integer, String>) pr).left==-1 && ((ImmutablePair<Integer, String>) pr).right==null) return null;
         return pr;
     }
 
