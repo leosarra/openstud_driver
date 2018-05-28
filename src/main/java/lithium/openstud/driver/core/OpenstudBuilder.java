@@ -5,7 +5,7 @@ public class OpenstudBuilder {
     private String webEndpoint="https://www.studenti.uniroma1.it/phxdroidws";
     private int connectionTimeout=5000;
     private int socketTimeout=60000;
-    private int studentID;
+    private int studentID = -1;
     private String password;
 
     public OpenstudBuilder setRetryCounter(int retryCounter) {

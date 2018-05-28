@@ -74,6 +74,8 @@ public class Openstud {
 
     public void login() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException {
         int count=0;
+        if (studentPassword==null) throw new OpenstudInvalidPasswordException("Password can't be empty");
+        if (studentID==-1) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while(true){
             try {
                 _login();
