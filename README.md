@@ -61,17 +61,36 @@ dependencies {
 Soon<sup>(tm)</sup>
 
 ### Examples
-```Logger log = Logger.getLogger("lithium.openstud");
- Openstud osb = new OpenstudBuilder().setPassword("myPassword").setStudentID(123456).setLogger(log).build();
- osb.login();
- Student st=osb.getInfoStudent(); //Get personal infos about a student
- List<ExamDoable> doable=osb.getExamsDoable(); //Get a list of exams that the student hasn't passed yet
- List<ExamPassed> passed=osb.getExamsPassed()); //Get a list of exams that the student passed with flying colors :)
- List<ExamReservation> active = osb.getActiveReservations(); //Get a list of reservations that the student has already placed
- List<ExamReservation> available = osb.getAvailableReservations(doable.get(0),st); //Get a list of the reservations avaiable for a particular exam
- Pair<Integer,String> pr = osb.insertReservation(available.get(0)); //place a reservation for a particulare session of an exam
- byte[] pdf=osb.getPdf(active.get(0)); //Download the PDF of a particular active reservation
- int result = osb.deleteReservation(active.get(0)); //Delete an active reservation
+```
+Logger log = Logger.getLogger("lithium.openstud");
+
+//Create an OpenStud object and sign-in
+Openstud osb = new OpenstudBuilder().setPassword("myPassword").setStudentID(123456).setLogger(log).build();
+osb.login();
+ 
+//Get personal infos about a student
+Student st=osb.getInfoStudent(); 
+ 
+//Get a list of exams that the student hasn't passed yet
+List<ExamDoable> doable=osb.getExamsDoable(); 
+ 
+//Get a list of exams that the student passed with flying colors :)
+List<ExamPassed> passed=osb.getExamsPassed());
+
+//Get a list of reservations that the student has already placed
+List<ExamReservation> active = osb.getActiveReservations(); 
+ 
+//Get a list of the reservations avaiable for a particular exam
+List<ExamReservation> available = osb.getAvailableReservations(doable.get(0),st);
+ 
+//Place a reservation for a particulare session of an exam
+Pair<Integer,String> pr = osb.insertReservation(available.get(0));
+ 
+//Download the PDF of a particular active reservation
+byte[] pdf=osb.getPdf(active.get(0)); 
+ 
+//Delete an active reservation
+int result = osb.deleteReservation(active.get(0));
  ```
  
  ## Dependencies
