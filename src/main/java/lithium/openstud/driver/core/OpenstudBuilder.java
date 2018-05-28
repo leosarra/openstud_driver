@@ -1,5 +1,7 @@
 package lithium.openstud.driver.core;
 
+import java.util.logging.Logger;
+
 public class OpenstudBuilder {
     private int retryCounter=3;
     private String webEndpoint="https://www.studenti.uniroma1.it/phxdroidws";
@@ -7,6 +9,7 @@ public class OpenstudBuilder {
     private int socketTimeout=60000;
     private int studentID = -1;
     private String password;
+    private Logger logger;
 
     public OpenstudBuilder setRetryCounter(int retryCounter) {
         this.retryCounter = retryCounter;
@@ -35,7 +38,11 @@ public class OpenstudBuilder {
         return this;
     }
 
+    public OpenstudBuilder setLogger(Logger logger){
+        this.logger=logger;
+        return this;
+    }
     public Openstud build(){
-        return new Openstud(webEndpoint,studentID, password,retryCounter,connectionTimeout, socketTimeout);
+        return new Openstud(webEndpoint,studentID, password, logger, retryCounter,connectionTimeout, socketTimeout);
     }
 }
