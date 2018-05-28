@@ -610,7 +610,7 @@ public class Openstud {
                         }
                         break;
                     case "SiglaModuloDidattico":
-                        if(obj.isNull("SiglaModuloDidattico")) res.setModule(obj.getString("SiglaModuloDidattico"));
+                        if(!obj.isNull("SiglaModuloDidattico")) res.setModule(obj.getString("SiglaModuloDidattico"));
                         break;
                 }
             }
