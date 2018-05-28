@@ -1,9 +1,10 @@
-# OpenStud Driver
+# OpenStud Driver [![Build Status](https://travis-ci.org/LithiumSR/openstud_driver.svg?branch=master)](https://travis-ci.org/LithiumSR/openstud_driver)
 
 OpenStud driver is Java Libary to obtain infos from Sapienza University's Infostud.
 This library is thread-safe and Android-friendly.
 
 ## Getting started
+
 ###Prerequisites
 This application is written with JDK8 in mind. If you don't have a Java Development Kit installed you can download it from [the Oracle website](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 
@@ -13,6 +14,7 @@ This application is written with JDK8 in mind. If you don't have a Java Developm
 - execute `mvn install -DskipTests` . You will find the .jar file in the target folder.
 
 ###Add to your project
+
 OpenStud Driver can be easily added to your existing project through Maven or Gradle.
 
 **Maven** 
@@ -55,7 +57,9 @@ dependencies {
 
 
 ##Documentation
+
 Soon<sup>(tm)</sup>
+
 ###Examples
 ```Logger log = Logger.getLogger("lithium.openstud");
  Openstud osb = new OpenstudBuilder().setPassword("myPassword").setStudentID(123456).setLogger(log).build();
