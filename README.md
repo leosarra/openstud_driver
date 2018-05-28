@@ -5,15 +5,15 @@ This library is thread-safe and Android-friendly.
 
 ## Getting started
 
-###Prerequisites
+### Prerequisites
 This application is written with JDK8 in mind. If you don't have a Java Development Kit installed you can download it from [the Oracle website](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 
-###Compile from source
+### Compile from source
 - `git clone` or download this repo.
 - open a terminal in the directory where the sources are stored.
 - execute `mvn install -DskipTests` . You will find the .jar file in the target folder.
 
-###Add to your project
+### Add to your project
 
 OpenStud Driver can be easily added to your existing project through Maven or Gradle.
 
@@ -56,11 +56,11 @@ dependencies {
 ```
 
 
-##Documentation
+## Documentation
 
 Soon<sup>(tm)</sup>
 
-###Examples
+### Examples
 ```Logger log = Logger.getLogger("lithium.openstud");
  Openstud osb = new OpenstudBuilder().setPassword("myPassword").setStudentID(123456).setLogger(log).build();
  osb.login();
@@ -74,7 +74,7 @@ Soon<sup>(tm)</sup>
  int result = osb.deleteReservation(active.get(0)); //Delete an active reservation
  ```
  
- ##Dependencies
+ ## Dependencies
  - [Square OkHttp](https://github.com/square/okhttp)
  - [JUnit](https://github.com/junit-team/junit4)
  - [org/Json](https://github.com/stleary/JSON-java)
