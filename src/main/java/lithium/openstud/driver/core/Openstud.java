@@ -608,6 +608,9 @@ public class Openstud {
         while(true){
             try {
                 pr =_insertReservation(res);
+                if(((ImmutablePair<Integer, String>) pr).left==-1 && ((ImmutablePair<Integer, String>) pr).right==null) {
+                    if (!(++count == maxTries)) continue;
+                }
                 break;
             } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
                 if (++count == maxTries) throw e;
