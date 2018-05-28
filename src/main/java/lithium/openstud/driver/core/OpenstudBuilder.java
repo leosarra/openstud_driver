@@ -5,8 +5,9 @@ import java.util.logging.Logger;
 public class OpenstudBuilder {
     private int retryCounter=3;
     private String webEndpoint="https://www.studenti.uniroma1.it/phxdroidws";
-    private int connectionTimeout=5000;
-    private int socketTimeout=60000;
+    private int connectTimeout=10;
+    private int writeTimeout=10;
+    private int readTimeout=30;
     private int studentID = -1;
     private String password;
     private Logger logger;
@@ -21,12 +22,16 @@ public class OpenstudBuilder {
         return this;
     }
 
-    public OpenstudBuilder setConnectionTimeout(int connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
+    public OpenstudBuilder setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
         return this;
     }
-    public OpenstudBuilder setSocketTimeout(int socketTimeout){
-        this.socketTimeout=socketTimeout;
+    public OpenstudBuilder setReadTimeout(int readTimeout){
+        this.readTimeout=readTimeout;
+        return this;
+    }
+    public OpenstudBuilder setWriteTimeout(int writeTimeout){
+        this.writeTimeout=writeTimeout;
         return this;
     }
     public OpenstudBuilder setStudentID(int id){
@@ -43,6 +48,6 @@ public class OpenstudBuilder {
         return this;
     }
     public Openstud build(){
-        return new Openstud(webEndpoint,studentID, password, logger, retryCounter,connectionTimeout, socketTimeout);
+        return new Openstud(webEndpoint,studentID, password, logger, retryCounter,connectTimeout, readTimeout, writeTimeout);
     }
 }
