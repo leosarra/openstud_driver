@@ -8,6 +8,8 @@ import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudEndpointNotReadyException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidPasswordException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -599,11 +601,10 @@ public class Openstud {
         }
     }
 
-    /**
     public Pair<Integer,String> insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         if (!isReady()) return null;
         int count=0;
-        Pair<Integer,String> pr=null;
+        Pair<Integer,String> pr;
         while(true){
             try {
                 pr =_insertReservation(res);
@@ -616,28 +617,28 @@ public class Openstud {
         return pr;
     }
 
-    public Pair<Integer,String> _insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    private ImmutablePair<Integer,String> _insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.post(endpointAPI + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID()
                     + "/" + res.getCourseCode() + "?ingresso=" + token).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
             String url = null;
             int flag = -1;
+            if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            response = response.getJSONObject("object");
             if (response.has("esito")) {
                 if (response.getJSONObject("esito").has("flagEsito")) {
                     flag = response.getJSONObject("esito").getInt("flagEsito");
                 }
             }
-            if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            response = response.getJSONObject("object");
-            if (response.isNull("url") && response.has("url")) url = response.getString("url");
-            return new Pair<>(flag, url);
+            else throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            if (!response.isNull("url") && response.has("url")) url = response.getString("url");
+            return new ImmutablePair<>(flag, url);
         } catch (UnirestException e){
             e.printStackTrace();
             throw new OpenstudConnectionException(e);
         }
     }
-     **/
 
     public int deleteReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         if (!isReady() || res.getReservationNumber()==-1) return -1;
@@ -660,8 +661,9 @@ public class Openstud {
             HttpResponse<JsonNode> jsonResponse = Unirest.delete(endpointAPI + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID()
                     + "/" + studentID + "/"+res.getReservationNumber()+"?ingresso=" + token).asJson();
             JSONObject response = new JSONObject(jsonResponse.getBody());
-            System.out.println(response);
             int flag = -1;
+            if (!response.has("object")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            response = response.getJSONObject("object");
             if (response.has("esito")) {
                 if (response.getJSONObject("esito").has("flagEsito")) {
                     flag = response.getJSONObject("esito").getInt("flagEsito");
