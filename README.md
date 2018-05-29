@@ -1,6 +1,7 @@
-# OpenStud Driver [![Build Status](https://travis-ci.org/LithiumSR/openstud_driver.svg?branch=master)](https://travis-ci.org/LithiumSR/openstud_driver)
+# OpenStud Driver [![Build Status](https://travis-ci.org/LithiumSR/openstud_driver.svg?branch=master)](https://travis-ci.org/LithiumSR/openstud_driver) [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 OpenStud driver is Java Libary to obtain infos from Sapienza University's Infostud.
+
 This library is thread-safe and Android-friendly.
 
 ## Getting started
@@ -10,8 +11,8 @@ This application is written with JDK8 in mind. If you don't have a Java Developm
 
 ### Compile from source
 - `git clone` or download this repo.
-- open a terminal in the directory where the sources are stored.
-- execute `mvn install -DskipTests` . You will find the .jar file in the target folder.
+- Open a terminal in the directory where the sources are stored.
+- Execute `mvn install -DskipTests` . You will find the .jar file in the target folder.
 
 ### Add to your project
 
@@ -43,7 +44,6 @@ OpenStud Driver can be easily added to your existing project through Maven or Gr
 ```
 allprojects {
     repositories {
-        ...
 		maven { url 'https://jitpack.io' }
 	}
 }
@@ -65,32 +65,32 @@ Soon<sup>(tm)</sup>
 Logger log = Logger.getLogger("lithium.openstud");
 
 //Create an OpenStud object and sign-in
-Openstud osb = new OpenstudBuilder().setPassword("myPassword").setStudentID(123456).setLogger(log).build();
-osb.login();
+Openstud os = new OpenstudBuilder().setPassword("myPassword").setStudentID(123456).setLogger(log).build();
+os.login();
  
 //Get personal infos about a student
-Student st=osb.getInfoStudent(); 
+Student st = os.getInfoStudent(); 
  
 //Get a list of exams that the student hasn't passed yet
-List<ExamDoable> doable=osb.getExamsDoable(); 
+List<ExamDoable> doable = os.getExamsDoable(); 
  
 //Get a list of exams that the student passed with flying colors :)
-List<ExamPassed> passed=osb.getExamsPassed());
+List<ExamPassed> passed = os.getExamsPassed());
 
 //Get a list of reservations that the student has already placed
-List<ExamReservation> active = osb.getActiveReservations(); 
+List<ExamReservation> active = os.getActiveReservations(); 
  
 //Get a list of the reservations avaiable for a particular exam
-List<ExamReservation> available = osb.getAvailableReservations(doable.get(0),st);
+List<ExamReservation> available = os.getAvailableReservations(doable.get(0),st);
  
 //Place a reservation for a particulare session of an exam
-Pair<Integer,String> pr = osb.insertReservation(available.get(0));
+Pair<Integer,String> pr = os.insertReservation(available.get(0));
  
 //Download the PDF of a particular active reservation
-byte[] pdf=osb.getPdf(active.get(0)); 
+byte[] pdf = os.getPdf(active.get(0)); 
  
 //Delete an active reservation
-int result = osb.deleteReservation(active.get(0));
+int result = os.deleteReservation(active.get(0));
  ```
  
  ## Dependencies
