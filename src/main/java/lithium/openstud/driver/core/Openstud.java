@@ -6,6 +6,7 @@ import lithium.openstud.driver.exceptions.OpenstudEndpointNotReadyException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidPasswordException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 import okhttp3.*;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
@@ -95,7 +96,7 @@ public class Openstud {
 
     public void login() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException {
         int count=0;
-        if (studentPassword==null) throw new OpenstudInvalidPasswordException("Password can't be empty");
+        if (studentPassword==null || studentPassword.isEmpty()) throw new OpenstudInvalidPasswordException("Password can't be left empty");
         if (studentID==-1) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while(true){
             try {
@@ -256,6 +257,7 @@ public class Openstud {
             st.setStudentID(studentID);
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
             for(String element : response.keySet()) {
+                if(response.isNull(element)) continue;
                 switch (element) {
                     case "codiceFiscale":
                         st.setCF(response.getString("codiceFiscale"));
@@ -316,7 +318,8 @@ public class Openstud {
                         st.setNation(response.getString("nazioneNascita"));
                         break;
                     case "creditiTotali":
-                        st.setCfu(response.getInt("creditiTotali"));
+                        String cfu = response.getString("creditiTotali");
+                        if (NumberUtils.isDigits(cfu)) st.setCfu(Integer.parseInt(cfu));
                         break;
                     case "indiMailIstituzionale":
                         st.setEmail(response.getString("indiMailIstituzionale"));

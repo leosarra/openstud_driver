@@ -211,6 +211,11 @@ public class Student {
         isErasmus = erasmus;
     }
 
+    public boolean isEnrolled(){
+        if(getTypeStudent()==-1) return false;
+        return true;
+    }
+
     @Override
     public String toString() {
         return "Student{" +
