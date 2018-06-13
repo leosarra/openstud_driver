@@ -176,44 +176,7 @@ public class Openstud {
             if (!response.has("risultato"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("risultato");
-            Isee res = new Isee();
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            for (String element : response.keySet()) {
-                switch (element) {
-                    case "valore":
-                        res.setValue(response.getDouble("value"));
-                        break;
-                    case "protocollo":
-                        String protocol = response.getString("protocollo");
-                        if (protocol == null || protocol.isEmpty()) return null;
-                        res.setProtocol(response.getString("protocollo"));
-                        break;
-                    case "modificabile":
-                        res.setEditable(response.getInt("modificabile") == 1);
-                        break;
-                    case "dataOperazione":
-                        String dateOperation = response.getString("dataOperazione");
-                        if (!(dateOperation == null || dateOperation.isEmpty())) {
-                            try {
-                                res.setDateOperation(formatter.parse(response.getString("dataOperazione")));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        break;
-                    case "data":
-                        String dateDeclaration = response.getString("data");
-                        if (!(dateDeclaration == null || dateDeclaration.isEmpty())) {
-                            try {
-                                res.setDateDeclaration(formatter.parse(response.getString("data")));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        break;
-                }
-            }
-            return res;
+            return OpenstudHelper.extractIsee(response);
         } catch (IOException e) {
             log(Level.SEVERE,e);
             throw new OpenstudConnectionException(e);
@@ -532,7 +495,7 @@ public class Openstud {
             if (!response.has("appelli")) return null;
             JSONArray array = response.getJSONArray("appelli");
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            extractReservations(list, array, formatter);
+            OpenstudHelper.extractReservations(list, array, formatter);
             return list;
         } catch (IOException e) {
             log(Level.SEVERE,e);
@@ -540,101 +503,6 @@ public class Openstud {
         }
     }
 
-    private void extractReservations(List<ExamReservation> list, JSONArray array, SimpleDateFormat formatter) {
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject obj = array.getJSONObject(i);
-            ExamReservation res = new ExamReservation();
-            for (String element : obj.keySet()) {
-                switch (element) {
-                    case "codIdenVerb":
-                        res.setReportID(obj.getInt("codIdenVerb"));
-                        break;
-                    case "codAppe":
-                        res.setSessionID(obj.getInt("codAppe"));
-                        break;
-                    case "codCorsoStud":
-                        res.setCourseCode(Integer.parseInt(obj.getString("codCorsoStud")));
-                        break;
-                    case "descrizione":
-                        res.setExamSubject(obj.getString("descrizione"));
-                        break;
-                    case "descCorsoStud":
-                        res.setCourseDescription(obj.getString("descCorsoStud"));
-                        break;
-                    case "crediti":
-                        res.setCfu(obj.getInt("crediti"));
-                        break;
-                    case "docente":
-                        res.setTeacher(obj.getString("docente"));
-                        break;
-                    case "annoAcca":
-                        res.setYearCourse(obj.getString("annoAcca"));
-                        break;
-                    case "facolta":
-                        res.setDepartment(obj.getString("facolta"));
-                        break;
-                    case "numeroPrenotazione":
-                        if (obj.isNull("numeroPrenotazione")) break;
-                        res.setReservationNumber(obj.getInt("numeroPrenotazione"));
-                        break;
-                    case "ssd":
-                        if (obj.isNull("ssd")) break;
-                        res.setSsd(obj.getString("ssd"));
-                        break;
-                    case "dataprenotazione":
-                        if (obj.isNull("dataprenotazione")) break;
-                        String reservationDate = obj.getString("dataprenotazione");
-                        if (!(reservationDate == null || reservationDate.isEmpty())) {
-                            try {
-                                res.setReservationDate(formatter.parse(reservationDate));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        break;
-                    case "note":
-                        res.setNote(obj.getString("note"));
-                        break;
-                    case "dataAppe":
-                        String examDate = obj.getString("dataAppe");
-                        if (!(examDate == null || examDate.isEmpty())) {
-                            try {
-                                res.setExamDate(formatter.parse(examDate));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        break;
-                    case "dataInizioPrenotazione":
-                        if(obj.isNull("dataInizioPrenotazione")) break;
-                        String startDate = obj.getString("dataInizioPrenotazione");
-                        if (!(startDate == null || startDate.isEmpty())) {
-                            try {
-                                res.setStartDate(formatter.parse(startDate));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        break;
-                    case "dataFinePrenotazione":
-                        if(obj.isNull("dataFinePrenotazione")) break;
-                        String endDate = obj.getString("dataFinePrenotazione");
-                        if (!(endDate == null || endDate.isEmpty())) {
-                            try {
-                                res.setEndDate(formatter.parse(endDate));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        break;
-                    case "SiglaModuloDidattico":
-                        if(!obj.isNull("SiglaModuloDidattico")) res.setModule(obj.getString("SiglaModuloDidattico"));
-                        break;
-                }
-            }
-            list.add(res);
-        }
-    }
 
     public List<ExamReservation> getAvailableReservations(ExamDoable exam, Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException {
         if (!isReady()) return null;
@@ -673,7 +541,7 @@ public class Openstud {
             if (!response.has("appelli")) return null;
             JSONArray array = response.getJSONArray("appelli");
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            extractReservations(list, array, formatter);
+            OpenstudHelper.extractReservations(list, array, formatter);
             return list;
         } catch (IOException e) {
             log(Level.SEVERE,e);
