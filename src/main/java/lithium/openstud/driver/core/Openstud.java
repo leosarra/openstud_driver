@@ -22,14 +22,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Openstud {
-    private int maxTries;
-    private String endpointAPI;
+    private final int maxTries;
+    private final String endpointAPI;
     private volatile String token;
     private String studentPassword;
-    private int studentID;
+    private final int studentID;
     private boolean isReady;
-    private Logger logger;
-    private OkHttpClient client;
+    private final Logger logger;
+    private final OkHttpClient client;
     Openstud(String webEndpoint, int studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout) {
         this.maxTries=retryCounter;
         this.endpointAPI=webEndpoint;
@@ -39,7 +39,7 @@ public class Openstud {
         client = new OkHttpClient.Builder()
                 .connectTimeout(connectionTimeout, TimeUnit.SECONDS)
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
-                .readTimeout(readTimeout, TimeUnit.SECONDS)
+                .readTimeout(readTimeout, TimeUnit.SECONDS).retryOnConnectionFailure(true)
                 .build();
     }
 
@@ -72,7 +72,6 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if(resp.body()==null) return 0;
             String body = resp.body().string();
-            log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (!response.has("output") || response.getString("output").isEmpty()) return -1;
             setToken(response.getString("output"));
@@ -89,6 +88,7 @@ public class Openstud {
                 }
             }
         } catch (IOException e) {
+            log(Level.SEVERE,e);
             e.printStackTrace();
         }
         return 0;
@@ -102,7 +102,7 @@ public class Openstud {
             try {
                 _login();
                 break;
-            } catch (OpenstudEndpointNotReadyException |OpenstudConnectionException e) {
+            } catch (OpenstudEndpointNotReadyException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
                     throw e;
@@ -137,7 +137,7 @@ public class Openstud {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log(Level.SEVERE,e);
             throw new OpenstudConnectionException(e);
         }
         isReady=true;
@@ -151,7 +151,7 @@ public class Openstud {
             try {
                 isee=_getIsee();
                 break;
-            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+            } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
                     throw e;
@@ -215,7 +215,7 @@ public class Openstud {
             }
             return res;
         } catch (IOException e) {
-            e.printStackTrace();
+            log(Level.SEVERE,e);
             throw new OpenstudConnectionException(e);
         }
     }
@@ -229,7 +229,7 @@ public class Openstud {
             try {
                 st=_getInfoStudent();
                 break;
-            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+            } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
                     throw e;
@@ -336,7 +336,7 @@ public class Openstud {
             }
             return  st;
         } catch (IOException e) {
-            e.printStackTrace();
+            log(Level.SEVERE,e);
             throw new OpenstudConnectionException(e);
         }
     }
@@ -350,7 +350,7 @@ public class Openstud {
             try {
                 exams=_getExamsDoable();
                 break;
-            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+            } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
                     throw e;
@@ -407,7 +407,7 @@ public class Openstud {
             }
             return list;
         } catch (IOException e) {
-            e.printStackTrace();
+            log(Level.SEVERE,e);
             throw new OpenstudConnectionException(e);
         }
     }
@@ -420,7 +420,7 @@ public class Openstud {
             try {
                 exams=_getExamsPassed();
                 break;
-            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+            } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
                     throw e;
@@ -490,7 +490,7 @@ public class Openstud {
             }
             return list;
         } catch (IOException e) {
-            e.printStackTrace();
+            log(Level.SEVERE,e);
             throw new OpenstudConnectionException(e);
         }
     }
@@ -503,7 +503,7 @@ public class Openstud {
             try {
                 reservations=_getActiveReservations();
                 break;
-            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+            } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
                     throw e;
@@ -535,7 +535,7 @@ public class Openstud {
             extractReservations(list, array, formatter);
             return list;
         } catch (IOException e) {
-            e.printStackTrace();
+            log(Level.SEVERE,e);
             throw new OpenstudConnectionException(e);
         }
     }
@@ -644,7 +644,7 @@ public class Openstud {
             try {
                 reservations=_getAvailableReservations(exam, student);
                 break;
-            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+            } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
                     throw e;
@@ -676,7 +676,7 @@ public class Openstud {
             extractReservations(list, array, formatter);
             return list;
         } catch (IOException e) {
-            e.printStackTrace();
+            log(Level.SEVERE,e);
             throw new OpenstudConnectionException(e);
         }
     }
@@ -692,7 +692,7 @@ public class Openstud {
                     if (!(++count == maxTries)) continue;
                 }
                 break;
-            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+            } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
                     throw e;
@@ -728,7 +728,7 @@ public class Openstud {
             if (!response.isNull("url") && response.has("url")) url = response.getString("url");
             return new ImmutablePair<>(flag, url);
         } catch (IOException e) {
-            e.printStackTrace();
+            log(Level.SEVERE,e);
             throw new OpenstudConnectionException(e);
         }
     }
@@ -741,7 +741,7 @@ public class Openstud {
             try {
                 ret =_deleteReservation(res);
                 break;
-            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+            } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
                     throw e;
@@ -772,7 +772,7 @@ public class Openstud {
             } else throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             return flag;
         }catch (IOException e) {
-            e.printStackTrace();
+            log(Level.SEVERE,e);
             throw new OpenstudConnectionException(e);
         }
     }
@@ -785,7 +785,7 @@ public class Openstud {
             try {
                 pdf=_getPdf(reservation);
                 break;
-            } catch (OpenstudConnectionException|OpenstudInvalidResponseException e) {
+            } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
                     throw e;
@@ -817,7 +817,7 @@ public class Openstud {
             log(Level.INFO,"Found PDF made of "+pdf.length+" bytes \n");
             return  pdf;
         } catch (IOException e) {
-            e.printStackTrace();
+            log(Level.SEVERE,e);
             throw new OpenstudConnectionException(e);
         }
     }
