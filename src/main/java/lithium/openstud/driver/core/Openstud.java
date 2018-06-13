@@ -180,7 +180,7 @@ public class Openstud {
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
             for (String element : response.keySet()) {
                 switch (element) {
-                    case "value":
+                    case "valore":
                         res.setValue(response.getDouble("value"));
                         break;
                     case "protocollo":
