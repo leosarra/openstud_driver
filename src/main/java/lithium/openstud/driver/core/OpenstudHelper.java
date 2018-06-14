@@ -25,6 +25,7 @@ public class OpenstudHelper {
                     res.setEditable(response.getInt("modificabile") == 1);
                     break;
                 case "dataOperazione":
+                    if (response.isNull("dataOperazione")) break;
                     String dateOperation = response.getString("dataOperazione");
                     if (!(dateOperation == null || dateOperation.isEmpty())) {
                         try {
