@@ -4,10 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import lithium.openstud.driver.core.*;
-import lithium.openstud.driver.exceptions.OpenstudConnectionException;
-import lithium.openstud.driver.exceptions.OpenstudEndpointNotReadyException;
-import lithium.openstud.driver.exceptions.OpenstudInvalidPasswordException;
-import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
+import lithium.openstud.driver.exceptions.*;
 import org.junit.Test;
 import java.util.List;
 
@@ -15,14 +12,14 @@ import java.util.List;
 public class OpenstudTest
 {
     @Test
-    public void testLogin() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException {
+    public void testLogin() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         assertTrue( osb.isReady() );
     }
 
     @Test
-    public void testGetIsee() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException {
+    public void testGetIsee() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         Isee res=osb.getCurrentIsee();
@@ -30,7 +27,7 @@ public class OpenstudTest
     }
 
     @Test
-    public void testGetListIsee() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException {
+    public void testGetIseeHistory() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         List<Isee> res=osb.getIseeHistory();
@@ -38,7 +35,7 @@ public class OpenstudTest
     }
 
     @Test
-    public void testGetInfoStudent() throws OpenstudEndpointNotReadyException, OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException {
+    public void testGetInfoStudent() throws OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         Student st=osb.getInfoStudent();
@@ -46,7 +43,7 @@ public class OpenstudTest
     }
 
     @Test
-    public void testGetExamsDoable() throws OpenstudEndpointNotReadyException, OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException {
+    public void testGetExamsDoable() throws OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         List<ExamDoable> list=osb.getExamsDoable();
@@ -54,7 +51,7 @@ public class OpenstudTest
     }
 
     @Test
-    public void testGetExamsPassed() throws OpenstudEndpointNotReadyException, OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException {
+    public void testGetExamsPassed() throws OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         List<ExamPassed> list=osb.getExamsPassed();
@@ -62,7 +59,7 @@ public class OpenstudTest
     }
 
     @Test
-    public void testGetActiveReservations() throws OpenstudEndpointNotReadyException, OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException {
+    public void testGetActiveReservations() throws OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         List<ExamReservation> list=osb.getActiveReservations();
@@ -70,7 +67,7 @@ public class OpenstudTest
     }
 
     @Test
-    public void testGetAvailableReservations() throws OpenstudInvalidResponseException, OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException {
+    public void testGetAvailableReservations() throws OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         List<ExamDoable> list=osb.getExamsDoable();
@@ -83,7 +80,7 @@ public class OpenstudTest
     }
 
     @Test
-    public void testGetPdf() throws OpenstudInvalidResponseException, OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException {
+    public void testGetPdf() throws OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         List<ExamReservation> list=osb.getActiveReservations();

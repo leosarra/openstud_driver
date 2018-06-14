@@ -1,10 +1,7 @@
 package lithium.openstud.driver.core;
 
 
-import lithium.openstud.driver.exceptions.OpenstudConnectionException;
-import lithium.openstud.driver.exceptions.OpenstudEndpointNotReadyException;
-import lithium.openstud.driver.exceptions.OpenstudInvalidPasswordException;
-import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
+import lithium.openstud.driver.exceptions.*;
 import okhttp3.*;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -64,38 +61,37 @@ public class Openstud {
         return isReady;
     }
 
-    private int refreshToken(){
+    private void refreshToken() throws OpenstudInvalidRefreshException, OpenstudInvalidResponseException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("key","r4g4zz3tt1").add("matricola",String.valueOf(studentID)).add("stringaAutenticazione",studentPassword).build();
             Request req = new Request.Builder().url(endpointAPI+"/autenticazione").header("Accept","application/json")
                     .header("Content-Type","application/x-www-form-urlencoded").post(formBody).build();
             Response resp = client.newCall(req).execute();
-            if(resp.body()==null) return 0;
+            if(resp.body()==null) return;
             String body = resp.body().string();
             JSONObject response = new JSONObject(body);
-            if (!response.has("output") || response.getString("output").isEmpty()) return -1;
+            if (!response.has("output") || response.getString("output").isEmpty()) return;
             setToken(response.getString("output"));
             if (response.has("esito")) {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
                     case -4:
-                        return -1;
+                        throw new OpenstudInvalidRefreshException("Invalid credentials when refreshing token");
                     case -1:
-                        return -1;
+                        throw new OpenstudInvalidRefreshException("Invalid credentials when refreshing token");
                     case 0:
-                        return 0;
+                        break;
                     default:
-                        return -1;
+                        throw new OpenstudInvalidResponseException("Infostud is not working as intended");
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException|JSONException e) {
             log(Level.SEVERE,e);
             e.printStackTrace();
         }
-        return 0;
     }
 
-    public void login() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException {
+    public void login() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         int count=0;
         if (studentPassword==null || studentPassword.isEmpty()) throw new OpenstudInvalidPasswordException("Password can't be left empty");
         if (studentID==-1) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
@@ -103,7 +99,7 @@ public class Openstud {
             try {
                 _login();
                 break;
-            } catch (OpenstudEndpointNotReadyException e) {
+            } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
                     throw e;
@@ -112,7 +108,7 @@ public class Openstud {
         }
     }
 
-    private void _login() throws OpenstudInvalidPasswordException, OpenstudEndpointNotReadyException, OpenstudConnectionException, OpenstudInvalidResponseException {
+    private void _login() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("key","r4g4zz3tt1").add("matricola",String.valueOf(studentID)).add("stringaAutenticazione",studentPassword).build();
@@ -122,21 +118,19 @@ public class Openstud {
             if(resp.body()==null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
             log(Level.INFO, body);
-            System.out.println(body);
             JSONObject response = new JSONObject(body);
-            System.out.println(response);
             if (!response.has("output")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             setToken(response.getString("output"));
             if (response.has("esito")) {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
                     case -4:
-                        throw new OpenstudInvalidResponseException("User is not enabled to use Infostud service.");
+                        throw new OpenstudUserNotEnabledException("User is not enabled to use Infostud service.");
                     case -1:
                         throw new OpenstudInvalidPasswordException("Password not valid");
                     case 0:
                         break;
                     default:
-                        throw new OpenstudEndpointNotReadyException("Infostud is not working as expected");
+                        throw new OpenstudConnectionException("Infostud is not working as expected");
                 }
             }
         } catch (IOException e) {
@@ -155,8 +149,11 @@ public class Openstud {
         if (!isReady()) return null;
         int count=0;
         Isee isee;
+        boolean refresh = false;
         while(true){
             try {
+                if(refresh) refreshToken();
+                refresh = true;
                 isee=_getCurrentIsee();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -164,10 +161,10 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-                if (refreshToken()==-1) {
-                    log(Level.SEVERE,"FAILED TOKEN REFRESH!! :"+e.toString());
-                    throw e;
-                }
+            } catch (OpenstudInvalidRefreshException e) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+                log(Level.SEVERE,invalidResponse);
+                throw invalidResponse;
             }
         }
         return isee;
@@ -177,8 +174,11 @@ public class Openstud {
         if (!isReady()) return null;
         int count=0;
         List<Isee> history;
+        boolean refresh = false;
         while(true){
             try {
+                if(refresh) refreshToken();
+                refresh = true;
                 history=_getIseeHistory();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -186,10 +186,10 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-                if (refreshToken()==-1) {
-                    log(Level.SEVERE,"FAILED TOKEN REFRESH!! :"+e.toString());
-                    throw e;
-                }
+            } catch (OpenstudInvalidRefreshException e) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+                log(Level.SEVERE,invalidResponse);
+                throw invalidResponse;
             }
         }
         return history;
@@ -252,8 +252,11 @@ public class Openstud {
         if (!isReady()) return null;
         int count=0;
         Student st;
+        boolean refresh = false;
         while(true){
             try {
+                if(refresh) refreshToken();
+                refresh = true;
                 st=_getInfoStudent();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -261,10 +264,10 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-                if (refreshToken()==-1) {
-                    log(Level.SEVERE,"FAILED TOKEN REFRESH!! :"+e.toString());
-                    throw e;
-                }
+            } catch (OpenstudInvalidRefreshException e) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+                log(Level.SEVERE,invalidResponse);
+                throw invalidResponse;
             }
         }
         return st;
@@ -378,8 +381,11 @@ public class Openstud {
         if (!isReady()) return null;
         int count=0;
         List<ExamDoable> exams;
+        boolean refresh = false;
         while(true){
             try {
+                if(refresh) refreshToken();
+                refresh = true;
                 exams=_getExamsDoable();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -387,10 +393,10 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-                if (refreshToken()==-1) {
-                    log(Level.SEVERE,"FAILED TOKEN REFRESH!! :"+e.toString());
-                    throw e;
-                }
+            } catch (OpenstudInvalidRefreshException e) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+                log(Level.SEVERE,invalidResponse);
+                throw invalidResponse;
             }
         }
         return exams;
@@ -453,8 +459,11 @@ public class Openstud {
         if (!isReady()) return null;
         int count=0;
         List<ExamPassed> exams;
+        boolean refresh = false;
         while(true){
             try {
+                if(refresh) refreshToken();
+                refresh = true;
                 exams=_getExamsPassed();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -462,10 +471,10 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-                if (refreshToken()==-1) {
-                    log(Level.SEVERE,"FAILED TOKEN REFRESH!! :"+e.toString());
-                    throw e;
-                }
+            } catch (OpenstudInvalidRefreshException e) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+                log(Level.SEVERE,invalidResponse);
+                throw invalidResponse;
             }
         }
         return exams;
@@ -541,8 +550,11 @@ public class Openstud {
         if (!isReady()) return null;
         int count=0;
         List<ExamReservation> reservations;
+        boolean refresh = false;
         while(true){
             try {
+                if(refresh) refreshToken();
+                refresh = true;
                 reservations=_getActiveReservations();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -550,10 +562,10 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-                if (refreshToken()==-1) {
-                    log(Level.SEVERE,"FAILED TOKEN REFRESH!! :"+e.toString());
-                    throw e;
-                }
+            } catch (OpenstudInvalidRefreshException e) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+                log(Level.SEVERE,invalidResponse);
+                throw invalidResponse;
             }
         }
         return reservations;
@@ -592,8 +604,11 @@ public class Openstud {
         if (!isReady()) return null;
         int count=0;
         List<ExamReservation> reservations;
+        boolean refresh = false;
         while(true){
             try {
+                if(refresh) refreshToken();
+                refresh = true;
                 reservations=_getAvailableReservations(exam, student);
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -601,10 +616,10 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-                if (refreshToken()==-1) {
-                    log(Level.SEVERE,"FAILED TOKEN REFRESH!! :"+e.toString());
-                    throw e;
-                }
+            } catch (OpenstudInvalidRefreshException e) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+                log(Level.SEVERE,invalidResponse);
+                throw invalidResponse;
             }
         }
         return reservations;
@@ -642,8 +657,11 @@ public class Openstud {
         if (!isReady()) return null;
         int count=0;
         Pair<Integer,String> pr;
+        boolean refresh = false;
         while(true){
             try {
+                if(refresh) refreshToken();
+                refresh = true;
                 pr =_insertReservation(res);
                 if(((ImmutablePair<Integer, String>) pr).left==-1 && ((ImmutablePair<Integer, String>) pr).right==null) {
                     if (!(++count == maxTries)) continue;
@@ -654,10 +672,10 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-                if (refreshToken()==-1) {
-                    log(Level.SEVERE,"FAILED TOKEN REFRESH!! :"+e.toString());
-                    throw e;
-                }
+            } catch (OpenstudInvalidRefreshException e) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+                log(Level.SEVERE,invalidResponse);
+                throw invalidResponse;
             }
         }
         if(((ImmutablePair<Integer, String>) pr).left==-1 && ((ImmutablePair<Integer, String>) pr).right==null) return null;
@@ -699,8 +717,11 @@ public class Openstud {
         if (!isReady() || res.getReservationNumber()==-1) return -1;
         int count=0;
         int ret;
+        boolean refresh = false;
         while(true){
             try {
+                if(refresh) refreshToken();
+                refresh = true;
                 ret =_deleteReservation(res);
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -708,10 +729,10 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-                if (refreshToken()==-1) {
-                    log(Level.SEVERE,"FAILED TOKEN REFRESH!! :"+e.toString());
-                    throw e;
-                }
+            } catch (OpenstudInvalidRefreshException e) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+                log(Level.SEVERE,invalidResponse);
+                throw invalidResponse;
             }
         }
         return ret;
@@ -748,8 +769,11 @@ public class Openstud {
         if (!isReady() || reservation==null) return null;
         int count=0;
         byte[] pdf;
+        boolean refresh = false;
         while(true){
             try {
+                if(refresh) refreshToken();
+                refresh = true;
                 pdf=_getPdf(reservation);
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -757,10 +781,10 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-                if (refreshToken()==-1) {
-                    log(Level.SEVERE,"FAILED TOKEN REFRESH! :"+e.toString());
-                    throw e;
-                }
+            } catch (OpenstudInvalidRefreshException e) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+                log(Level.SEVERE,invalidResponse);
+                throw invalidResponse;
             }
         }
         return pdf;
