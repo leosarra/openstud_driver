@@ -137,19 +137,20 @@ public class Openstud {
                 }
             }
         } catch (IOException e) {
-            log(Level.SEVERE,e);
-            throw new OpenstudConnectionException(e);
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE,connectionException);
+            throw connectionException;
         }
         isReady=true;
     }
 
-    public Isee getIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public Isee getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         if (!isReady()) return null;
         int count=0;
         Isee isee;
         while(true){
             try {
-                isee=_getIsee();
+                isee=_getCurrentIsee();
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
@@ -165,7 +166,55 @@ public class Openstud {
         return isee;
     }
 
-    private Isee _getIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public List<Isee> getIseeHistory() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        if (!isReady()) return null;
+        int count=0;
+        List<Isee> history;
+        while(true){
+            try {
+                history=_getIseeHistory();
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (++count == maxTries) {
+                    log(Level.SEVERE,e);
+                    throw e;
+                }
+                if (refreshToken()==-1) {
+                    log(Level.SEVERE,"FAILED TOKEN REFRESH!! :"+e.toString());
+                    throw e;
+                }
+            }
+        }
+        return history;
+    }
+
+    private List<Isee> _getIseeHistory() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        try {
+            Request req = new Request.Builder().url(endpointAPI + "/contabilita/" + studentID + "/listaIsee?ingresso=" + getToken()).build();
+            Response resp = client.newCall(req).execute();
+            List<Isee> list = new LinkedList<>();
+            if(resp.body()==null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            String body = resp.body().string();
+            log(Level.INFO, body);
+            JSONObject response = new JSONObject(body);
+            if (!response.has("risultatoLista"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            response = response.getJSONObject("risultatoLista");
+            if (!response.has("risultati"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid");
+            JSONArray array  = response.getJSONArray("risultati");
+            for (int i=0;i<array.length();i++){
+                list.add(OpenstudHelper.extractIsee(array.getJSONObject(i)));
+            }
+            return list;
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE,connectionException);
+            throw connectionException;
+        }
+    }
+
+    private Isee _getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             Request req = new Request.Builder().url(endpointAPI + "/contabilita/" + studentID + "/isee?ingresso=" + getToken()).build();
             Response resp = client.newCall(req).execute();
@@ -299,8 +348,9 @@ public class Openstud {
             }
             return  st;
         } catch (IOException e) {
-            log(Level.SEVERE,e);
-            throw new OpenstudConnectionException(e);
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE,connectionException);
+            throw connectionException;
         }
     }
 
@@ -370,8 +420,9 @@ public class Openstud {
             }
             return list;
         } catch (IOException e) {
-            log(Level.SEVERE,e);
-            throw new OpenstudConnectionException(e);
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE,connectionException);
+            throw connectionException;
         }
     }
 
@@ -453,8 +504,9 @@ public class Openstud {
             }
             return list;
         } catch (IOException e) {
-            log(Level.SEVERE,e);
-            throw new OpenstudConnectionException(e);
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE,connectionException);
+            throw connectionException;
         }
     }
 
@@ -498,8 +550,9 @@ public class Openstud {
             OpenstudHelper.extractReservations(list, array, formatter);
             return list;
         } catch (IOException e) {
-            log(Level.SEVERE,e);
-            throw new OpenstudConnectionException(e);
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE,connectionException);
+            throw connectionException;
         }
     }
 
@@ -544,8 +597,9 @@ public class Openstud {
             OpenstudHelper.extractReservations(list, array, formatter);
             return list;
         } catch (IOException e) {
-            log(Level.SEVERE,e);
-            throw new OpenstudConnectionException(e);
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE,connectionException);
+            throw connectionException;
         }
     }
 
@@ -596,8 +650,9 @@ public class Openstud {
             if (!response.isNull("url") && response.has("url")) url = response.getString("url");
             return new ImmutablePair<>(flag, url);
         } catch (IOException e) {
-            log(Level.SEVERE,e);
-            throw new OpenstudConnectionException(e);
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE,connectionException);
+            throw connectionException;
         }
     }
 
@@ -640,8 +695,9 @@ public class Openstud {
             } else throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             return flag;
         }catch (IOException e) {
-            log(Level.SEVERE,e);
-            throw new OpenstudConnectionException(e);
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE,connectionException);
+            throw connectionException;
         }
     }
 
@@ -685,8 +741,9 @@ public class Openstud {
             log(Level.INFO,"Found PDF made of "+pdf.length+" bytes \n");
             return  pdf;
         } catch (IOException e) {
-            log(Level.SEVERE,e);
-            throw new OpenstudConnectionException(e);
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE,connectionException);
+            throw connectionException;
         }
     }
 

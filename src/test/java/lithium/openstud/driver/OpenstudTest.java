@@ -25,8 +25,16 @@ public class OpenstudTest
     public void testGetIsee() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
-        Isee res=osb.getIsee();
+        Isee res=osb.getCurrentIsee();
         assertTrue(res!=null && res.isValid());
+    }
+
+    @Test
+    public void testGetListIsee() throws OpenstudEndpointNotReadyException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException {
+        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
+        osb.login();
+        List<Isee> res=osb.getIseeHistory();
+        assertTrue(res!=null && res.size()!=0);
     }
 
     @Test
