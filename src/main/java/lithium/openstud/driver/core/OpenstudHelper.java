@@ -3,14 +3,15 @@ package lithium.openstud.driver.core;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.LinkedList;
 import java.util.List;
 
 public class OpenstudHelper {
     protected static Isee extractIsee(JSONObject response) {
         Isee res = new Isee();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         for (String element : response.keySet()) {
             switch (element) {
                 case "valore":
@@ -26,21 +27,23 @@ public class OpenstudHelper {
                     break;
                 case "dataOperazione":
                     if (response.isNull("dataOperazione")) break;
+                    DateTimeFormatter formatterOperation = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
                     String dateOperation = response.getString("dataOperazione");
                     if (!(dateOperation == null || dateOperation.isEmpty())) {
                         try {
-                            res.setDateOperation(formatter.parse(response.getString("dataOperazione")));
-                        } catch (ParseException e) {
+                            res.setDateOperation(LocalDate.parse(response.getString("dataOperazione"),formatterOperation));
+                        } catch (DateTimeParseException e) {
                             e.printStackTrace();
                         }
                     }
                     break;
                 case "data":
+                    DateTimeFormatter formatterDateDeclaration = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                     String dateDeclaration = response.getString("data");
                     if (!(dateDeclaration == null || dateDeclaration.isEmpty())) {
                         try {
-                            res.setDateDeclaration(formatter.parse(response.getString("data")));
-                        } catch (ParseException e) {
+                            res.setDateDeclaration(LocalDate.parse(response.getString("data"),formatterDateDeclaration));
+                        } catch (DateTimeParseException e) {
                             e.printStackTrace();
                         }
                     }
@@ -50,7 +53,9 @@ public class OpenstudHelper {
         }
         return res;
     }
-    protected static void extractReservations(List<ExamReservation> list, JSONArray array, SimpleDateFormat formatter) {
+    protected static List<ExamReservation> extractReservations(JSONArray array) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        List<ExamReservation> list = new LinkedList<>();
         for (int i = 0; i < array.length(); i++) {
             JSONObject obj = array.getJSONObject(i);
             ExamReservation res = new ExamReservation();
@@ -96,8 +101,8 @@ public class OpenstudHelper {
                         String reservationDate = obj.getString("dataprenotazione");
                         if (!(reservationDate == null || reservationDate.isEmpty())) {
                             try {
-                                res.setReservationDate(formatter.parse(reservationDate));
-                            } catch (ParseException e) {
+                                res.setReservationDate(LocalDate.parse(reservationDate,formatter));
+                            } catch (DateTimeParseException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -109,8 +114,8 @@ public class OpenstudHelper {
                         String examDate = obj.getString("dataAppe");
                         if (!(examDate == null || examDate.isEmpty())) {
                             try {
-                                res.setExamDate(formatter.parse(examDate));
-                            } catch (ParseException e) {
+                                res.setExamDate(LocalDate.parse(examDate,formatter));
+                            } catch (DateTimeParseException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -120,8 +125,8 @@ public class OpenstudHelper {
                         String startDate = obj.getString("dataInizioPrenotazione");
                         if (!(startDate == null || startDate.isEmpty())) {
                             try {
-                                res.setStartDate(formatter.parse(startDate));
-                            } catch (ParseException e) {
+                                res.setStartDate(LocalDate.parse(startDate,formatter));
+                            } catch (DateTimeParseException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -131,8 +136,8 @@ public class OpenstudHelper {
                         String endDate = obj.getString("dataFinePrenotazione");
                         if (!(endDate == null || endDate.isEmpty())) {
                             try {
-                                res.setEndDate(formatter.parse(endDate));
-                            } catch (ParseException e) {
+                                res.setEndDate(LocalDate.parse(endDate,formatter));
+                            } catch (DateTimeParseException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -144,5 +149,6 @@ public class OpenstudHelper {
             }
             list.add(res);
         }
+        return list;
     }
 }
