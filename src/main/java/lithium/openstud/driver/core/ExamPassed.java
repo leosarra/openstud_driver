@@ -1,18 +1,18 @@
 package lithium.openstud.driver.core;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class ExamPassed extends Exam {
-    private Date date;
+    private LocalDate date;
     private int year;
     private String nominalResult;
     private int result;
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    protected void setDate(Date date) {
+    protected void setDate(LocalDate date) {
         this.date = date;
     }
 

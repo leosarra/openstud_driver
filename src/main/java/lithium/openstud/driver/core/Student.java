@@ -1,12 +1,12 @@
 package lithium.openstud.driver.core;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Student {
     private String CF;
     private String firstName;
     private String lastName;
-    private Date birthDate;
+    private LocalDate birthDate;
     private String birthCity;
     private String birthPlace;
     private String courseYear;
@@ -91,11 +91,11 @@ public class Student {
         this.lastName = lastName;
     }
 
-    public Date getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    protected void setBirthDate(Date birthDate) {
+    protected void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 

@@ -1,12 +1,12 @@
 package lithium.openstud.driver.core;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Isee {
     private double value;
     private String protocol;
-    private Date dateOperation;
-    private Date dateDeclaration;
+    private LocalDate dateOperation;
+    private LocalDate dateDeclaration;
     private boolean isEditable;
 
     public double getValue() {
@@ -17,11 +17,11 @@ public class Isee {
         return protocol;
     }
 
-    public Date getDateOperation() {
+    public LocalDate getDateOperation() {
         return dateOperation;
     }
 
-    public Date getDateDeclaration() {
+    public LocalDate getDateDeclaration() {
         return dateDeclaration;
     }
 
@@ -37,11 +37,11 @@ public class Isee {
         this.protocol = protocol;
     }
 
-    protected void setDateOperation(Date dateOperation) {
+    protected void setDateOperation(LocalDate dateOperation) {
         this.dateOperation = dateOperation;
     }
 
-    protected void setDateDeclaration(Date dateDeclaration) {
+    protected void setDateDeclaration(LocalDate dateDeclaration) {
         this.dateDeclaration = dateDeclaration;
     }
 

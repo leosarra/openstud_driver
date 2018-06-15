@@ -1,12 +1,16 @@
 package lithium.openstud.driver;
 
+import lithium.openstud.driver.core.*;
+import lithium.openstud.driver.exceptions.OpenstudConnectionException;
+import lithium.openstud.driver.exceptions.OpenstudInvalidPasswordException;
+import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
+import lithium.openstud.driver.exceptions.OpenstudUserNotEnabledException;
+import org.junit.Test;
+
+import java.util.List;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
-import lithium.openstud.driver.core.*;
-import lithium.openstud.driver.exceptions.*;
-import org.junit.Test;
-import java.util.List;
 
 
 public class OpenstudTest

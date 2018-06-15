@@ -13,6 +13,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -285,7 +288,7 @@ public class Openstud {
             response=response.getJSONObject("ritorno");
             Student st = new Student();
             st.setStudentID(studentID);
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             for(String element : response.keySet()) {
                 if(response.isNull(element)) continue;
                 switch (element) {
@@ -302,8 +305,8 @@ public class Openstud {
                         String dateBirth = response.getString("dataDiNascita");
                         if (!(dateBirth == null || dateBirth.isEmpty())) {
                             try {
-                                st.setBirthDate(formatter.parse(response.getString("dataDiNascita")));
-                            } catch (ParseException e) {
+                                st.setBirthDate(LocalDate.parse(response.getString("dataDiNascita"),formatter));
+                            } catch (DateTimeParseException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -494,7 +497,7 @@ public class Openstud {
             List<ExamPassed> list = new LinkedList<>();
             if (!response.has("esami")) return null;
             JSONArray array = response.getJSONArray("esami");
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
                 ExamPassed exam = new ExamPassed();
@@ -516,8 +519,8 @@ public class Openstud {
                             String dateBirth = obj.getString("data");
                             if (!(dateBirth == null || dateBirth.isEmpty())) {
                                 try {
-                                    exam.setDate(formatter.parse(dateBirth));
-                                } catch (ParseException e) {
+                                    exam.setDate(LocalDate.parse(dateBirth,formatter));
+                                } catch (DateTimeParseException e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -582,12 +585,9 @@ public class Openstud {
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
-            List<ExamReservation> list = new LinkedList<>();
             if (!response.has("appelli")) return null;
             JSONArray array = response.getJSONArray("appelli");
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            OpenstudHelper.extractReservations(list, array, formatter);
-            return list;
+            return OpenstudHelper.extractReservations(array);
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             log(Level.SEVERE,connectionException);
@@ -636,12 +636,9 @@ public class Openstud {
             JSONObject response = new JSONObject(body);
             if (!response.has("ritorno")) throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
-            List<ExamReservation> list = new LinkedList<>();
             if (!response.has("appelli")) return null;
             JSONArray array = response.getJSONArray("appelli");
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            OpenstudHelper.extractReservations(list, array, formatter);
-            return list;
+            return OpenstudHelper.extractReservations(array);
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             log(Level.SEVERE,connectionException);

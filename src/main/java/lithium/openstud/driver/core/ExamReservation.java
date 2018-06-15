@@ -1,6 +1,6 @@
 package lithium.openstud.driver.core;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class ExamReservation {
     private int reportID;
@@ -13,19 +13,19 @@ public class ExamReservation {
     private String examSubject;
     private String teacher;
     private String department;
-    private Date endDate;
-    private Date startDate;
-    private Date reservationDate;
-    private Date examDate;
+    private LocalDate endDate;
+    private LocalDate startDate;
+    private LocalDate reservationDate;
+    private LocalDate examDate;
     private String note;
     private String ssd;
     private String module;
 
-    public Date getExamDate() {
+    public LocalDate getExamDate() {
         return examDate;
     }
 
-    protected void setExamDate(Date examDate) {
+    protected void setExamDate(LocalDate examDate) {
         this.examDate = examDate;
     }
 
@@ -109,27 +109,27 @@ public class ExamReservation {
         this.department = department;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    protected void setEndDate(Date endDate) {
+    protected void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    protected void setStartDate(Date startDate) {
+    protected void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getReservationDate() {
+    public LocalDate getReservationDate() {
         return reservationDate;
     }
 
-    protected void setReservationDate(Date reservationDate) {
+    protected void setReservationDate(LocalDate reservationDate) {
         this.reservationDate = reservationDate;
     }
 
