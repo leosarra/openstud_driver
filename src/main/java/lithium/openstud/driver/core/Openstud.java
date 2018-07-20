@@ -119,7 +119,6 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if(resp.body()==null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
-            System.out.println(body);
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (!response.has("output")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");

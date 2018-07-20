@@ -105,7 +105,6 @@ public class OpenstudTest
         List<Tax> list=osb.getPaidTaxes();
         assertNotNull(list);
         assertFalse(list.isEmpty());
-        System.out.println(list);
     }
 
     @Test
@@ -113,7 +112,6 @@ public class OpenstudTest
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
         List<Tax> list=osb.getUnpaidTaxes();
-        System.out.println(list);
         assertNotNull(list);
         assertFalse(list.isEmpty());
     }
