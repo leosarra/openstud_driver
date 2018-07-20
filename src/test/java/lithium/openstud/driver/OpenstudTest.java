@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +23,7 @@ public class OpenstudTest
         assertTrue( osb.isReady() );
     }
 
+/**
     @Test
     public void testGetIsee() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
@@ -29,8 +31,8 @@ public class OpenstudTest
         Isee res=osb.getCurrentIsee();
         assertTrue(res!=null && res.isValid());
     }
+**/
 
-    /**
     @Test
     public void testGetIseeHistory() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
@@ -38,7 +40,6 @@ public class OpenstudTest
         List<Isee> res=osb.getIseeHistory();
         assertTrue(res!=null && res.size()!=0);
     }
-     **/
 
     @Test
     public void testGetInfoStudent() throws OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUserNotEnabledException {
@@ -95,5 +96,25 @@ public class OpenstudTest
             assertNotNull(pdf);
         }
         assertTrue(true);
+    }
+
+    @Test
+    public void testGetPaidTaxes() throws OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUserNotEnabledException {
+        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
+        osb.login();
+        List<Tax> list=osb.getPaidTaxes();
+        assertNotNull(list);
+        assertFalse(list.isEmpty());
+        System.out.println(list);
+    }
+
+    @Test
+    public void testGetUnpaidTaxes() throws OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUserNotEnabledException {
+        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
+        osb.login();
+        List<Tax> list=osb.getUnpaidTaxes();
+        System.out.println(list);
+        assertNotNull(list);
+        assertFalse(list.isEmpty());
     }
 }
