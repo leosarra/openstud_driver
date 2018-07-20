@@ -6,30 +6,32 @@ import java.util.List;
 import java.util.Objects;
 
 public class Tax {
-    private int code;
-    private int codeCourse;
+    private String code;
+    private String codeCourse;
     private String descriptionCourse;
-    private int amount;
+    private double amount;
     private LocalDate paymentDate;
+    private LocalDate expirationDate;
     private List<PaymentDescription> paymentDescriptionList;
+    private int academicYear;
 
     public Tax() {
         paymentDescriptionList = new LinkedList<PaymentDescription>();
     }
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
-    protected void setCode(int code) {
+    protected void setCode(String code) {
         this.code = code;
     }
 
-    public int getCodeCourse() {
+    public String getCodeCourse() {
         return codeCourse;
     }
 
-    protected void setCodeCourse(int codeCourse) {
+    protected void setCodeCourse(String codeCourse) {
         this.codeCourse = codeCourse;
     }
 
@@ -41,11 +43,11 @@ public class Tax {
         this.descriptionCourse = descriptionCourse;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    protected void setAmount(int amount) {
+    protected void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -57,6 +59,14 @@ public class Tax {
         this.paymentDate = paymentDate;
     }
 
+    public LocalDate getExpirationDate() {
+        return expirationDate;
+    }
+
+    protected void setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
     public List<PaymentDescription> getPaymentDescriptionList() {
         return paymentDescriptionList;
     }
@@ -65,34 +75,46 @@ public class Tax {
         this.paymentDescriptionList = paymentDescriptionList;
     }
 
+    public int getAcademicYear() {
+        return academicYear;
+    }
+
+    protected void setAcademicYear(int academicYear) {
+        this.academicYear = academicYear;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tax tax = (Tax) o;
-        return code == tax.code &&
-                codeCourse == tax.codeCourse &&
-                amount == tax.amount &&
+        return Double.compare(tax.amount, amount) == 0 &&
+                academicYear == tax.academicYear &&
+                Objects.equals(code, tax.code) &&
+                Objects.equals(codeCourse, tax.codeCourse) &&
                 Objects.equals(descriptionCourse, tax.descriptionCourse) &&
                 Objects.equals(paymentDate, tax.paymentDate) &&
+                Objects.equals(expirationDate, tax.expirationDate) &&
                 Objects.equals(paymentDescriptionList, tax.paymentDescriptionList);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(code, codeCourse, descriptionCourse, amount, paymentDate, paymentDescriptionList);
+        return Objects.hash(code, codeCourse, descriptionCourse, amount, paymentDate, expirationDate, paymentDescriptionList, academicYear);
     }
 
     @Override
     public String toString() {
         return "Tax{" +
-                "code=" + code +
-                ", codeCourse=" + codeCourse +
+                "code='" + code + '\'' +
+                ", codeCourse='" + codeCourse + '\'' +
                 ", descriptionCourse='" + descriptionCourse + '\'' +
                 ", amount=" + amount +
                 ", paymentDate=" + paymentDate +
+                ", expirationDate=" + expirationDate +
                 ", paymentDescriptionList=" + paymentDescriptionList +
+                ", academicYear=" + academicYear +
                 '}';
     }
 }

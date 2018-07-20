@@ -1,11 +1,9 @@
 package lithium.openstud.driver.core;
 
-import java.util.Objects;
-
 public class PaymentDescription {
     private String description;
-    private int amount;
-    private int year;
+    private Double amount;
+    private Double amountPaid;
     private String academicYear;
 
     public String getDescription() {
@@ -16,20 +14,20 @@ public class PaymentDescription {
         this.description = description;
     }
 
-    public int getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    protected void setAmount(int amount) {
+    protected void setAmount(Double amount) {
         this.amount = amount;
     }
 
-    public int getYear() {
-        return year;
+    public Double getAmountPaid() {
+        return amountPaid;
     }
 
-    protected void setYear(int year) {
-        this.year = year;
+    protected void setAmountPaid(Double amountPaid) {
+        this.amountPaid = amountPaid;
     }
 
     public String getAcademicYear() {
@@ -45,25 +43,8 @@ public class PaymentDescription {
         return "PaymentDescription{" +
                 "description='" + description + '\'' +
                 ", amount=" + amount +
-                ", year=" + year +
+                ", amountPaid=" + amountPaid +
                 ", academicYear='" + academicYear + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PaymentDescription that = (PaymentDescription) o;
-        return amount == that.amount &&
-                year == that.year &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(academicYear, that.academicYear);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(description, amount, year, academicYear);
     }
 }
