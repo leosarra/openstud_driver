@@ -1,5 +1,6 @@
 package lithium.openstud.driver.core;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -8,8 +9,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class OpenstudHelper {
+    private static Logger log;
     protected static Isee extractIsee(JSONObject response) {
         Isee res = new Isee();
         for (String element : response.keySet()) {
@@ -56,6 +60,45 @@ public class OpenstudHelper {
         }
         return res;
     }
+
+    protected static List<PaymentDescription> extractPaymentDescriptionList(JSONArray array, Logger logger){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        List<PaymentDescription> list = new LinkedList<>();
+        if (array == null) return list;
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject obj = array.getJSONObject(i);
+            PaymentDescription pdes = new PaymentDescription();
+            for (String element : obj.keySet()) {
+                switch (element) {
+                    case "descrizione":
+                        pdes.setDescription(obj.getString("descrizione"));
+                        break;
+                    case "importo":
+                        try {
+                            Double value = Double.parseDouble(obj.getString("importo"));
+                            pdes.setAmount(value);
+                        } catch (NumberFormatException e) {
+                            logger.log(Level.SEVERE,e.toString());
+                        }
+                        break;
+                    case "annoAccademicoString":
+                        pdes.setAcademicYear(obj.getString("annoAccademicoString"));
+                        break;
+                    case "impoVers":
+                        try {
+                            Double value = Double.parseDouble(obj.getString("impoVers"));
+                            pdes.setAmountPaid(value);
+                        } catch (NumberFormatException e) {
+                            logger.log(Level.SEVERE,e.toString());
+                        }
+                        break;
+                }
+            }
+            list.add(pdes);
+        }
+        return list;
+    }
+
     protected static List<ExamReservation> extractReservations(JSONArray array) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         List<ExamReservation> list = new LinkedList<>();
@@ -153,5 +196,9 @@ public class OpenstudHelper {
             list.add(res);
         }
         return list;
+    }
+
+    protected static void setLogger(Logger log){
+        OpenstudHelper.log = log;
     }
 }
