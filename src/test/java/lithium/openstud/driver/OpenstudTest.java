@@ -30,6 +30,7 @@ public class OpenstudTest
         assertTrue(res!=null && res.isValid());
     }
 
+    /**
     @Test
     public void testGetIseeHistory() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
@@ -37,6 +38,7 @@ public class OpenstudTest
         List<Isee> res=osb.getIseeHistory();
         assertTrue(res!=null && res.size()!=0);
     }
+     **/
 
     @Test
     public void testGetInfoStudent() throws OpenstudInvalidResponseException, OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudUserNotEnabledException {
