@@ -15,6 +15,8 @@ public class OpenstudHelper {
         for (String element : response.keySet()) {
             switch (element) {
                 case "valore":
+                    double value = response.getDouble("valore");
+                    if (value == -2) return null;
                     res.setValue(response.getDouble("valore"));
                     break;
                 case "protocollo":
@@ -39,6 +41,7 @@ public class OpenstudHelper {
                     break;
                 case "data":
                     DateTimeFormatter formatterDateDeclaration = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    if (response.isNull("data")) return null;
                     String dateDeclaration = response.getString("data");
                     if (!(dateDeclaration == null || dateDeclaration.isEmpty())) {
                         try {

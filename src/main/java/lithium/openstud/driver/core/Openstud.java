@@ -11,8 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -120,6 +118,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if(resp.body()==null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            System.out.println(body);
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (!response.has("output")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
@@ -210,10 +209,11 @@ public class Openstud {
             if (!response.has("risultatoLista"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("risultatoLista");
-            if (!response.has("risultati"))
-                throw new OpenstudInvalidResponseException("Infostud response is not valid");
+            if (!response.has("risultati") || response.isNull("risultati")) return new LinkedList<>();
             JSONArray array  = response.getJSONArray("risultati");
             for (int i=0;i<array.length();i++){
+                Isee result = OpenstudHelper.extractIsee(array.getJSONObject(i));
+                if (result == null) continue;
                 list.add(OpenstudHelper.extractIsee(array.getJSONObject(i)));
             }
             return list;
@@ -417,7 +417,7 @@ public class Openstud {
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
             List<ExamDoable> list = new LinkedList<>();
-            if (!response.has("esami")) return null;
+            if (!response.has("esami") || response.isNull("esami")) return list;
             JSONArray array = response.getJSONArray("esami");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
@@ -495,7 +495,7 @@ public class Openstud {
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
             List<ExamPassed> list = new LinkedList<>();
-            if (!response.has("esami")) return null;
+            if (!response.has("esami") || response.isNull("esami")) return list;
             JSONArray array = response.getJSONArray("esami");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             for (int i = 0; i < array.length(); i++) {
@@ -585,7 +585,7 @@ public class Openstud {
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
-            if (!response.has("appelli")) return null;
+            if (!response.has("appelli") || response.isNull("appelli")) return null;
             JSONArray array = response.getJSONArray("appelli");
             return OpenstudHelper.extractReservations(array);
         } catch (IOException e) {
@@ -636,7 +636,7 @@ public class Openstud {
             JSONObject response = new JSONObject(body);
             if (!response.has("ritorno")) throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
-            if (!response.has("appelli")) return null;
+            if (!response.has("appelli") || response.isNull("appelli")) return new LinkedList<>();
             JSONArray array = response.getJSONArray("appelli");
             return OpenstudHelper.extractReservations(array);
         } catch (IOException e) {
@@ -814,6 +814,5 @@ public class Openstud {
             throw invalidResponse;
         }
     }
-
 
 }
