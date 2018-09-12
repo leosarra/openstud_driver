@@ -63,7 +63,7 @@ public class Openstud {
         return isReady;
     }
 
-    private void refreshToken() throws OpenstudInvalidRefreshException, OpenstudInvalidResponseException {
+    private synchronized void refreshToken() throws OpenstudInvalidRefreshException, OpenstudInvalidResponseException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("key","r4g4zz3tt1").add("matricola",String.valueOf(studentID)).add("stringaAutenticazione",studentPassword).build();
@@ -110,7 +110,7 @@ public class Openstud {
         }
     }
 
-    private void _login() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
+    private synchronized void _login() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("key","r4g4zz3tt1").add("matricola",String.valueOf(studentID)).add("stringaAutenticazione",studentPassword).build();
@@ -871,7 +871,7 @@ public class Openstud {
                             break;
                         case "impoVers":
                             try {
-                                Double value = Double.parseDouble(obj.getString("impoVers"));
+                                double value = Double.parseDouble(obj.getString("impoVers"));
                                 tax.setAmount(value);
                             } catch (NumberFormatException e) {
                                 log(Level.SEVERE,e);
@@ -956,7 +956,7 @@ public class Openstud {
                             break;
                         case "importoBollettino":
                             try {
-                                Double value = Double.parseDouble(obj.getString("importoBollettino").replace(",","."));
+                                double value = Double.parseDouble(obj.getString("importoBollettino").replace(",","."));
                                 tax.setAmount(value);
                             } catch (NumberFormatException e) {
                                 log(Level.SEVERE,e);
