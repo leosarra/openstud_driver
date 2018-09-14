@@ -1,6 +1,6 @@
 package lithium.openstud.driver.core;
 
-import java.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 public class Student {
     private String CF;
