@@ -3,7 +3,6 @@ package lithium.openstud.driver.core;
 
 import lithium.openstud.driver.exceptions.*;
 import okhttp3.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -93,9 +92,9 @@ public class Openstud {
         }
     }
 
-    public void login() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
+    public void login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         int count=0;
-        if (studentPassword==null || studentPassword.isEmpty()) throw new OpenstudInvalidPasswordException("Password can't be left empty");
+        if (studentPassword==null || studentPassword.isEmpty()) throw new OpenstudInvalidCredentialsException("Password can't be left empty");
         if (studentID==-1) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while(true){
             try {
@@ -110,7 +109,7 @@ public class Openstud {
         }
     }
 
-    private synchronized void _login() throws OpenstudInvalidPasswordException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
+    private synchronized void _login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("key","r4g4zz3tt1").add("matricola",String.valueOf(studentID)).add("stringaAutenticazione",studentPassword).build();
@@ -121,14 +120,15 @@ public class Openstud {
             String body = resp.body().string();
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
-            if (!response.has("output")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Student ID is not valid");
+            else if (!response.has("output")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             setToken(response.getString("output"));
             if (response.has("esito")) {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
                     case -4:
                         throw new OpenstudUserNotEnabledException("User is not enabled to use Infostud service.");
                     case -1:
-                        throw new OpenstudInvalidPasswordException("Password not valid");
+                        throw new OpenstudInvalidCredentialsException("Password not valid");
                     case 0:
                         break;
                     default:
