@@ -3,6 +3,7 @@ package lithium.openstud.driver.core;
 
 import lithium.openstud.driver.exceptions.*;
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -296,10 +297,10 @@ public class Openstud {
                         st.setCF(response.getString("codiceFiscale"));
                         break;
                     case "cognome":
-                        st.setLastName(response.getString("cognome"));
+                        st.setLastName(StringUtils.capitalize(response.getString("cognome").toLowerCase()));
                         break;
                     case "nome":
-                        st.setFirstName(response.getString("nome"));
+                        st.setFirstName(StringUtils.capitalize(response.getString("nome").toLowerCase()));
                         break;
                     case "dataDiNascita":
                         String dateBirth = response.getString("dataDiNascita");
