@@ -852,6 +852,8 @@ public class Openstud {
             JSONObject response = new JSONObject(body);
             if (!response.has("risultatoLista"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            if (response.isNull("risultatoLista"))
+                return new LinkedList<>();
             response = response.getJSONObject("risultatoLista");
             if (!response.has("risultati") || response.isNull("risultati")) return new LinkedList<>();
             JSONArray array  = response.getJSONArray("risultati");
@@ -937,6 +939,8 @@ public class Openstud {
             JSONObject response = new JSONObject(body);
             if (!response.has("risultatoLista"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            if (response.isNull("risultatoLista"))
+                return new LinkedList<>();
             response = response.getJSONObject("risultatoLista");
             if (!response.has("risultati") || response.isNull("risultati")) return new LinkedList<>();
             JSONArray array  = response.getJSONArray("risultati");
