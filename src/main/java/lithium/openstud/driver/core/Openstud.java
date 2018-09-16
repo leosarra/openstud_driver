@@ -148,7 +148,7 @@ public class Openstud {
         isReady=true;
     }
 
-    public Isee getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public Isee getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
         Isee isee;
@@ -165,15 +165,15 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         return isee;
     }
 
-    public List<Isee> getIseeHistory() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public List<Isee> getIseeHistory() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
         List<Isee> history;
@@ -190,9 +190,9 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         return history;
@@ -252,7 +252,7 @@ public class Openstud {
     }
 
 
-    public Student getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public Student getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
         Student st;
@@ -269,9 +269,9 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         return st;
@@ -381,7 +381,7 @@ public class Openstud {
     }
 
 
-    public List<ExamDoable> getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public List<ExamDoable> getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
         List<ExamDoable> exams;
@@ -398,9 +398,9 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         return exams;
@@ -459,7 +459,7 @@ public class Openstud {
         }
     }
 
-    public List<ExamPassed> getExamsPassed() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public List<ExamPassed> getExamsPassed() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
         List<ExamPassed> exams;
@@ -476,9 +476,9 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         return exams;
@@ -550,7 +550,7 @@ public class Openstud {
         }
     }
 
-    public List<ExamReservation> getActiveReservations() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public List<ExamReservation> getActiveReservations() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
         List<ExamReservation> reservations;
@@ -567,9 +567,9 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         return reservations;
@@ -601,7 +601,7 @@ public class Openstud {
     }
 
 
-    public List<ExamReservation> getAvailableReservations(ExamDoable exam, Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public List<ExamReservation> getAvailableReservations(ExamDoable exam, Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
         List<ExamReservation> reservations;
@@ -618,9 +618,9 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         return reservations;
@@ -651,7 +651,7 @@ public class Openstud {
         }
     }
 
-    public Pair<Integer,String> insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    public Pair<Integer,String> insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
         Pair<Integer,String> pr;
@@ -671,9 +671,9 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         if(((ImmutablePair<Integer, String>) pr).left==-1 && ((ImmutablePair<Integer, String>) pr).right==null) return null;
@@ -711,7 +711,7 @@ public class Openstud {
         }
     }
 
-    public int deleteReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    public int deleteReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException, OpenstudInvalidCredentialsException {
         if (!isReady() || res.getReservationNumber()==-1) return -1;
         int count=0;
         int ret;
@@ -728,9 +728,9 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         return ret;
@@ -763,7 +763,7 @@ public class Openstud {
         }
     }
 
-    public byte[] getPdf(ExamReservation reservation) throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public byte[] getPdf(ExamReservation reservation) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady() || reservation==null) return null;
         int count=0;
         byte[] pdf;
@@ -780,9 +780,9 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         return pdf;
@@ -816,7 +816,7 @@ public class Openstud {
         }
     }
 
-    public List<Tax> getPaidTaxes() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public List<Tax> getPaidTaxes() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
         List<Tax> taxes;
@@ -833,9 +833,9 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         return taxes;
@@ -903,7 +903,7 @@ public class Openstud {
         }
     }
 
-    public List<Tax> getUnpaidTaxes() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public List<Tax> getUnpaidTaxes() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
         List<Tax> taxes;
@@ -920,9 +920,9 @@ public class Openstud {
                     throw e;
                 }
             } catch (OpenstudInvalidRefreshException e) {
-                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-                log(Level.SEVERE,invalidResponse);
-                throw invalidResponse;
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE,invalidCredentials);
+                throw invalidCredentials;
             }
         }
         return taxes;
