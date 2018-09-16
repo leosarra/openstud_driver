@@ -130,6 +130,8 @@ public class Openstud {
                         throw new OpenstudUserNotEnabledException("User is not enabled to use Infostud service.");
                     case -1:
                         throw new OpenstudInvalidCredentialsException("Password not valid");
+                    case -2:
+                        throw new OpenstudInvalidCredentialsException("Password should be reset");
                     case 0:
                         break;
                     default:
