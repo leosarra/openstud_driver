@@ -79,6 +79,8 @@ public class Openstud {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
                     case -4:
                         throw new OpenstudInvalidRefreshException("Invalid credentials when refreshing token");
+                    case -2:
+                        throw new OpenstudInvalidRefreshException("Password expired").setPasswordExpiredType();
                     case -1:
                         throw new OpenstudInvalidRefreshException("Invalid credentials when refreshing token");
                     case 0:
@@ -128,6 +130,8 @@ public class Openstud {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
                     case -4:
                         throw new OpenstudUserNotEnabledException("User is not enabled to use Infostud service.");
+                    case -2:
+                        throw new OpenstudInvalidCredentialsException("Password expired").setPasswordExpiredType();
                     case -1:
                         throw new OpenstudInvalidCredentialsException("Password not valid");
                     case 0:
