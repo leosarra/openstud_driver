@@ -63,7 +63,7 @@ public class Openstud {
         return isReady;
     }
 
-    private synchronized void refreshToken() throws OpenstudInvalidRefreshException, OpenstudInvalidResponseException {
+    private synchronized void refreshToken() throws OpenstudRefreshException, OpenstudInvalidResponseException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("key","r4g4zz3tt1").add("matricola",String.valueOf(studentID)).add("stringaAutenticazione",studentPassword).build();
@@ -78,11 +78,11 @@ public class Openstud {
             if (response.has("esito")) {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
                     case -4:
-                        throw new OpenstudInvalidRefreshException("Invalid credentials when refreshing token");
+                        throw new OpenstudRefreshException("Invalid credentials when refreshing token");
                     case -2:
-                        throw new OpenstudInvalidRefreshException("Password expired").setPasswordExpiredType();
+                        throw new OpenstudRefreshException("Password expired").setPasswordExpiredType();
                     case -1:
-                        throw new OpenstudInvalidRefreshException("Invalid credentials when refreshing token");
+                        throw new OpenstudRefreshException("Invalid credentials when refreshing token");
                     case 0:
                         break;
                     default:
@@ -168,7 +168,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
@@ -193,7 +193,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
@@ -272,7 +272,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
@@ -401,7 +401,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
@@ -479,7 +479,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
@@ -570,7 +570,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
@@ -621,7 +621,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
@@ -674,7 +674,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
@@ -731,7 +731,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
@@ -783,7 +783,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
@@ -836,7 +836,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
@@ -923,7 +923,7 @@ public class Openstud {
                     log(Level.SEVERE,e);
                     throw e;
                 }
-            } catch (OpenstudInvalidRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 log(Level.SEVERE,invalidCredentials);
                 throw invalidCredentials;
