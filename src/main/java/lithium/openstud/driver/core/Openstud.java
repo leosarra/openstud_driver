@@ -22,15 +22,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Openstud {
-    private final int maxTries;
-    private final String endpointAPI;
+    private int maxTries;
+    private String endpointAPI;
     private volatile String token;
     private String studentPassword;
-    private final int studentID;
+    private int studentID;
     private boolean isReady;
-    private final Logger logger;
-    private final OkHttpClient client;
-    Openstud(String webEndpoint, int studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout) {
+    private Logger logger;
+    private OkHttpClient client;
+
+    public Openstud(String webEndpoint, int studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout) {
         this.maxTries=retryCounter;
         this.endpointAPI=webEndpoint;
         this.studentID=studentID;
