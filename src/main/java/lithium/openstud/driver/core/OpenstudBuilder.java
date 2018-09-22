@@ -11,6 +11,7 @@ public class OpenstudBuilder {
     private int studentID = -1;
     private String password;
     private Logger logger;
+    private boolean readyState = false;
 
     public OpenstudBuilder setRetryCounter(int retryCounter) {
         this.retryCounter = retryCounter;
@@ -47,7 +48,13 @@ public class OpenstudBuilder {
         this.logger=logger;
         return this;
     }
+
+    public OpenstudBuilder forceReadyState(){
+        this.readyState = true;
+        return this;
+    }
+
     public Openstud build(){
-        return new Openstud(webEndpoint,studentID, password, logger, retryCounter,connectTimeout, readTimeout, writeTimeout);
+        return new Openstud(webEndpoint,studentID, password, logger, retryCounter,connectTimeout, readTimeout, writeTimeout, readyState);
     }
 }
