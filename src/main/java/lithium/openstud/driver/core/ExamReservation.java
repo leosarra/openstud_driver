@@ -13,6 +13,7 @@ public class ExamReservation {
     private String examSubject;
     private String teacher;
     private String department;
+    private String channel;
     private LocalDate endDate;
     private LocalDate startDate;
     private LocalDate reservationDate;
@@ -101,6 +102,14 @@ public class ExamReservation {
         this.teacher = teacher;
     }
 
+    public String getChannel() {
+        return channel;
+    }
+
+    protected void setChannel(String channel) {
+        this.channel = channel;
+    }
+
     public String getDepartment() {
         return department;
     }
@@ -165,6 +174,7 @@ public class ExamReservation {
                 ", sessionID=" + sessionID +
                 ", courseCode=" + courseCode +
                 ", cfu=" + cfu +
+                ", channel=" + channel +
                 ", reservationNumber=" + reservationNumber +
                 ", yearCourse='" + yearCourse + '\'' +
                 ", courseDescription='" + courseDescription + '\'' +
