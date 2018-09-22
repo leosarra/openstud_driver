@@ -35,12 +35,13 @@ public class Openstud {
         super();
     }
 
-    public Openstud(String webEndpoint, int studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout) {
+    Openstud(String webEndpoint, int studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout, boolean readyState) {
         this.maxTries=retryCounter;
         this.endpointAPI=webEndpoint;
         this.studentID=studentID;
         this.studentPassword=studentPassword;
         this.logger=logger;
+        this.isReady = readyState;
         client = new OkHttpClient.Builder()
                 .connectTimeout(connectionTimeout, TimeUnit.SECONDS)
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
