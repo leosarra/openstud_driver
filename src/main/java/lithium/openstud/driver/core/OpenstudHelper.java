@@ -111,6 +111,9 @@ public class OpenstudHelper {
                     case "codIdenVerb":
                         res.setReportID(obj.getInt("codIdenVerb"));
                         break;
+                    case "canale":
+                        res.setChannel(obj.getString("canale"));
+                        break;
                     case "codAppe":
                         res.setSessionID(obj.getInt("codAppe"));
                         break;
