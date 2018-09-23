@@ -8,6 +8,7 @@ import lithium.openstud.driver.exceptions.OpenstudUserNotEnabledException;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -59,7 +60,7 @@ public class OpenstudTest
     public void testGetExamsPassed() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).build();
         osb.login();
-        List<ExamPassed> list=osb.getExamsPassed();
+        List<ExamDone> list=osb.getExamsDone();
         assertNotNull(list);
     }
 

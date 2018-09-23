@@ -3,11 +3,13 @@ package lithium.openstud.driver.core;
 
 import org.threeten.bp.LocalDate;
 
-public class ExamPassed extends Exam {
+public class ExamDone extends Exam {
     private LocalDate date;
     private int year;
     private String nominalResult;
     private int result;
+    private boolean passed;
+    private boolean certified;
 
     public LocalDate getDate() {
         return date;
@@ -41,14 +43,32 @@ public class ExamPassed extends Exam {
         this.result = result;
     }
 
+    public boolean isPassed() {
+        return passed;
+    }
+
+    protected void setPassed(boolean passed) {
+        this.passed = passed;
+    }
+
+    public boolean isCertified() {
+        return certified;
+    }
+
+    protected void setCertified(boolean certified) {
+        this.certified = certified;
+    }
+
     @Override
     public String toString() {
-        return "ExamPassed{" +
+        return "ExamDone{" +
                 "description='" + getDescription() + '\'' +
                 "date=" + date +
                 ", year=" + year +
                 ", nominalResult='" + nominalResult + '\'' +
                 ", result=" + result +
+                ", passed=" + passed +
+                ", certified=" + certified +
                 ", subjectCode='" + getExamCode() + '\'' +
                 ", ssd='" + getSsd() + '\'' +
                 ", cfu=" + getCfu() +

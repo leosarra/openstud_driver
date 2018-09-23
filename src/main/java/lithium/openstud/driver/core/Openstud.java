@@ -469,16 +469,16 @@ public class Openstud {
         }
     }
 
-    public List<ExamPassed> getExamsPassed() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    public List<ExamDone> getExamsDone() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
-        List<ExamPassed> exams;
+        List<ExamDone> exams;
         boolean refresh = false;
         while(true){
             try {
                 if(refresh) refreshToken();
                 refresh = true;
-                exams=_getExamsPassed();
+                exams=_getExamsDone();
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
@@ -494,7 +494,7 @@ public class Openstud {
         return exams;
     }
 
-    private List<ExamPassed> _getExamsPassed() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    private List<ExamDone> _getExamsDone() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             Request req = new Request.Builder().url(endpointAPI + "/studente/" + studentID + "/esami?ingresso=" + getToken()).build();
             Response resp = client.newCall(req).execute();
@@ -505,13 +505,13 @@ public class Openstud {
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
-            List<ExamPassed> list = new LinkedList<>();
+            List<ExamDone> list = new LinkedList<>();
             if (!response.has("esami") || response.isNull("esami")) return list;
             JSONArray array = response.getJSONArray("esami");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
-                ExamPassed exam = new ExamPassed();
+                ExamDone exam = new ExamDone();
                 for (String element : obj.keySet()) {
                     switch (element) {
                         case "codiceInsegnamento":
@@ -535,6 +535,12 @@ public class Openstud {
                                     e.printStackTrace();
                                 }
                             }
+                            break;
+                        case "certificato":
+                            exam.setCertified(obj.getBoolean("certificato"));
+                            break;
+                        case "superamento":
+                            exam.setPassed(obj.getBoolean("superamento"));
                             break;
                         case "annoAcca":
                             exam.setYear(obj.getInt("annoAcca"));
