@@ -527,13 +527,13 @@ public class Openstud {
                             exam.setSsd(obj.getString("ssd"));
                             break;
                         case "data":
+                            if (obj.isNull("data")) break;
                             String dateBirth = obj.getString("data");
-                            if (!(dateBirth == null || dateBirth.isEmpty())) {
-                                try {
-                                    exam.setDate(LocalDate.parse(dateBirth,formatter));
-                                } catch (DateTimeParseException e) {
-                                    e.printStackTrace();
-                                }
+                            if (dateBirth.isEmpty()) break;
+                            try {
+                                exam.setDate(LocalDate.parse(dateBirth,formatter));
+                            } catch (DateTimeParseException e) {
+                                e.printStackTrace();
                             }
                             break;
                         case "certificato":
