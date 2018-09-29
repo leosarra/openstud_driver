@@ -491,7 +491,7 @@ public class Openstud {
                 throw invalidCredentials;
             }
         }
-        return exams;
+        return OpenstudHelper.sortByDate(exams,false);
     }
 
     private List<ExamDone> _getExamsDone() throws OpenstudConnectionException, OpenstudInvalidResponseException {
