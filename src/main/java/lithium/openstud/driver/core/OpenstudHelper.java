@@ -8,6 +8,7 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -15,6 +16,34 @@ import java.util.logging.Logger;
 
 public class OpenstudHelper {
     private static Logger log;
+
+    public static List<ExamDone> sortByDate(List<ExamDone> list, boolean ascending){
+        list.sort((o1, o2) -> {
+            if(o1.getDate() == null && o2.getDate()==null) return 0;
+            if (ascending)
+                if (o1.getDate()==null) return 1;
+                else if (o2.getDate() == null) return -1;
+                else return o1.getDate().compareTo(o2.getDate());
+            else {
+                if (o1.getDate()==null) return -1;
+                else if (o2.getDate() == null) return 1;
+                else return o2.getDate().compareTo(o1.getDate());
+            }
+        });
+        return list;
+    }
+
+    public static List<ExamDone> sortByGrade(List<ExamDone> list, boolean ascending){
+        list.sort((o1, o2) -> {
+            if (ascending)
+                return Integer.compare(o1.getResult(), o2.getResult());
+            else {
+                return Integer.compare(o2.getResult(),o1.getResult());
+            }
+        });
+        return list;
+    }
+
     protected static Isee extractIsee(JSONObject response) {
         Isee res = new Isee();
         for (String element : response.keySet()) {
