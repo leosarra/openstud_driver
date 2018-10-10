@@ -17,6 +17,58 @@ import java.util.logging.Logger;
 public class OpenstudHelper {
     private static Logger log;
 
+    public static double computeWeightedAverage(List<ExamDone> list, int laude){
+        double cfu = 0;
+        double sum = 0;
+        for (ExamDone exam: list){
+            if (exam.isPassed() && exam.getResult()>=18) {
+                int grade = exam.getResult();
+                if (grade == 31) grade = laude;
+                sum += grade * exam.getCfu();
+                cfu += exam.getCfu();
+            }
+        }
+        if (cfu == 0 || sum == 0) return -1;
+        return sum/cfu;
+    }
+
+    public static double computeArithmeticAverage(List<ExamDone> list, int laude){
+        int num = 0;
+        double sum = 0;
+        for (ExamDone exam: list){
+            if (exam.isPassed() && exam.getResult()>=18) {
+                int grade = exam.getResult();
+                if (grade == 31) grade = laude;
+                sum += grade;
+                num++;
+            }
+        }
+        if (num == 0 || sum == 0) return -1;
+        return sum/num;
+    }
+
+    public static int getSumCFU(List<ExamDone> list){
+        int cfu = 0;
+        for (ExamDone exam: list){
+            if (exam.isPassed() && exam.getResult()>=18) {
+                cfu+=exam.getCfu();
+            }
+        }
+        return cfu;
+    }
+
+    public static ExamDone createFakeExamDone(String description, int cfu, int grade, int laude){
+        if (cfu>=0 || grade <18) return null;
+        ExamDone done = new ExamDone();
+        done.setCertified(true);
+        done.setPassed(true);
+        done.setCfu(cfu);
+        done.setDescription(description);
+        if (grade>=31) done.setResult(laude);
+        else done.setResult(grade);
+        return done;
+    }
+
     public static List<ExamDone> sortByDate(List<ExamDone> list, boolean ascending){
         list.sort((o1, o2) -> {
             if(o1.getDate() == null && o2.getDate()==null) return 0;
