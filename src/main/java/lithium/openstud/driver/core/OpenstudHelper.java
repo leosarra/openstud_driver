@@ -50,7 +50,7 @@ public class OpenstudHelper {
     public static int getSumCFU(List<ExamDone> list){
         int cfu = 0;
         for (ExamDone exam: list){
-            if (exam.isPassed() && exam.getResult()>=18) {
+            if (exam.isPassed()) {
                 cfu+=exam.getCfu();
             }
         }
