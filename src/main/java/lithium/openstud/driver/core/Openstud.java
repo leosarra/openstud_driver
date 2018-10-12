@@ -670,14 +670,14 @@ public class Openstud {
     public Pair<Integer,String> insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count=0;
-        Pair<Integer,String> pr;
+        Pair<Integer,String> pr = null;
         boolean refresh = false;
         while(true){
             try {
                 if(refresh) refreshToken();
                 refresh = true;
                 pr =_insertReservation(res);
-                if(((ImmutablePair<Integer, String>) pr).left==-1 && ((ImmutablePair<Integer, String>) pr).right==null) {
+                if(pr == null) {
                     if (!(++count == maxTries)) continue;
                 }
                 break;
@@ -692,7 +692,6 @@ public class Openstud {
                 throw invalidCredentials;
             }
         }
-        if(((ImmutablePair<Integer, String>) pr).left==-1 && ((ImmutablePair<Integer, String>) pr).right==null) return null;
         return pr;
     }
 
@@ -708,13 +707,18 @@ public class Openstud {
             JSONObject response = new JSONObject(body);
             String url = null;
             int flag = -1;
+            String nota = null;
             if (response.has("esito")) {
                 if (response.getJSONObject("esito").has("flagEsito")) {
                     flag = response.getJSONObject("esito").getInt("flagEsito");
                 }
+                if (response.getJSONObject("esito").has("nota")){
+                    if (!response.getJSONObject("esito").isNull("nota")) nota = response.getJSONObject("esito").getString("nota");
+                }
             }
             else throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             if (!response.isNull("url") && response.has("url")) url = response.getString("url");
+            if (url == null && flag != 0 && (nota == null || !nota.contains("già prenotato"))) return null;
             return new ImmutablePair<>(flag, url);
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
