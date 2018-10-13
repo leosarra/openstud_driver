@@ -2,6 +2,8 @@ package lithium.openstud.driver.core;
 
 import org.threeten.bp.LocalDate;
 
+import java.util.Objects;
+
 public class ExamReservation {
     private int reportID;
     private int sessionID;
@@ -188,5 +190,35 @@ public class ExamReservation {
                 ", ssd='" + ssd + '\'' +
                 ", module='" + module + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExamReservation that = (ExamReservation) o;
+        return reportID == that.reportID &&
+                sessionID == that.sessionID &&
+                courseCode == that.courseCode &&
+                cfu == that.cfu &&
+                reservationNumber == that.reservationNumber &&
+                Objects.equals(yearCourse, that.yearCourse) &&
+                Objects.equals(courseDescription, that.courseDescription) &&
+                Objects.equals(examSubject, that.examSubject) &&
+                Objects.equals(teacher, that.teacher) &&
+                Objects.equals(department, that.department) &&
+                Objects.equals(channel, that.channel) &&
+                Objects.equals(endDate, that.endDate) &&
+                Objects.equals(startDate, that.startDate) &&
+                Objects.equals(reservationDate, that.reservationDate) &&
+                Objects.equals(examDate, that.examDate) &&
+                Objects.equals(note, that.note) &&
+                Objects.equals(ssd, that.ssd) &&
+                Objects.equals(module, that.module);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(reportID, sessionID, courseCode, cfu, reservationNumber, yearCourse, courseDescription, examSubject, teacher, department, channel, endDate, startDate, reservationDate, examDate, note, ssd, module);
     }
 }

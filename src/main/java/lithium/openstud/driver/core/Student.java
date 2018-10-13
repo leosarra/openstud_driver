@@ -2,6 +2,8 @@ package lithium.openstud.driver.core;
 
 import org.threeten.bp.LocalDate;
 
+import java.util.Objects;
+
 public class Student {
     private String CF;
     private String firstName;
@@ -243,5 +245,40 @@ public class Student {
                 ", cfu=" + cfu +
                 ", isErasmus=" + isErasmus +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return academicYear == student.academicYear &&
+                academicYearCourse == student.academicYearCourse &&
+                studentID == student.studentID &&
+                codeCourse == student.codeCourse &&
+                typeStudent == student.typeStudent &&
+                cfu == student.cfu &&
+                isErasmus == student.isErasmus &&
+                Objects.equals(CF, student.CF) &&
+                Objects.equals(firstName, student.firstName) &&
+                Objects.equals(lastName, student.lastName) &&
+                Objects.equals(birthDate, student.birthDate) &&
+                Objects.equals(birthCity, student.birthCity) &&
+                Objects.equals(birthPlace, student.birthPlace) &&
+                Objects.equals(courseYear, student.courseYear) &&
+                Objects.equals(firstEnrollment, student.firstEnrollment) &&
+                Objects.equals(lastEnrollment, student.lastEnrollment) &&
+                Objects.equals(departmentName, student.departmentName) &&
+                Objects.equals(courseName, student.courseName) &&
+                Objects.equals(nation, student.nation) &&
+                Objects.equals(email, student.email) &&
+                Objects.equals(citizenship, student.citizenship) &&
+                Objects.equals(gender, student.gender) &&
+                Objects.equals(studentStatus, student.studentStatus);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(CF, firstName, lastName, birthDate, birthCity, birthPlace, courseYear, firstEnrollment, lastEnrollment, departmentName, courseName, nation, email, citizenship, gender, studentStatus, academicYear, academicYearCourse, studentID, codeCourse, typeStudent, cfu, isErasmus);
     }
 }

@@ -3,6 +3,8 @@ package lithium.openstud.driver.core;
 
 import org.threeten.bp.LocalDate;
 
+import java.util.Objects;
+
 public class ExamDone extends Exam {
     private LocalDate date;
     private int year;
@@ -73,5 +75,27 @@ public class ExamDone extends Exam {
                 ", ssd='" + getSsd() + '\'' +
                 ", cfu=" + getCfu() +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExamDone examDone = (ExamDone) o;
+        return getCfu() == examDone.getCfu() &&
+                Objects.equals(getDescription(), examDone.getDescription()) &&
+                Objects.equals(getExamCode(), examDone.getExamCode()) &&
+                Objects.equals(getSsd(), examDone.getSsd()) &&
+                year == examDone.year &&
+                result == examDone.result &&
+                passed == examDone.passed &&
+                certified == examDone.certified &&
+                Objects.equals(date, examDone.date) &&
+                Objects.equals(nominalResult, examDone.nominalResult);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDescription(), getExamCode(), getSsd(), getCfu(), date, year, nominalResult, result, passed, certified);
     }
 }

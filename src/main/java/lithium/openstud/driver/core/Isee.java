@@ -3,6 +3,8 @@ package lithium.openstud.driver.core;
 
 import org.threeten.bp.LocalDate;
 
+import java.util.Objects;
+
 public class Isee {
     private double value;
     private String protocol;
@@ -63,5 +65,22 @@ public class Isee {
 
     public boolean isValid(){
         return protocol != null && !protocol.isEmpty();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Isee isee = (Isee) o;
+        return Double.compare(isee.value, value) == 0 &&
+                isEditable == isee.isEditable &&
+                Objects.equals(protocol, isee.protocol) &&
+                Objects.equals(dateOperation, isee.dateOperation) &&
+                Objects.equals(dateDeclaration, isee.dateDeclaration);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, protocol, dateOperation, dateDeclaration, isEditable);
     }
 }

@@ -100,7 +100,6 @@ public class Tax {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(code, codeCourse, descriptionCourse, amount, paymentDate, expirationDate, paymentDescriptionList, academicYear);
     }
 
@@ -117,5 +116,7 @@ public class Tax {
                 ", academicYear=" + academicYear +
                 '}';
     }
+
+
 }
 
