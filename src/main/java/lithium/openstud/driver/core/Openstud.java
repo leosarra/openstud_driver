@@ -30,18 +30,21 @@ public class Openstud {
     private boolean isReady;
     private Logger logger;
     private OkHttpClient client;
+    private String key;
 
     public Openstud(){
         super();
     }
 
-    Openstud(String webEndpoint, int studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout, boolean readyState) {
+    Openstud(String webEndpoint, int studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout, boolean readyState, OpenstudHelper.Mode mode) {
         this.maxTries=retryCounter;
         this.endpointAPI=webEndpoint;
         this.studentID=studentID;
         this.studentPassword=studentPassword;
         this.logger=logger;
         this.isReady = readyState;
+        if (mode == OpenstudHelper.Mode.WEB) key = "1nf0r1cc1";
+        else key = "r4g4zz3tt1";
         client = new OkHttpClient.Builder()
                 .connectTimeout(connectionTimeout, TimeUnit.SECONDS)
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
@@ -72,7 +75,7 @@ public class Openstud {
     private synchronized void refreshToken() throws OpenstudRefreshException, OpenstudInvalidResponseException {
         try {
             RequestBody formBody = new FormBody.Builder()
-                    .add("key","r4g4zz3tt1").add("matricola",String.valueOf(studentID)).add("stringaAutenticazione",studentPassword).build();
+                    .add("key",key).add("matricola",String.valueOf(studentID)).add("stringaAutenticazione",studentPassword).build();
             Request req = new Request.Builder().url(endpointAPI+"/autenticazione").header("Accept","application/json")
                     .header("Content-Type","application/x-www-form-urlencoded").post(formBody).build();
             Response resp = client.newCall(req).execute();

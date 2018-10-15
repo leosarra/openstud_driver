@@ -12,6 +12,7 @@ public class OpenstudBuilder {
     private String password;
     private Logger logger;
     private boolean readyState = false;
+    private OpenstudHelper.Mode mode = OpenstudHelper.Mode.MOBILE;
 
     public OpenstudBuilder setRetryCounter(int retryCounter) {
         this.retryCounter = retryCounter;
@@ -54,7 +55,14 @@ public class OpenstudBuilder {
         return this;
     }
 
+    public OpenstudBuilder setMode(OpenstudHelper.Mode mode){
+        this.mode = mode;
+        return this;
+    }
+
     public Openstud build(){
-        return new Openstud(webEndpoint,studentID, password, logger, retryCounter,connectTimeout, readTimeout, writeTimeout, readyState);
+        if (mode == OpenstudHelper.Mode.MOBILE) webEndpoint= "https://www.studenti.uniroma1.it/phxdroidws";
+        else if (mode == OpenstudHelper.Mode.WEB) webEndpoint="https://www.studenti.uniroma1.it/phoenixws";
+        return new Openstud(webEndpoint,studentID, password, logger, retryCounter,connectTimeout, readTimeout, writeTimeout, readyState, mode);
     }
 }
