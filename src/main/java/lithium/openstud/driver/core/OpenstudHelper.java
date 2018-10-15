@@ -1,20 +1,22 @@
 package lithium.openstud.driver.core;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class OpenstudHelper {
+
+    public enum Mode {
+        MOBILE, WEB
+    }
+
     private static Logger log;
 
     public static double computeWeightedAverage(List<ExamDone> list, int laude){
