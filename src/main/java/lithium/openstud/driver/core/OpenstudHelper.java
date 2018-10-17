@@ -65,6 +65,7 @@ public class OpenstudHelper {
         done.setCertified(true);
         done.setPassed(true);
         done.setCfu(cfu);
+        done.setDate(LocalDate.now());
         done.setDescription(description);
         if (grade>=31) done.setResult(31);
         else done.setResult(grade);
