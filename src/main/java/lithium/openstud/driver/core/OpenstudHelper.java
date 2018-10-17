@@ -59,14 +59,14 @@ public class OpenstudHelper {
         return cfu;
     }
 
-    public static ExamDone createFakeExamDone(String description, int cfu, int grade, int laude){
-        if (cfu>=0 || grade <18) return null;
+    public static ExamDone createFakeExamDone(String description, int cfu, int grade){
+        if (cfu<=0 || grade <18) return null;
         ExamDone done = new ExamDone();
         done.setCertified(true);
         done.setPassed(true);
         done.setCfu(cfu);
         done.setDescription(description);
-        if (grade>=31) done.setResult(laude);
+        if (grade>=31) done.setResult(31);
         else done.setResult(grade);
         return done;
     }
