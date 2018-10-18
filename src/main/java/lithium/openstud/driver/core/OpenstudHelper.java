@@ -6,6 +6,7 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -73,7 +74,7 @@ public class OpenstudHelper {
     }
 
     public static List<ExamDone> sortByDate(List<ExamDone> list, boolean ascending){
-        list.sort((o1, o2) -> {
+        Collections.sort(list, (o1, o2) -> {
             if(o1.getDate() == null && o2.getDate()==null) return 0;
             if (ascending)
                 if (o1.getDate()==null) return 1;
@@ -89,7 +90,7 @@ public class OpenstudHelper {
     }
 
     public static List<ExamDone> sortByGrade(List<ExamDone> list, boolean ascending){
-        list.sort((o1, o2) -> {
+        Collections.sort(list,(o1, o2) -> {
             if (ascending)
                 return Integer.compare(o1.getResult(), o2.getResult());
             else {
