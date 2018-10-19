@@ -225,7 +225,7 @@ public class Openstud {
                 case 0:
                     break;
                 default:
-                    throw new OpenstudConnectionException("Infostud is not working as expected");
+                    throw new OpenstudInvalidResponseException("Infostud is not working as expected");
             }
         } catch (IOException e) {
             log(Level.SEVERE,e);
