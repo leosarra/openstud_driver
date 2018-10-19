@@ -190,6 +190,54 @@ public class Openstud {
         }
     }
 
+    public void resetPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException, OpenstudInvalidCredentialsException {
+        int count=0;
+        if (studentID==-1) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
+        while(true){
+            try {
+                _resetPasswordWithEmail(email, answer);
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (++count == maxTries) {
+                    log(Level.SEVERE,e);
+                    throw e;
+                }
+            }
+        }
+    }
+
+    private void _resetPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        try {
+            RequestBody formBody = new FormBody.Builder()
+                    .add("matricola",String.valueOf(studentID)).add("email", email).add("risposta",answer).build();
+            Request req = new Request.Builder().url(endpointAPI+"/pwd/recupera/matricola").header("Accept","application/json")
+                    .header("Content-Type","application/x-www-form-urlencoded").post(formBody).build();
+            Response resp = client.newCall(req).execute();
+            if(resp.body()==null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            String body = resp.body().string();
+            log(Level.INFO, body);
+            JSONObject response = new JSONObject(body);
+            if (response.isNull("livelloErrore"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid.");
+            switch (response.getInt("livelloErrore")) {
+                case 3:
+                    throw new OpenstudInvalidCredentialsException("Answer is not correct");
+                case 0:
+                    break;
+                default:
+                    throw new OpenstudConnectionException("Infostud is not working as expected");
+            }
+        } catch (IOException e) {
+            log(Level.SEVERE,e);
+            throw new OpenstudConnectionException(e);
+        } catch (JSONException e){
+            OpenstudInvalidResponseException invalidResponse= new OpenstudInvalidResponseException(e);
+            log(Level.SEVERE,invalidResponse);
+            throw invalidResponse;
+        }
+    }
+
+
     public void login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         int count = 0;
         if (studentPassword == null || studentPassword.isEmpty())
