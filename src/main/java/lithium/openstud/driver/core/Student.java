@@ -213,8 +213,8 @@ public class Student {
         isErasmus = erasmus;
     }
 
-    public boolean isEnrolled(){
-        if(getTypeStudent()==-1) return false;
+    public boolean isEnrolled() {
+        if (getTypeStudent() == -1) return false;
         return true;
     }
 

@@ -3,11 +3,11 @@ package lithium.openstud.driver.core;
 import java.util.logging.Logger;
 
 public class OpenstudBuilder {
-    private int retryCounter=3;
-    private String webEndpoint="https://www.studenti.uniroma1.it/phxdroidws";
-    private int connectTimeout=10;
-    private int writeTimeout=10;
-    private int readTimeout=30;
+    private int retryCounter = 3;
+    private String webEndpoint = "https://www.studenti.uniroma1.it/phxdroidws";
+    private int connectTimeout = 10;
+    private int writeTimeout = 10;
+    private int readTimeout = 30;
     private int studentID = -1;
     private String password;
     private Logger logger;
@@ -28,41 +28,45 @@ public class OpenstudBuilder {
         this.connectTimeout = connectTimeout;
         return this;
     }
-    public OpenstudBuilder setReadTimeout(int readTimeout){
-        this.readTimeout=readTimeout;
-        return this;
-    }
-    public OpenstudBuilder setWriteTimeout(int writeTimeout){
-        this.writeTimeout=writeTimeout;
-        return this;
-    }
-    public OpenstudBuilder setStudentID(int id){
-        this.studentID=id;
-        return this;
-    }
-    public OpenstudBuilder setPassword(String password){
-        this.password=password;
+
+    public OpenstudBuilder setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
         return this;
     }
 
-    public OpenstudBuilder setLogger(Logger logger){
-        this.logger=logger;
+    public OpenstudBuilder setWriteTimeout(int writeTimeout) {
+        this.writeTimeout = writeTimeout;
         return this;
     }
 
-    public OpenstudBuilder forceReadyState(){
+    public OpenstudBuilder setStudentID(int id) {
+        this.studentID = id;
+        return this;
+    }
+
+    public OpenstudBuilder setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public OpenstudBuilder setLogger(Logger logger) {
+        this.logger = logger;
+        return this;
+    }
+
+    public OpenstudBuilder forceReadyState() {
         this.readyState = true;
         return this;
     }
 
-    public OpenstudBuilder setMode(OpenstudHelper.Mode mode){
+    public OpenstudBuilder setMode(OpenstudHelper.Mode mode) {
         this.mode = mode;
         return this;
     }
 
-    public Openstud build(){
-        if (mode == OpenstudHelper.Mode.MOBILE) webEndpoint= "https://www.studenti.uniroma1.it/phxdroidws";
-        else if (mode == OpenstudHelper.Mode.WEB) webEndpoint="https://www.studenti.uniroma1.it/phoenixws";
-        return new Openstud(webEndpoint,studentID, password, logger, retryCounter,connectTimeout, readTimeout, writeTimeout, readyState, mode);
+    public Openstud build() {
+        if (mode == OpenstudHelper.Mode.MOBILE) webEndpoint = "https://www.studenti.uniroma1.it/phxdroidws";
+        else if (mode == OpenstudHelper.Mode.WEB) webEndpoint = "https://www.studenti.uniroma1.it/phoenixws";
+        return new Openstud(webEndpoint, studentID, password, logger, retryCounter, connectTimeout, readTimeout, writeTimeout, readyState, mode);
     }
 }

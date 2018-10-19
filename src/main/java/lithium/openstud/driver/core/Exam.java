@@ -1,7 +1,5 @@
 package lithium.openstud.driver.core;
 
-import java.util.Objects;
-
 public abstract class Exam {
     private String description;
     private String examCode;

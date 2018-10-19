@@ -20,11 +20,11 @@ public class OpenstudHelper {
 
     private static Logger log;
 
-    public static double computeWeightedAverage(List<ExamDone> list, int laude){
+    public static double computeWeightedAverage(List<ExamDone> list, int laude) {
         double cfu = 0;
         double sum = 0;
-        for (ExamDone exam: list){
-            if (exam.isPassed() && exam.getResult()>=18) {
+        for (ExamDone exam : list) {
+            if (exam.isPassed() && exam.getResult() >= 18) {
                 int grade = exam.getResult();
                 if (grade == 31) grade = laude;
                 sum += grade * exam.getCfu();
@@ -32,14 +32,14 @@ public class OpenstudHelper {
             }
         }
         if (cfu == 0 || sum == 0) return -1;
-        return sum/cfu;
+        return sum / cfu;
     }
 
-    public static double computeArithmeticAverage(List<ExamDone> list, int laude){
+    public static double computeArithmeticAverage(List<ExamDone> list, int laude) {
         int num = 0;
         double sum = 0;
-        for (ExamDone exam: list){
-            if (exam.isPassed() && exam.getResult()>=18) {
+        for (ExamDone exam : list) {
+            if (exam.isPassed() && exam.getResult() >= 18) {
                 int grade = exam.getResult();
                 if (grade == 31) grade = laude;
                 sum += grade;
@@ -47,41 +47,41 @@ public class OpenstudHelper {
             }
         }
         if (num == 0 || sum == 0) return -1;
-        return sum/num;
+        return sum / num;
     }
 
-    public static int getSumCFU(List<ExamDone> list){
+    public static int getSumCFU(List<ExamDone> list) {
         int cfu = 0;
-        for (ExamDone exam: list){
+        for (ExamDone exam : list) {
             if (exam.isPassed()) {
-                cfu+=exam.getCfu();
+                cfu += exam.getCfu();
             }
         }
         return cfu;
     }
 
-    public static ExamDone createFakeExamDone(String description, int cfu, int grade){
-        if (cfu<=0 || grade <18) return null;
+    public static ExamDone createFakeExamDone(String description, int cfu, int grade) {
+        if (cfu <= 0 || grade < 18) return null;
         ExamDone done = new ExamDone();
         done.setCertified(true);
         done.setPassed(true);
         done.setCfu(cfu);
         done.setDate(LocalDate.now());
         done.setDescription(description);
-        if (grade>=31) done.setResult(31);
+        if (grade >= 31) done.setResult(31);
         else done.setResult(grade);
         return done;
     }
 
-    public static List<ExamDone> sortByDate(List<ExamDone> list, boolean ascending){
+    public static List<ExamDone> sortByDate(List<ExamDone> list, boolean ascending) {
         Collections.sort(list, (o1, o2) -> {
-            if(o1.getDate() == null && o2.getDate()==null) return 0;
+            if (o1.getDate() == null && o2.getDate() == null) return 0;
             if (ascending)
-                if (o1.getDate()==null) return 1;
+                if (o1.getDate() == null) return 1;
                 else if (o2.getDate() == null) return -1;
                 else return o1.getDate().compareTo(o2.getDate());
             else {
-                if (o1.getDate()==null) return -1;
+                if (o1.getDate() == null) return -1;
                 else if (o2.getDate() == null) return 1;
                 else return o2.getDate().compareTo(o1.getDate());
             }
@@ -89,12 +89,12 @@ public class OpenstudHelper {
         return list;
     }
 
-    public static List<ExamDone> sortByGrade(List<ExamDone> list, boolean ascending){
-        Collections.sort(list,(o1, o2) -> {
+    public static List<ExamDone> sortByGrade(List<ExamDone> list, boolean ascending) {
+        Collections.sort(list, (o1, o2) -> {
             if (ascending)
                 return Integer.compare(o1.getResult(), o2.getResult());
             else {
-                return Integer.compare(o2.getResult(),o1.getResult());
+                return Integer.compare(o2.getResult(), o1.getResult());
             }
         });
         return list;
@@ -123,7 +123,7 @@ public class OpenstudHelper {
                     String dateOperation = response.getString("dataOperazione");
                     if (!(dateOperation == null || dateOperation.isEmpty())) {
                         try {
-                            res.setDateOperation(LocalDate.parse(response.getString("dataOperazione"),formatterOperation));
+                            res.setDateOperation(LocalDate.parse(response.getString("dataOperazione"), formatterOperation));
                         } catch (DateTimeParseException e) {
                             e.printStackTrace();
                         }
@@ -135,7 +135,7 @@ public class OpenstudHelper {
                     String dateDeclaration = response.getString("data");
                     if (!(dateDeclaration == null || dateDeclaration.isEmpty())) {
                         try {
-                            res.setDateDeclaration(LocalDate.parse(response.getString("data"),formatterDateDeclaration));
+                            res.setDateDeclaration(LocalDate.parse(response.getString("data"), formatterDateDeclaration));
                         } catch (DateTimeParseException e) {
                             e.printStackTrace();
                         }
@@ -147,7 +147,7 @@ public class OpenstudHelper {
         return res;
     }
 
-    protected static List<PaymentDescription> extractPaymentDescriptionList(JSONArray array, Logger logger){
+    protected static List<PaymentDescription> extractPaymentDescriptionList(JSONArray array, Logger logger) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         List<PaymentDescription> list = new LinkedList<>();
         if (array == null) return list;
@@ -164,7 +164,7 @@ public class OpenstudHelper {
                             Double value = Double.parseDouble(obj.getString("importo"));
                             pdes.setAmount(value);
                         } catch (NumberFormatException e) {
-                            logger.log(Level.SEVERE,e.toString());
+                            logger.log(Level.SEVERE, e.toString());
                         }
                         break;
                     case "annoAccademicoString":
@@ -175,7 +175,7 @@ public class OpenstudHelper {
                             Double value = Double.parseDouble(obj.getString("impoVers"));
                             pdes.setAmountPaid(value);
                         } catch (NumberFormatException e) {
-                            logger.log(Level.SEVERE,e.toString());
+                            logger.log(Level.SEVERE, e.toString());
                         }
                         break;
                 }
@@ -236,7 +236,7 @@ public class OpenstudHelper {
                         String reservationDate = obj.getString("dataprenotazione");
                         if (!(reservationDate == null || reservationDate.isEmpty())) {
                             try {
-                                res.setReservationDate(LocalDate.parse(reservationDate,formatter));
+                                res.setReservationDate(LocalDate.parse(reservationDate, formatter));
                             } catch (DateTimeParseException e) {
                                 e.printStackTrace();
                             }
@@ -249,36 +249,36 @@ public class OpenstudHelper {
                         String examDate = obj.getString("dataAppe");
                         if (!(examDate == null || examDate.isEmpty())) {
                             try {
-                                res.setExamDate(LocalDate.parse(examDate,formatter));
+                                res.setExamDate(LocalDate.parse(examDate, formatter));
                             } catch (DateTimeParseException e) {
                                 e.printStackTrace();
                             }
                         }
                         break;
                     case "dataInizioPrenotazione":
-                        if(obj.isNull("dataInizioPrenotazione")) break;
+                        if (obj.isNull("dataInizioPrenotazione")) break;
                         String startDate = obj.getString("dataInizioPrenotazione");
                         if (!(startDate == null || startDate.isEmpty())) {
                             try {
-                                res.setStartDate(LocalDate.parse(startDate,formatter));
+                                res.setStartDate(LocalDate.parse(startDate, formatter));
                             } catch (DateTimeParseException e) {
                                 e.printStackTrace();
                             }
                         }
                         break;
                     case "dataFinePrenotazione":
-                        if(obj.isNull("dataFinePrenotazione")) break;
+                        if (obj.isNull("dataFinePrenotazione")) break;
                         String endDate = obj.getString("dataFinePrenotazione");
                         if (!(endDate == null || endDate.isEmpty())) {
                             try {
-                                res.setEndDate(LocalDate.parse(endDate,formatter));
+                                res.setEndDate(LocalDate.parse(endDate, formatter));
                             } catch (DateTimeParseException e) {
                                 e.printStackTrace();
                             }
                         }
                         break;
                     case "SiglaModuloDidattico":
-                        if(!obj.isNull("SiglaModuloDidattico")) res.setModule(obj.getString("SiglaModuloDidattico"));
+                        if (!obj.isNull("SiglaModuloDidattico")) res.setModule(obj.getString("SiglaModuloDidattico"));
                         break;
                 }
             }
@@ -287,7 +287,7 @@ public class OpenstudHelper {
         return list;
     }
 
-    protected static void setLogger(Logger log){
+    protected static void setLogger(Logger log) {
         OpenstudHelper.log = log;
     }
 }

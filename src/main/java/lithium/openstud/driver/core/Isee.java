@@ -63,7 +63,7 @@ public class Isee {
                 '}';
     }
 
-    public boolean isValid(){
+    public boolean isValid() {
         return protocol != null && !protocol.isEmpty();
     }
 
