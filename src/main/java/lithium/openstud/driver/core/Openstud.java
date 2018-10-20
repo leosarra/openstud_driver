@@ -26,7 +26,7 @@ public class Openstud {
     private String endpointAPI;
     private volatile String token;
     private String studentPassword;
-    private int studentID;
+    private String studentID;
     private boolean isReady;
     private Logger logger;
     private OkHttpClient client;
@@ -36,7 +36,7 @@ public class Openstud {
         super();
     }
 
-    Openstud(String webEndpoint, int studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout, boolean readyState, OpenstudHelper.Mode mode) {
+    Openstud(String webEndpoint, String studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout, boolean readyState, OpenstudHelper.Mode mode) {
         this.maxTries = retryCounter;
         this.endpointAPI = webEndpoint;
         this.studentID = studentID;
@@ -106,6 +106,7 @@ public class Openstud {
 
     public String getQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         int count = 0;
+        if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
             try {
                 return _getQuestion();
@@ -144,6 +145,7 @@ public class Openstud {
 
     public void resetPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException, OpenstudInvalidCredentialsException {
         int count = 0;
+        if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
             try {
                 _resetPassword(answer);
@@ -190,6 +192,7 @@ public class Openstud {
 
     public void resetPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException, OpenstudInvalidCredentialsException {
         int count=0;
+        if (studentID==null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while(true){
             try {
                 _resetPasswordWithEmail(email, answer);
@@ -237,6 +240,9 @@ public class Openstud {
 
     public void login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         int count = 0;
+        if (studentPassword == null || studentPassword.isEmpty())
+            throw new OpenstudInvalidCredentialsException("Password can't be left empty");
+        if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
             try {
                 _login();
@@ -1148,6 +1154,14 @@ public class Openstud {
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
+    }
+
+    String getPassword() {
+        return studentPassword;
+    }
+
+    String getStudentID(){
+        return studentID;
     }
 
 

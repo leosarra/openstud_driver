@@ -10,7 +10,7 @@ public class OpenstudBuilder {
     private int connectTimeout = 10;
     private int writeTimeout = 10;
     private int readTimeout = 30;
-    private int studentID = -1;
+    private String studentID;
     private String password;
     private Logger logger;
     private boolean readyState = false;
@@ -41,7 +41,7 @@ public class OpenstudBuilder {
         return this;
     }
 
-    public OpenstudBuilder setStudentID(int id) {
+    public OpenstudBuilder setStudentID(String id) {
         this.studentID = id;
         return this;
     }
@@ -54,24 +54,6 @@ public class OpenstudBuilder {
     public OpenstudBuilder setLogger(Logger logger) {
         this.logger = logger;
         return this;
-    }
-
-    private OpenstudBuilder validatePassword() throws OpenstudInvalidCredentialsException {
-        String nice_path = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,16}$";
-        if (this.password!= null && this.password.matches(nice_path))
-            return this;
-        throw new OpenstudInvalidCredentialsException("This password is not valid");
-    }
-
-    //to be used when password is forgotten
-    public OpenstudBuilder validateUserID() throws OpenstudInvalidCredentialsException {
-        if (this.studentID == -1)
-            throw new OpenstudInvalidCredentialsException("UserID cannot be left empty");
-        return this;
-    }
-
-    public OpenstudBuilder validate() throws OpenstudInvalidCredentialsException {
-        return this.validatePassword().validateUserID();
     }
 
     public OpenstudBuilder forceReadyState() {

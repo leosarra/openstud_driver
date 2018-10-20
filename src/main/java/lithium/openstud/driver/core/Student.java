@@ -23,7 +23,7 @@ public class Student {
     private String studentStatus;
     private int academicYear;
     private int academicYearCourse;
-    private int studentID;
+    private String studentID;
     private int codeCourse;
     private int typeStudent;
     private int cfu;
@@ -173,11 +173,11 @@ public class Student {
         this.academicYearCourse = academicYearCourse;
     }
 
-    public int getStudentID() {
+    public String getStudentID() {
         return studentID;
     }
 
-    protected void setStudentID(int studentID) {
+    protected void setStudentID(String studentID) {
         this.studentID = studentID;
     }
 
@@ -254,7 +254,7 @@ public class Student {
         Student student = (Student) o;
         return academicYear == student.academicYear &&
                 academicYearCourse == student.academicYearCourse &&
-                studentID == student.studentID &&
+                studentID.equals(student.studentID) &&
                 codeCourse == student.codeCourse &&
                 typeStudent == student.typeStudent &&
                 cfu == student.cfu &&
