@@ -1,5 +1,7 @@
 package lithium.openstud.driver.core;
 
+import lithium.openstud.driver.exceptions.OpenstudInvalidCredentialsException;
+
 import java.util.logging.Logger;
 
 public class OpenstudBuilder {
@@ -54,13 +56,14 @@ public class OpenstudBuilder {
         return this;
     }
 
-    public OpenstudBuilder validatePassword() throws OpenstudInvalidCredentialsException {
+    private OpenstudBuilder validatePassword() throws OpenstudInvalidCredentialsException {
         String nice_path = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,16}$";
-        if (this.password.matches(nice_path))
+        if (this.password!= null && this.password.matches(nice_path))
             return this;
         throw new OpenstudInvalidCredentialsException("This password is not valid");
     }
 
+    //to be used when password is forgotten
     public OpenstudBuilder validateUserID() throws OpenstudInvalidCredentialsException {
         if (this.studentID == -1)
             throw new OpenstudInvalidCredentialsException("UserID cannot be left empty");
