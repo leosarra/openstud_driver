@@ -5,7 +5,10 @@ import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidCredentialsException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 import lithium.openstud.driver.exceptions.OpenstudUserNotEnabledException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.omg.CORBA.DynAnyPackage.Invalid;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -17,6 +20,22 @@ import static org.junit.Assert.assertTrue;
 
 public class OpenstudTest
 {
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
+
+    @Test
+    public void testPasswordValidation() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
+        String malformed_pwd = "No_Numbers!";
+        exception.expect(OpenstudInvalidCredentialsException.class);
+        new OpenstudBuilder().setPassword(malformed_pwd).setStudentID(12345678).validate().build();
+    }
+
+    @Test
+    public void testUserIDValidation() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
+        exception.expect(OpenstudInvalidCredentialsException.class);
+        new OpenstudBuilder().setPassword("Perfect_psw1").validate().build();
+    }
+
     @Test
     public void testLogin() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(Integer.parseInt(System.getenv("OPENSTUD_TESTID"))).validate().build();
