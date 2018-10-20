@@ -106,7 +106,6 @@ public class Openstud {
 
     public String getQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         int count = 0;
-        if (studentID == -1) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
             try {
                 return _getQuestion();
@@ -145,7 +144,6 @@ public class Openstud {
 
     public void resetPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException, OpenstudInvalidCredentialsException {
         int count = 0;
-        if (studentID == -1) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
             try {
                 _resetPassword(answer);
@@ -192,7 +190,6 @@ public class Openstud {
 
     public void resetPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException, OpenstudInvalidCredentialsException {
         int count=0;
-        if (studentID==-1) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while(true){
             try {
                 _resetPasswordWithEmail(email, answer);
@@ -240,9 +237,6 @@ public class Openstud {
 
     public void login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         int count = 0;
-        if (studentPassword == null || studentPassword.isEmpty())
-            throw new OpenstudInvalidCredentialsException("Password can't be left empty");
-        if (studentID == -1) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
             try {
                 _login();
