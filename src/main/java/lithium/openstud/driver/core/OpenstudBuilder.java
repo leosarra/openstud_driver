@@ -54,6 +54,23 @@ public class OpenstudBuilder {
         return this;
     }
 
+    public OpenstudBuilder validatePassword() throws OpenstudInvalidCredentialsException {
+        String nice_path = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,16}$";
+        if (this.password.matches(nice_path))
+            return this;
+        throw new OpenstudInvalidCredentialsException("This password is not valid");
+    }
+
+    public OpenstudBuilder validateUserID() throws OpenstudInvalidCredentialsException {
+        if (this.studentID == -1)
+            throw new OpenstudInvalidCredentialsException("UserID cannot be left empty");
+        return this;
+    }
+
+    public OpenstudBuilder validate() throws OpenstudInvalidCredentialsException {
+        return this.validatePassword().validateUserID();
+    }
+
     public OpenstudBuilder forceReadyState() {
         this.readyState = true;
         return this;
