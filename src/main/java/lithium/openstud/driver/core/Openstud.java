@@ -74,6 +74,7 @@ public class Openstud {
 
     private synchronized void refreshToken() throws OpenstudRefreshException, OpenstudInvalidResponseException {
         try {
+            if (!StringUtils.isNumeric(studentID)) throw new OpenstudRefreshException("Student ID is not valid");
             RequestBody formBody = new FormBody.Builder()
                     .add("key", key).add("matricola", String.valueOf(studentID)).add("stringaAutenticazione", studentPassword).build();
             Request req = new Request.Builder().url(endpointAPI + "/autenticazione").header("Accept", "application/json")
@@ -311,6 +312,7 @@ public class Openstud {
 
     private synchronized void _login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         try {
+            if (!StringUtils.isNumeric(studentID)) throw new OpenstudInvalidCredentialsException("Student ID is not valid");
             RequestBody formBody = new FormBody.Builder()
                     .add("key", "r4g4zz3tt1").add("matricola", String.valueOf(studentID)).add("stringaAutenticazione", studentPassword).build();
             Request req = new Request.Builder().url(endpointAPI + "/autenticazione").header("Accept", "application/json")
