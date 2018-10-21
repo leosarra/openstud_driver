@@ -9,7 +9,14 @@ public class OpenstudValidator {
     }
 
     public static boolean validatePassword(String password) {
-        String nice_path = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,16}$";
+        String nice_path = "^" +   // start
+                "(?=.*[0-9])" +   // at least one digit
+                "(?=.*[a-z])" +   // at least one lower case letter
+                "(?=.*[A-Z])" +   // at least one upper case letter
+                "(?=.*[\\[\\]*?.@#$%^&!=_-])" +  // =.][#?!@$%^&*_-
+                "(?=\\S+$)" + // no spaces
+                ".{8,16}" + // length in [8, 16]
+                "$";   // end
         return password != null && password.matches(nice_path);
     }
 
