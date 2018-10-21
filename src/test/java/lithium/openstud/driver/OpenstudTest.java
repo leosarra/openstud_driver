@@ -5,9 +5,7 @@ import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidCredentialsException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 import lithium.openstud.driver.exceptions.OpenstudUserNotEnabledException;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.util.List;
 
@@ -16,18 +14,32 @@ import static org.junit.Assert.*;
 
 public class OpenstudTest
 {
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void testPasswordValidation() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
+    public void testPasswordValidation() throws OpenstudInvalidCredentialsException {
+        String id = "12345678";
         String malformed_pwd = "No_Numbers!";
-        Openstud os = new OpenstudBuilder().setPassword(malformed_pwd).setStudentID("12345678").build();
+        Openstud os = new OpenstudBuilder().setPassword(malformed_pwd).setStudentID(id).build();
         assertFalse(OpenstudValidator.validate(os));
+        malformed_pwd = "NoSp3ci4l";
+        os = new OpenstudBuilder().setPassword(malformed_pwd).setStudentID(id).build();
+        assertFalse(OpenstudValidator.validate(os));
+        malformed_pwd = "2 Spaces !";
+        os = new OpenstudBuilder().setPassword(malformed_pwd).setStudentID(id).build();
+        assertFalse(OpenstudValidator.validate(os));
+        malformed_pwd = "Long_Password_17!";
+        os = new OpenstudBuilder().setPassword(malformed_pwd).setStudentID(id).build();
+        assertFalse(OpenstudValidator.validate(os));
+        String correct_pwd = "#8_Chars";
+        os = new OpenstudBuilder().setPassword(correct_pwd).setStudentID(id).build();
+        assertTrue(OpenstudValidator.validate(os));
+        correct_pwd = "[.!-=?#@]1aA";
+        os = new OpenstudBuilder().setPassword(correct_pwd).setStudentID(id).build();
+        assertTrue(OpenstudValidator.validate(os));
     }
 
     @Test
-    public void testUserIDValidation() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
+    public void testUserIDValidation() throws OpenstudInvalidCredentialsException {
         Openstud os = new OpenstudBuilder().setPassword("Perfect_psw1").build();
         assertFalse(OpenstudValidator.validate(os));
     }

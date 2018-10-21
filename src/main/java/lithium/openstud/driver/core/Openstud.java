@@ -104,12 +104,12 @@ public class Openstud {
         }
     }
 
-    public String getQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
+    public String getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         int count = 0;
         if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
             try {
-                return _getQuestion();
+                return _getSecurityQuestion();
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
@@ -119,7 +119,7 @@ public class Openstud {
         }
     }
 
-    private String _getQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    private String _getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola", String.valueOf(studentID)).build();
@@ -132,7 +132,7 @@ public class Openstud {
             JSONObject response = new JSONObject(body);
             if (response.isNull("risultato"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid.");
-            return response.getString("risultato").toString();
+            return response.getString("risultato");
         } catch (IOException e) {
             log(Level.SEVERE, e);
             throw new OpenstudConnectionException(e);
@@ -143,12 +143,12 @@ public class Openstud {
         }
     }
 
-    public void resetPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException, OpenstudInvalidCredentialsException {
+    public void recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         int count = 0;
         if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
             try {
-                _resetPassword(answer);
+                _recoverPassword(answer);
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
@@ -159,7 +159,60 @@ public class Openstud {
         }
     }
 
-    private void _resetPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    public void resetPassword(String new_password) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        int count = 0;
+        if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
+        while (true) {
+            try {
+                _resetPassword(new_password);
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (++count == maxTries) {
+                    log(Level.SEVERE, e);
+                    throw e;
+                }
+            }
+        }
+    }
+
+    private void _resetPassword(String new_password) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        try {
+            RequestBody formBody = new FormBody.Builder()
+                    .add("oldPwd", studentPassword)
+                    .add("newPwd", new_password)
+                    .add("confermaPwd", new_password)   //TODO confirmation should be passed as second param?
+                    .build();
+
+            Request req = new Request.Builder().url(endpointAPI + "/pwd/" + studentID + "/reset").header("Accept", "application/json")
+                    .header("Content-Type", "application/x-www-form-urlencoded").post(formBody).build();
+            Response resp = client.newCall(req).execute();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            String body = resp.body().string();
+            log(Level.INFO, body);
+            JSONObject response = new JSONObject(body);
+            if (response.isNull("codiceErrore") || response.isNull("risultato"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid.");
+
+            String error_code = response.getString("codiceErrore");
+            boolean result = response.getBoolean("risultato");
+            if(error_code.equals("000") && result) {
+                studentPassword = new_password; // TODO check this
+                return;
+            }
+
+            throw new OpenstudInvalidCredentialsException("Answer is not correct");
+
+        } catch (IOException e) {
+            log(Level.SEVERE, e);
+            throw new OpenstudConnectionException(e);
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
+
+    private void _recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola", String.valueOf(studentID)).add("risposta", answer).build();
@@ -190,12 +243,12 @@ public class Openstud {
         }
     }
 
-    public void resetPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException, OpenstudInvalidCredentialsException {
+    public void recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException, OpenstudInvalidCredentialsException {
         int count=0;
         if (studentID==null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while(true){
             try {
-                _resetPasswordWithEmail(email, answer);
+                _recoverPasswordWithEmail(email, answer);
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
@@ -206,7 +259,7 @@ public class Openstud {
         }
     }
 
-    private void _resetPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    private void _recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola",String.valueOf(studentID)).add("email", email).add("risposta",answer).build();
