@@ -11,12 +11,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +27,7 @@ import java.util.logging.Logger;
 public class Openstud {
     private int maxTries;
     private String endpointAPI;
+    private String endpointTimeable = "https://aule-gomp.apps.os.sapienzaapps.it/lectures/";
     private volatile String token;
     private String studentPassword;
     private String studentID;
@@ -1200,6 +1204,89 @@ public class Openstud {
                 list.add(tax);
             }
             return list;
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE, connectionException);
+            throw connectionException;
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
+
+
+    public Map<String, List<Lesson>> getTimetable(List<ExamDoable> exams) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+        if (!isReady()) return null;
+        int count = 0;
+        Map<String, List<Lesson>> ret;
+        boolean refresh = false;
+        while (true) {
+            try {
+                ret = _getTimetable(exams);
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (++count == maxTries) {
+                    log(Level.SEVERE, e);
+                    throw e;
+                }
+            }
+        }
+        return ret;
+    }
+
+    private Map<String, List<Lesson>> _getTimetable(List<ExamDoable> exams) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        Map<String, List<Lesson>> ret = new HashMap<>();
+        if (exams.isEmpty()) return ret;
+        try {
+            StringBuilder builder = new StringBuilder();
+            boolean first = true;
+            for (ExamDoable exam : exams) {
+                if (!first) {
+                    builder.append(",");
+                }
+                first = false;
+                builder.append(exam.getExamCode());
+            }
+            String codes = builder.toString();
+            System.out.println(codes);
+            Request req = new Request.Builder().url(endpointTimeable + builder.toString()).build();
+            Response resp = client.newCall(req).execute();
+            List<Tax> list = new LinkedList<>();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
+            String body = resp.body().string();
+            log(Level.INFO, body);
+            JSONObject response = new JSONObject(body);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
+            for (String examCode : response.keySet()) {
+                if (!codes.contains(examCode)) continue;
+                JSONArray array = response.getJSONArray(examCode);
+                LinkedList<Lesson> lessons = new LinkedList<>();
+                for (int i = 0; i<array.length(); i++) {
+                    JSONObject object = array.getJSONObject(i);
+                    Lesson lesson = new Lesson();
+                    for (String lessonInfo : object.keySet()) {
+                        switch (lessonInfo) {
+                            case "name":
+                                if (!object.isNull(lessonInfo)) lesson.setName(object.getString(lessonInfo));
+                                break;
+                            case "where":
+                                if (!object.isNull(lessonInfo)) lesson.setWhere(object.getString(lessonInfo));
+                                break;
+                            case "start":
+                                if (!object.isNull(lessonInfo)) lesson.setStart(LocalDateTime.parse(object.getString(lessonInfo), formatter));
+                                break;
+                            case "end":
+                                if (!object.isNull(lessonInfo)) lesson.setEnd(LocalDateTime.parse(object.getString(lessonInfo), formatter));
+                                break;
+                        }
+                    }
+                    lessons.add(lesson);
+                }
+                ret.put(examCode, lessons);
+            }
+            return ret;
+
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             log(Level.SEVERE, connectionException);
