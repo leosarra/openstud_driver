@@ -8,6 +8,7 @@ import lithium.openstud.driver.exceptions.OpenstudUserNotEnabledException;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
@@ -46,7 +47,7 @@ public class OpenstudTest
 
     @Test
     public void testLogin() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
+        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID("123123123123213.2").setLogger(Logger.getLogger("ciao")).build();
         osb.login();
         assertTrue( osb.isReady() );
     }
@@ -82,6 +83,16 @@ public class OpenstudTest
         List<ExamDoable> list=osb.getExamsDoable();
         assertNotNull(list);
     }
+
+    @Test
+    public void testGetTimetable() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
+        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
+        osb.login();
+        List<ExamDoable> list=osb.getExamsDoable();
+        System.out.println(osb.getTimetable(list));
+        assertNotNull(list);
+    }
+
 
     @Test
     public void testGetExamsPassed() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
