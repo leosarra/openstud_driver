@@ -8,6 +8,7 @@ import lithium.openstud.driver.exceptions.OpenstudUserNotEnabledException;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
@@ -89,8 +90,8 @@ public class OpenstudTest
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
         osb.login();
         List<ExamDoable> list=osb.getExamsDoable();
-        System.out.println(osb.getTimetable(list));
-        assertNotNull(list);
+        Map<String, List<Lesson>> map = osb.getTimetable(list);
+        assertNotNull(map);
     }
 
 
