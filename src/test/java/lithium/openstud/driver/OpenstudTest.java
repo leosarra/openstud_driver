@@ -48,7 +48,7 @@ public class OpenstudTest
 
     @Test
     public void testLogin() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID("123123123123213.2").setLogger(Logger.getLogger("ciao")).build();
+        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
         osb.login();
         assertTrue( osb.isReady() );
     }
