@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 public class Openstud {
     private int maxTries;
     private String endpointAPI;
-    private String endpointTimeable = "https://aule-gomp.apps.os.sapienzaapps.it/lectures/";
+    private String endpointTimetable;
     private volatile String token;
     private String studentPassword;
     private String studentID;
@@ -40,10 +40,11 @@ public class Openstud {
         super();
     }
 
-    Openstud(String webEndpoint, String studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout, boolean readyState, OpenstudHelper.Mode mode) {
+    Openstud(String webEndpoint, String endpointTimetable, String studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout, boolean readyState, OpenstudHelper.Mode mode) {
         this.maxTries = retryCounter;
         this.endpointAPI = webEndpoint;
         this.studentID = studentID;
+        this.endpointTimetable = endpointTimetable;
         this.studentPassword = studentPassword;
         this.logger = logger;
         this.isReady = readyState;
@@ -1249,8 +1250,7 @@ public class Openstud {
                 builder.append(exam.getExamCode());
             }
             String codes = builder.toString();
-            System.out.println(codes);
-            Request req = new Request.Builder().url(endpointTimeable + builder.toString()).build();
+            Request req = new Request.Builder().url(endpointTimetable + builder.toString()).build();
             Response resp = client.newCall(req).execute();
             List<Tax> list = new LinkedList<>();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
