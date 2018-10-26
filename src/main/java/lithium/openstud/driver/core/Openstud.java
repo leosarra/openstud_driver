@@ -149,7 +149,7 @@ public class Openstud {
         }
     }
 
-    public void recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    public void recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
         int count = 0;
         if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
@@ -218,7 +218,7 @@ public class Openstud {
         }
     }
 
-    private void _recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    private void _recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola", String.valueOf(studentID)).add("risposta", answer).build();
@@ -227,13 +227,14 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            if (body.contains("Matricola errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("livelloErrore"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid.");
             switch (response.getInt("livelloErrore")) {
                 case 3:
-                    throw new OpenstudInvalidCredentialsException("Answer is not correct");
+                    throw new OpenstudInvalidAnswerException("Answer is not correct");
                 case 0:
                     break;
                 default:
@@ -249,7 +250,7 @@ public class Openstud {
         }
     }
 
-    public void recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException, OpenstudInvalidCredentialsException {
+    public void recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
         int count=0;
         if (studentID==null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while(true){
@@ -265,7 +266,7 @@ public class Openstud {
         }
     }
 
-    private void _recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    private void _recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola",String.valueOf(studentID)).add("email", email).add("risposta",answer).build();
@@ -274,13 +275,14 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if(resp.body()==null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            if (body.contains("Matricola errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("livelloErrore"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid.");
             switch (response.getInt("livelloErrore")) {
                 case 3:
-                    throw new OpenstudInvalidCredentialsException("Answer is not correct");
+                    throw new OpenstudInvalidAnswerException("Answer is not correct");
                 case 0:
                     break;
                 default:
@@ -319,7 +321,7 @@ public class Openstud {
         try {
             if (!StringUtils.isNumeric(studentID)) throw new OpenstudInvalidCredentialsException("Student ID is not valid");
             RequestBody formBody = new FormBody.Builder()
-                    .add("key", "r4g4zz3tt1").add("matricola", String.valueOf(studentID)).add("stringaAutenticazione", studentPassword).build();
+                    .add("key", key).add("matricola", String.valueOf(studentID)).add("stringaAutenticazione", studentPassword).build();
             Request req = new Request.Builder().url(endpointAPI + "/autenticazione").header("Accept", "application/json")
                     .header("Content-Type", "application/x-www-form-urlencoded").post(formBody).build();
             Response resp = client.newCall(req).execute();
