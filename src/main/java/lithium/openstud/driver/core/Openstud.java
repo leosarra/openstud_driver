@@ -135,6 +135,7 @@ public class Openstud {
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
             if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
+            if (body.contains("Impossibile recuperare la password per email")) return null;
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("risultato"))
@@ -150,13 +151,12 @@ public class Openstud {
         }
     }
 
-    public void recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
+    public int recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
         int count = 0;
         if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
             try {
-                _recoverPassword(answer);
-                break;
+                return _recoverPassword(answer);
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
@@ -219,7 +219,7 @@ public class Openstud {
         }
     }
 
-    private void _recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
+    private int _recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola", String.valueOf(studentID)).add("risposta", answer).build();
@@ -229,6 +229,7 @@ public class Openstud {
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
             if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
+            if (body.contains("Impossibile recuperare la password per email")) return -1;
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("livelloErrore"))
@@ -249,15 +250,15 @@ public class Openstud {
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
+        return 0;
     }
 
-    public void recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
+    public int recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
         int count=0;
         if (studentID==null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while(true){
             try {
-                _recoverPasswordWithEmail(email, answer);
-                break;
+                return _recoverPasswordWithEmail(email, answer);
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
                     log(Level.SEVERE,e);
@@ -267,7 +268,7 @@ public class Openstud {
         }
     }
 
-    private void _recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
+    private int _recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola",String.valueOf(studentID)).add("email", email).add("risposta",answer).build();
@@ -277,6 +278,7 @@ public class Openstud {
             if(resp.body()==null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
             if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
+            if (body.contains("Impossibile recuperare la password per email")) return -1;
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("livelloErrore"))
@@ -297,6 +299,7 @@ public class Openstud {
             log(Level.SEVERE,invalidResponse);
             throw invalidResponse;
         }
+        return 0;
     }
 
 
