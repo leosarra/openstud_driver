@@ -134,7 +134,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
-            if (body.contains("Matricola errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
+            if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("risultato"))
@@ -228,7 +228,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
-            if (body.contains("Matricola errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
+            if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("livelloErrore"))
@@ -276,7 +276,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if(resp.body()==null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
-            if (body.contains("Matricola errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
+            if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("livelloErrore"))
