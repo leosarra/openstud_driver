@@ -110,7 +110,7 @@ public class Openstud {
         }
     }
 
-    public String getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    public String getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         int count = 0;
         if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
@@ -125,7 +125,7 @@ public class Openstud {
         }
     }
 
-    private String _getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+    private String _getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola", String.valueOf(studentID)).build();
@@ -134,6 +134,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            if (body.contains("Matricola errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("risultato"))
