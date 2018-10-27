@@ -3,6 +3,7 @@ package lithium.openstud.driver.core;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
@@ -13,6 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class OpenstudHelper {
+
+
 
     public enum Mode {
         MOBILE, WEB
@@ -71,6 +74,28 @@ public class OpenstudHelper {
         if (grade >= 31) done.setResult(31);
         else done.setResult(grade);
         return done;
+    }
+
+    static List<Event> generateEvents(List<ExamReservation> reservations, List<ExamReservation> avaiableReservations) {
+        List<Event> events = new LinkedList<>();
+        for (ExamReservation res : reservations) {
+            events.add(new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), Type.RESERVED));
+        }
+        for (ExamReservation res : avaiableReservations) {
+            boolean exist = false;
+            for (ExamReservation res_active : reservations) {
+                if (res_active.getReportID() == res.getReportID() && res_active.getSessionID() == res.getSessionID()) {
+                    exist = true;
+                    break;
+                }
+            }
+            if (exist) continue;
+            Event event = new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), Type.DOABLE);
+            event.setStartReservations(res.getStartDate());
+            event.setEndReservations(res.getEndDate());
+            events.add(event);
+        }
+        return events;
     }
 
     public static List<ExamDone> sortByDate(List<ExamDone> list, boolean ascending) {
