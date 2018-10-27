@@ -598,6 +598,36 @@ public class Openstud {
     }
 
 
+    public List<Event> getCalendarEvents(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!isReady()) return null;
+        int count = 0;
+        boolean refresh = false;
+        while (true) {
+            try {
+                if (refresh) refreshToken();
+                refresh = true;
+                List<ExamDoable> exams = _getExamsDoable();
+                List<ExamReservation> reservations = _getActiveReservations();
+                List<ExamReservation> avaiableReservations = new LinkedList<>();
+                for (ExamDoable exam : exams) {
+                   avaiableReservations.addAll(_getAvailableReservations(exam, student));
+                }
+                return OpenstudHelper.generateEvents(reservations, avaiableReservations);
+            }catch (OpenstudInvalidResponseException e) {
+                if (++count == maxTries) {
+                    log(Level.SEVERE, e);
+                    throw e;
+                }
+            } catch (OpenstudRefreshException e) {
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                log(Level.SEVERE, invalidCredentials);
+                throw invalidCredentials;
+            }
+        }
+    }
+
+
+
     public List<ExamDoable> getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count = 0;
@@ -810,7 +840,7 @@ public class Openstud {
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
-            if (!response.has("appelli") || response.isNull("appelli")) return null;
+            if (!response.has("appelli") || response.isNull("appelli")) throw new OpenstudInvalidResponseException("Infostud response is not valid. Maybe the server is not working");
             JSONArray array = response.getJSONArray("appelli");
             return OpenstudHelper.extractReservations(array);
         } catch (IOException e) {
