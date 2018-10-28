@@ -83,7 +83,7 @@ public class Openstud {
             RequestBody formBody = new FormBody.Builder()
                     .add("key", key).add("matricola", String.valueOf(studentID)).add("stringaAutenticazione", studentPassword).build();
             Request req = new Request.Builder().url(endpointAPI + "/autenticazione").header("Accept", "application/json")
-                    .header("Content-Type", "application/x-www-form-urlencoded").post(formBody).build();
+                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) return;
             String body = resp.body().string();
@@ -130,7 +130,7 @@ public class Openstud {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola", String.valueOf(studentID)).build();
             Request req = new Request.Builder().url(endpointAPI + "/pwd/recuperaDomanda/matricola").header("Accept", "application/json")
-                    .header("Content-Type", "application/x-www-form-urlencoded").post(formBody).build();
+                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
@@ -191,7 +191,7 @@ public class Openstud {
                     .build();
 
             Request req = new Request.Builder().url(endpointAPI + "/pwd/" + studentID + "/reset").header("Accept", "application/json")
-                    .header("Content-Type", "application/x-www-form-urlencoded").post(formBody).build();
+                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
@@ -224,7 +224,7 @@ public class Openstud {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola", String.valueOf(studentID)).add("risposta", answer).build();
             Request req = new Request.Builder().url(endpointAPI + "/pwd/recupera/matricola").header("Accept", "application/json")
-                    .header("Content-Type", "application/x-www-form-urlencoded").post(formBody).build();
+                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
@@ -273,7 +273,7 @@ public class Openstud {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola",String.valueOf(studentID)).add("email", email).add("risposta",answer).build();
             Request req = new Request.Builder().url(endpointAPI+"/pwd/recupera/matricola").header("Accept","application/json")
-                    .header("Content-Type","application/x-www-form-urlencoded").post(formBody).build();
+                    .header("Content-EventType","application/x-www-form-urlencoded").post(formBody).build();
             Response resp = client.newCall(req).execute();
             if(resp.body()==null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
@@ -327,7 +327,7 @@ public class Openstud {
             RequestBody formBody = new FormBody.Builder()
                     .add("key", key).add("matricola", String.valueOf(studentID)).add("stringaAutenticazione", studentPassword).build();
             Request req = new Request.Builder().url(endpointAPI + "/autenticazione").header("Accept", "application/json")
-                    .header("Content-Type", "application/x-www-form-urlencoded").post(formBody).build();
+                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();

@@ -3,7 +3,6 @@ package lithium.openstud.driver.core;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
-import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
@@ -82,7 +81,7 @@ public class OpenstudHelper {
         for (String code : timetable.keySet()) {
             List<Lesson> lessons = timetable.get(code);
             for (Lesson lesson : lessons) {
-                Event ev = new Event(lesson.getName(),lesson.getStart(), lesson.getEnd(), Type.LESSON);
+                Event ev = new Event(lesson.getName(),lesson.getStart(), lesson.getEnd(), EventType.LESSON);
                 ev.setTeacher(lesson.getTeacher());
                 ev.setWhere(lesson.getWhere());
                 events.add(ev);
@@ -94,7 +93,7 @@ public class OpenstudHelper {
     static List<Event> generateEvents(List<ExamReservation> reservations, List<ExamReservation> avaiableReservations) {
         List<Event> events = new LinkedList<>();
         for (ExamReservation res : reservations) {
-            events.add(new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), null, Type.RESERVED));
+            events.add(new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), null, EventType.RESERVED));
         }
         for (ExamReservation res : avaiableReservations) {
             boolean exist = false;
@@ -105,7 +104,7 @@ public class OpenstudHelper {
                 }
             }
             if (exist) continue;
-            Event event = new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), null, Type.DOABLE);
+            Event event = new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), null, EventType.DOABLE);
             event.setStartReservations(res.getStartDate());
             event.setEndReservations(res.getEndDate());
             events.add(event);

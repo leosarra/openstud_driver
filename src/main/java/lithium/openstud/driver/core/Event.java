@@ -4,9 +4,6 @@ package lithium.openstud.driver.core;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
-enum Type {
-    DOABLE, RESERVED, LESSON
-}
 public class Event {
     private String description;
     private String teacher; //May come in handy in the future
@@ -15,15 +12,15 @@ public class Event {
     private LocalDateTime end;
     private LocalDate startReservations;
     private LocalDate endReservations;
-    private Type type;
+    private EventType eventType;
 
 
 
-    public Event(String description, LocalDateTime start, LocalDateTime end, Type type){
+    public Event(String description, LocalDateTime start, LocalDateTime end, EventType eventType){
         this.description = description;
         this.start = start;
         this.end = end;
-        this.type = type;
+        this.eventType = eventType;
     }
 
     public String getDescription() {
@@ -42,12 +39,12 @@ public class Event {
         this.start = when;
     }
 
-    public Type getType() {
-        return type;
+    public EventType getEventType() {
+        return eventType;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
     }
 
     public String getTeacher() {
@@ -100,7 +97,7 @@ public class Event {
                 ", end=" + end +
                 ", startReservations=" + startReservations +
                 ", endReservations=" + endReservations +
-                ", type=" + type +
+                ", eventType=" + eventType +
                 '}';
     }
 }
