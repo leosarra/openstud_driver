@@ -1317,6 +1317,8 @@ public class Openstud {
                                 break;
                         }
                     }
+                    int indexTeacher = lesson.getName().indexOf("Docente:");
+                    if (indexTeacher != -1 ) lesson.setTeacher(lesson.getName().substring(indexTeacher+"Docente: ".length()));
                     lessons.add(lesson);
                 }
                 ret.put(examCode, lessons);
