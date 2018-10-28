@@ -10,6 +10,7 @@ import org.threeten.bp.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,10 +77,24 @@ public class OpenstudHelper {
         return done;
     }
 
+    public static List<Event> generateEventsFromTimetable(Map<String,List<Lesson>> timetable) {
+        List<Event> events = new LinkedList<>();
+        for (String code : timetable.keySet()) {
+            List<Lesson> lessons = timetable.get(code);
+            for (Lesson lesson : lessons) {
+                Event ev = new Event(lesson.getName(),lesson.getStart(), lesson.getEnd(), Type.LESSON);
+                ev.setTeacher(lesson.getTeacher());
+                ev.setWhere(lesson.getWhere());
+                events.add(ev);
+            }
+        }
+        return events;
+    }
+
     static List<Event> generateEvents(List<ExamReservation> reservations, List<ExamReservation> avaiableReservations) {
         List<Event> events = new LinkedList<>();
         for (ExamReservation res : reservations) {
-            events.add(new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), Type.RESERVED));
+            events.add(new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), null, Type.RESERVED));
         }
         for (ExamReservation res : avaiableReservations) {
             boolean exist = false;
@@ -90,7 +105,7 @@ public class OpenstudHelper {
                 }
             }
             if (exist) continue;
-            Event event = new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), Type.DOABLE);
+            Event event = new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), null, Type.DOABLE);
             event.setStartReservations(res.getStartDate());
             event.setEndReservations(res.getEndDate());
             events.add(event);
