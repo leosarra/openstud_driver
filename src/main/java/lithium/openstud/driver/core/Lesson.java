@@ -8,6 +8,7 @@ public class Lesson {
     private String where;
     private LocalDateTime start;
     private LocalDateTime end;
+    private String teacher;
 
     public String getName() {
         return name;
@@ -41,6 +42,14 @@ public class Lesson {
         this.end = end;
     }
 
+    public String getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(String teacher) {
+        this.teacher = teacher;
+    }
+
     @Override
     public String toString() {
         return "Lesson{" +
@@ -48,6 +57,7 @@ public class Lesson {
                 ", where='" + where + '\'' +
                 ", start=" + start +
                 ", end=" + end +
+                ", teacher='" + teacher + '\'' +
                 '}';
     }
 }
