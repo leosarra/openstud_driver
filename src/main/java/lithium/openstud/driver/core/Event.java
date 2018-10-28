@@ -11,16 +11,18 @@ public class Event {
     private String description;
     private String teacher; //May come in handy in the future
     private String where; //for the future
-    private LocalDateTime when;
+    private LocalDateTime start;
+    private LocalDateTime end;
     private LocalDate startReservations;
     private LocalDate endReservations;
     private Type type;
 
 
 
-    public Event(String description, LocalDateTime when, Type type){
+    public Event(String description, LocalDateTime start, LocalDateTime end, Type type){
         this.description = description;
-        this.when = when;
+        this.start = start;
+        this.end = end;
         this.type = type;
     }
 
@@ -32,12 +34,12 @@ public class Event {
         this.description = description;
     }
 
-    public LocalDateTime getWhen() {
-        return when;
+    public LocalDateTime getStart() {
+        return start;
     }
 
-    public void setWhen(LocalDateTime when) {
-        this.when = when;
+    public void setStart(LocalDateTime when) {
+        this.start = when;
     }
 
     public Type getType() {
@@ -72,6 +74,14 @@ public class Event {
         this.endReservations = endReservations;
     }
 
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
+    public void setEnd(LocalDateTime end) {
+        this.end = end;
+    }
+
     public String getWhere() {
         return where;
     }
@@ -86,7 +96,8 @@ public class Event {
                 "description='" + description + '\'' +
                 ", teacher='" + teacher + '\'' +
                 ", where='" + where + '\'' +
-                ", when=" + when +
+                ", start=" + start +
+                ", end=" + end +
                 ", startReservations=" + startReservations +
                 ", endReservations=" + endReservations +
                 ", type=" + type +
