@@ -93,7 +93,9 @@ public class OpenstudHelper {
     static List<Event> generateEvents(List<ExamReservation> reservations, List<ExamReservation> avaiableReservations) {
         List<Event> events = new LinkedList<>();
         for (ExamReservation res : reservations) {
-            events.add(new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), null, EventType.RESERVED));
+            Event ev = new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), null, EventType.RESERVED);
+            ev.setWhere(res.getNote());
+            events.add(ev);
         }
         for (ExamReservation res : avaiableReservations) {
             boolean exist = false;
