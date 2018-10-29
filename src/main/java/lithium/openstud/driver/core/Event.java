@@ -4,6 +4,8 @@ package lithium.openstud.driver.core;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
+import java.util.Objects;
+
 public class Event {
     private String description;
     private String teacher; //May come in handy in the future
@@ -99,5 +101,25 @@ public class Event {
                 ", endReservations=" + endReservations +
                 ", eventType=" + eventType +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return Objects.equals(description, event.description) &&
+                Objects.equals(teacher, event.teacher) &&
+                Objects.equals(where, event.where) &&
+                Objects.equals(start, event.start) &&
+                Objects.equals(end, event.end) &&
+                Objects.equals(startReservations, event.startReservations) &&
+                Objects.equals(endReservations, event.endReservations) &&
+                eventType == event.eventType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(description, teacher, where, start, end, startReservations, endReservations, eventType);
     }
 }
