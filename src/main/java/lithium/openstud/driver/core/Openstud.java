@@ -1358,38 +1358,7 @@ public class Openstud {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
             for (int i = 0; i<array.length(); i++){
                 JSONObject object = array.getJSONObject(i);
-                Lesson lesson = new Lesson();
-                for (String info : object.keySet()) {
-                    if (object.isNull(info)) continue;
-                    switch (info) {
-                        case "name":
-                            String name = object.getString(info).replace("\n", " ");
-                            int startIdx = name.indexOf(" ");
-                            int endIdx = name.indexOf("Docente:");
-                            if (startIdx != -1 && endIdx != -1) {
-                                if (name.endsWith(" ")) {
-                                    name = name.substring(0, name.length() - 1);
-                                }
-                                lesson.setName(name.substring(startIdx, endIdx));
-                            } else lesson.setName(name);
-                            int indexTeacher = lesson.getName().indexOf("Docente:");
-                            if (indexTeacher != -1 ) lesson.setTeacher(lesson.getName().substring(indexTeacher+"Docente: ".length()));
-                            break;
-                        case "where":
-                            lesson.setWhere(object.getString(info));
-                            break;
-                        case "start":
-                            lesson.setStart(LocalDateTime.parse(object.getString(info), formatter));
-                            break;
-                        case "end":
-                            lesson.setEnd(LocalDateTime.parse(object.getString(info), formatter));
-                            break;
-                    }
-                    int indexTeacher = lesson.getName().indexOf("Docente:");
-                    if (indexTeacher != -1 ) lesson.setTeacher(lesson.getName().substring(indexTeacher+"Docente: ".length()));
-                    ret.add(lesson);
-                }
-                ret.add(lesson);
+                ret.add(OpenstudHelper.extractLesson(object, formatter));
             }
             return OpenstudHelper.sortLessonsByStartDate(ret, true);
 
@@ -1450,39 +1419,10 @@ public class Openstud {
                 LinkedList<Lesson> lessons = new LinkedList<>();
                 for (int i = 0; i<array.length(); i++) {
                     JSONObject object = array.getJSONObject(i);
-                    Lesson lesson = new Lesson();
-                    for (String lessonInfo : object.keySet()) {
-                        if (object.isNull(lessonInfo)) continue;
-                        switch (lessonInfo) {
-                            case "name":
-                                String name = object.getString(lessonInfo).replace("\n", " ");
-                                int startIdx = name.indexOf(" ");
-                                int endIdx = name.indexOf("Docente:");
-                                if (startIdx != -1 && endIdx != -1) {
-                                    if (name.endsWith(" ")) {
-                                        name = name.substring(0, name.length() - 1);
-                                    }
-                                    lesson.setName(name.substring(startIdx, endIdx));
-                                } else lesson.setName(name);
-                                int indexTeacher = lesson.getName().indexOf("Docente:");
-                                if (indexTeacher != -1 ) lesson.setTeacher(lesson.getName().substring(indexTeacher+"Docente: ".length()));
-                                break;
-                            case "where":
-                                lesson.setWhere(object.getString(lessonInfo));
-                                break;
-                            case "start":
-                                lesson.setStart(LocalDateTime.parse(object.getString(lessonInfo), formatter));
-                                break;
-                            case "end":
-                                lesson.setEnd(LocalDateTime.parse(object.getString(lessonInfo), formatter));
-                                break;
-                        }
-                        lessons.add(lesson);
+                    lessons.add(OpenstudHelper.extractLesson(object, formatter));
                     }
-
-                }
                 ret.put(examCode, lessons);
-            }
+                }
             return ret;
 
         } catch (IOException e) {

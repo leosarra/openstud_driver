@@ -3,6 +3,7 @@ package lithium.openstud.driver.core;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
@@ -157,6 +158,38 @@ public class OpenstudHelper {
             }
         });
         return list;
+    }
+
+    protected static Lesson extractLesson(JSONObject response, DateTimeFormatter formatter) {
+        Lesson lesson = new Lesson();
+        for (String lessonInfo : response.keySet()) {
+            if (response.isNull(lessonInfo)) continue;
+            switch (lessonInfo) {
+                case "name":
+                    String name = response.getString(lessonInfo);
+                    int startIdx = name.indexOf(" ");
+                    int endIdx = name.indexOf("Docente:");
+                    if (startIdx != -1 && endIdx != -1) {
+                        if (name.endsWith(" ")) {
+                            name = name.substring(0, name.length() - 1);
+                        }
+                        lesson.setName(name.substring(startIdx, endIdx).trim());
+                    } else lesson.setName(name);
+                    int indexTeacher = name.indexOf("Docente:");
+                    if (indexTeacher != -1) lesson.setTeacher(name.substring(indexTeacher + "Docente: ".length()));
+                    break;
+                case "where":
+                    lesson.setWhere(response.getString(lessonInfo));
+                    break;
+                case "start":
+                    lesson.setStart(LocalDateTime.parse(response.getString(lessonInfo), formatter));
+                    break;
+                case "end":
+                    lesson.setEnd(LocalDateTime.parse(response.getString(lessonInfo), formatter));
+                    break;
+            }
+        }
+        return lesson;
     }
 
     protected static Isee extractIsee(JSONObject response) {
