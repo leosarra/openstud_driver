@@ -112,6 +112,7 @@ public class OpenstudHelper {
             event.setStartReservations(res.getStartDate());
             event.setEndReservations(res.getEndDate());
             event.setTeacher(res.getTeacher());
+            event.setWhere(res.getNote());
             events.add(event);
         }
         return events;
