@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 public class OpenstudBuilder {
     private int retryCounter = 3;
     private String webEndpoint = "https://www.studenti.uniroma1.it/phxdroidws";
-    private String timetableEndpoint = "https://aule-gomp.apps.os.sapienzaapps.it/lectures/";
+    private String timetableEndpoint = "https://aule-gomp.apps.os.sapienzaapps.it/";
     private int connectTimeout = 10;
     private int writeTimeout = 10;
     private int readTimeout = 30;

@@ -16,10 +16,7 @@ import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1253,6 +1250,160 @@ public class Openstud {
     }
 
 
+    public List<Classroom> getClassRoom(String query) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+        if (!isReady()) return null;
+        int count = 0;
+        List<Classroom> ret;
+        while (true) {
+            try {
+                ret = _getClassroom(query);
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (++count == maxTries) {
+                    log(Level.SEVERE, e);
+                    throw e;
+                }
+            }
+        }
+        return ret;
+    }
+
+    private List<Classroom> _getClassroom(String query) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        List<Classroom> ret = new LinkedList<>();
+        try {
+            Request req = new Request.Builder().url(endpointTimetable +"/classroom/search?q="+ query).build();
+            Response resp = client.newCall(req).execute();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
+            String body = resp.body().string();
+            log(Level.INFO, body);
+            JSONArray array = new JSONArray(body);
+            for (int i = 0; i<array.length(); i++){
+                JSONObject object = array.getJSONObject(i);
+                Classroom classroom = new Classroom();
+                for (String info: object.keySet()){
+                    if (object.isNull(info)) continue;
+                    switch (info){
+                        case "roominternalid":
+                            classroom.setInternalId(object.getInt(info));
+                            break;
+                        case "fullname":
+                            classroom.setFullName(object.getString(info));
+                            break;
+                        case "name":
+                            classroom.setName(object.getString(info));
+                            break;
+                        case "site":
+                            classroom.setWhere(object.getString(info));
+                            break;
+                        case "lat":
+                            classroom.setLatitude(object.getDouble(info));
+                            break;
+                        case "lng":
+                            classroom.setLongitude(object.getDouble(info));
+                            break;
+                        case "occupied":
+                            classroom.setOccupied(object.getBoolean(info));
+                            break;
+                        case "willbeoccupied":
+                            classroom.setWillBeOccupied(object.getBoolean(info));
+                            break;
+                        case "weight":
+                            classroom.setWeight(object.getInt(info));
+                            break;
+                    }
+                }
+                ret.add(classroom);
+            }
+            return ret;
+
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE, connectionException);
+            throw connectionException;
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
+
+    public List<Lesson> getClassroomTimetable(int id, LocalDate date) throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        if (!isReady()) return null;
+        int count = 0;
+        List<Lesson> ret;
+        while (true) {
+            try {
+                ret = _getClassroomTimetable(id,date);
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (++count == maxTries) {
+                    log(Level.SEVERE, e);
+                    throw e;
+                }
+            }
+        }
+        return ret;
+
+    }
+
+    private List<Lesson> _getClassroomTimetable(int id, LocalDate date) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        List<Lesson> ret = new LinkedList<>();
+        try {
+            Request req = new Request.Builder().url(endpointTimetable +"/events/"+date.getYear()+"/"+date.getMonthValue()+"/"+date.getDayOfMonth()+"/"+id).build();
+            Response resp = client.newCall(req).execute();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
+            String body = resp.body().string();
+            log(Level.INFO, body);
+            JSONArray array = new JSONArray(body);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
+            for (int i = 0; i<array.length(); i++){
+                JSONObject object = array.getJSONObject(i);
+                Lesson lesson = new Lesson();
+                for (String info : object.keySet()) {
+                    if (object.isNull(info)) continue;
+                    switch (info) {
+                        case "name":
+                            String name = object.getString(info).replace("\n", " ");
+                            int startIdx = name.indexOf(" ");
+                            int endIdx = name.indexOf("Docente:");
+                            if (startIdx != -1 && endIdx != -1) {
+                                if (name.endsWith(" ")) {
+                                    name = name.substring(0, name.length() - 1);
+                                }
+                                lesson.setName(name.substring(startIdx, endIdx));
+                            } else lesson.setName(name);
+                            int indexTeacher = lesson.getName().indexOf("Docente:");
+                            if (indexTeacher != -1 ) lesson.setTeacher(lesson.getName().substring(indexTeacher+"Docente: ".length()));
+                            break;
+                        case "where":
+                            lesson.setWhere(object.getString(info));
+                            break;
+                        case "start":
+                            lesson.setStart(LocalDateTime.parse(object.getString(info), formatter));
+                            break;
+                        case "end":
+                            lesson.setEnd(LocalDateTime.parse(object.getString(info), formatter));
+                            break;
+                    }
+                    int indexTeacher = lesson.getName().indexOf("Docente:");
+                    if (indexTeacher != -1 ) lesson.setTeacher(lesson.getName().substring(indexTeacher+"Docente: ".length()));
+                    ret.add(lesson);
+                }
+                ret.add(lesson);
+            }
+            return OpenstudHelper.sortLessonsByStartDate(ret, true);
+
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE, connectionException);
+            throw connectionException;
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
+
     public Map<String, List<Lesson>> getTimetable(List<ExamDoable> exams) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
         if (!isReady()) return null;
         int count = 0;
@@ -1286,9 +1437,8 @@ public class Openstud {
                 builder.append(exam.getExamCode());
             }
             String codes = builder.toString();
-            Request req = new Request.Builder().url(endpointTimetable + builder.toString()).build();
+            Request req = new Request.Builder().url(endpointTimetable +"/lectures/"+ builder.toString()).build();
             Response resp = client.newCall(req).execute();
-            List<Tax> list = new LinkedList<>();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
             String body = resp.body().string();
             log(Level.INFO, body);
@@ -1302,24 +1452,34 @@ public class Openstud {
                     JSONObject object = array.getJSONObject(i);
                     Lesson lesson = new Lesson();
                     for (String lessonInfo : object.keySet()) {
+                        if (object.isNull(lessonInfo)) continue;
                         switch (lessonInfo) {
                             case "name":
-                                if (!object.isNull(lessonInfo)) lesson.setName(object.getString(lessonInfo));
+                                String name = object.getString(lessonInfo).replace("\n", " ");
+                                int startIdx = name.indexOf(" ");
+                                int endIdx = name.indexOf("Docente:");
+                                if (startIdx != -1 && endIdx != -1) {
+                                    if (name.endsWith(" ")) {
+                                        name = name.substring(0, name.length() - 1);
+                                    }
+                                    lesson.setName(name.substring(startIdx, endIdx));
+                                } else lesson.setName(name);
+                                int indexTeacher = lesson.getName().indexOf("Docente:");
+                                if (indexTeacher != -1 ) lesson.setTeacher(lesson.getName().substring(indexTeacher+"Docente: ".length()));
                                 break;
                             case "where":
-                                if (!object.isNull(lessonInfo)) lesson.setWhere(object.getString(lessonInfo));
+                                lesson.setWhere(object.getString(lessonInfo));
                                 break;
                             case "start":
-                                if (!object.isNull(lessonInfo)) lesson.setStart(LocalDateTime.parse(object.getString(lessonInfo), formatter));
+                                lesson.setStart(LocalDateTime.parse(object.getString(lessonInfo), formatter));
                                 break;
                             case "end":
-                                if (!object.isNull(lessonInfo)) lesson.setEnd(LocalDateTime.parse(object.getString(lessonInfo), formatter));
+                                lesson.setEnd(LocalDateTime.parse(object.getString(lessonInfo), formatter));
                                 break;
                         }
+                        lessons.add(lesson);
                     }
-                    int indexTeacher = lesson.getName().indexOf("Docente:");
-                    if (indexTeacher != -1 ) lesson.setTeacher(lesson.getName().substring(indexTeacher+"Docente: ".length()));
-                    lessons.add(lesson);
+
                 }
                 ret.put(examCode, lessons);
             }
