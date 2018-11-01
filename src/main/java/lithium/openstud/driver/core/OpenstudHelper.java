@@ -132,6 +132,22 @@ public class OpenstudHelper {
         return list;
     }
 
+    public static List<Lesson> sortLessonsByStartDate(List<Lesson> list, boolean ascending) {
+        Collections.sort(list, (o1, o2) -> {
+            if (o1.getStart() == null && o2.getStart()  == null) return 0;
+            if (ascending)
+                if (o1.getStart()  == null) return 1;
+                else if (o2.getStart()  == null) return -1;
+                else return o1.getStart().compareTo(o2.getStart());
+            else {
+                if (o1.getStart() == null) return -1;
+                else if (o2.getStart()== null) return 1;
+                else return o2.getStart().compareTo(o1.getStart());
+            }
+        });
+        return list;
+    }
+
     public static List<ExamDone> sortByGrade(List<ExamDone> list, boolean ascending) {
         Collections.sort(list, (o1, o2) -> {
             if (ascending)
