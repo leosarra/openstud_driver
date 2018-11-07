@@ -1321,8 +1321,8 @@ public class Openstud {
                             break;
                         }
                     }
-                    ret.add(classroom);
                 }
+                ret.add(classroom);
 
             }
         } catch (IOException e) {
