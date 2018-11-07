@@ -1277,12 +1277,13 @@ public class Openstud {
             String body = resp.body().string();
             log(Level.INFO, body);
             JSONArray array = new JSONArray(body);
-            for (int i = 0; i<array.length(); i++){
+            LocalDateTime now = LocalDateTime.now();
+            for (int i = 0; i<array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 Classroom classroom = new Classroom();
-                for (String info: object.keySet()){
+                for (String info : object.keySet()) {
                     if (object.isNull(info)) continue;
-                    switch (info){
+                    switch (info) {
                         case "roominternalid":
                             classroom.setInternalId(object.getInt(info));
                             break;
@@ -1311,11 +1312,19 @@ public class Openstud {
                             classroom.setWeight(object.getInt(info));
                             break;
                     }
-                }
-                ret.add(classroom);
-            }
-            return ret;
+                    List<Lesson> classLessons = getClassroomTimetable(classroom.getInternalId(), LocalDate.now());
 
+                    for(Lesson lesson : classLessons) {
+                        if(lesson.getStart().isBefore(now) && lesson.getEnd().isAfter(now)) classroom.setLessonNow(lesson);
+                        else if (lesson.getStart().isAfter(now)) {
+                            classroom.setNextLesson(lesson);
+                            break;
+                        }
+                    }
+                    ret.add(classroom);
+                }
+
+            }
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             log(Level.SEVERE, connectionException);
@@ -1325,6 +1334,7 @@ public class Openstud {
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
+        return ret;
     }
 
     public List<Lesson> getClassroomTimetable(int id, LocalDate date) throws OpenstudConnectionException, OpenstudInvalidResponseException {
@@ -1349,7 +1359,7 @@ public class Openstud {
     private List<Lesson> _getClassroomTimetable(int id, LocalDate date) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Lesson> ret = new LinkedList<>();
         try {
-            Request req = new Request.Builder().url(endpointTimetable +"/events/"+date.getYear()+"/"+date.getMonthValue()+"/"+date.getDayOfMonth()+"/"+id).build();
+            Request req = new Request.Builder().url(endpointTimetable +"events/"+date.getYear()+"/"+date.getMonthValue()+"/"+date.getDayOfMonth()+"/"+id).build();
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
             String body = resp.body().string();
