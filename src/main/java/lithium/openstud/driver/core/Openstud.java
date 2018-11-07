@@ -1271,7 +1271,7 @@ public class Openstud {
     private List<Classroom> _getClassroom(String query) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Classroom> ret = new LinkedList<>();
         try {
-            Request req = new Request.Builder().url(endpointTimetable +"/classroom/search?q="+ query).build();
+            Request req = new Request.Builder().url(endpointTimetable +"classroom/search?q="+ query.replace(" ","%20")).build();
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
             String body = resp.body().string();
@@ -1406,7 +1406,7 @@ public class Openstud {
                 builder.append(exam.getExamCode());
             }
             String codes = builder.toString();
-            Request req = new Request.Builder().url(endpointTimetable +"/lectures/"+ builder.toString()).build();
+            Request req = new Request.Builder().url(endpointTimetable +"lectures/"+ builder.toString()).build();
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
             String body = resp.body().string();
