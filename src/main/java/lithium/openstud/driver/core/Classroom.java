@@ -1,5 +1,7 @@
 package lithium.openstud.driver.core;
 
+import java.util.Objects;
+
 public class Classroom {
     private double latitude;
     private double longitude;
@@ -10,6 +12,8 @@ public class Classroom {
     private String roomId;
     private boolean occupied;
     private boolean willBeOccupied;
+    private Lesson lessonNow;
+    private Lesson nextLesson;
     private int weight;
 
     public double getLatitude() {
@@ -92,6 +96,22 @@ public class Classroom {
         this.weight = weight;
     }
 
+    public Lesson getLessonNow() {
+        return lessonNow;
+    }
+
+    public void setLessonNow(Lesson lessonNow) {
+        this.lessonNow = lessonNow;
+    }
+
+    public Lesson getNextLesson() {
+        return nextLesson;
+    }
+
+    public void setNextLesson(Lesson nextLesson) {
+        this.nextLesson = nextLesson;
+    }
+
     @Override
     public String toString() {
         return "Classroom{" +
@@ -104,7 +124,33 @@ public class Classroom {
                 ", roomId='" + roomId + '\'' +
                 ", occupied=" + occupied +
                 ", willBeOccupied=" + willBeOccupied +
+                ", lessonNow=" + lessonNow +
+                ", nextLesson=" + nextLesson +
                 ", weight=" + weight +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Classroom classroom = (Classroom) o;
+        return Double.compare(classroom.latitude, latitude) == 0 &&
+                Double.compare(classroom.longitude, longitude) == 0 &&
+                internalId == classroom.internalId &&
+                occupied == classroom.occupied &&
+                willBeOccupied == classroom.willBeOccupied &&
+                weight == classroom.weight &&
+                Objects.equals(where, classroom.where) &&
+                Objects.equals(name, classroom.name) &&
+                Objects.equals(fullName, classroom.fullName) &&
+                Objects.equals(roomId, classroom.roomId) &&
+                Objects.equals(lessonNow, classroom.lessonNow) &&
+                Objects.equals(nextLesson, classroom.nextLesson);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(latitude, longitude, where, name, fullName, internalId, roomId, occupied, willBeOccupied, lessonNow, nextLesson, weight);
     }
 }
