@@ -1312,18 +1312,19 @@ public class Openstud {
                             classroom.setWeight(object.getInt(info));
                             break;
                     }
-                    List<Lesson> classLessons = getClassroomTimetable(classroom.getInternalId(), LocalDate.now());
 
-                    for(Lesson lesson : classLessons) {
-                        if(lesson.getStart().isBefore(now) && lesson.getEnd().isAfter(now)) classroom.setLessonNow(lesson);
-                        else if (lesson.getStart().isAfter(now)) {
-                            classroom.setNextLesson(lesson);
-                            break;
-                        }
+                }
+
+                List<Lesson> classLessons = getClassroomTimetable(classroom.getInternalId(), LocalDate.now());
+                for(Lesson lesson : classLessons) {
+                    if(lesson.getStart().isBefore(now) && lesson.getEnd().isAfter(now)) classroom.setLessonNow(lesson);
+                    else if (lesson.getStart().isAfter(now)) {
+                        classroom.setNextLesson(lesson);
+                        break;
                     }
                 }
+                classroom.setTodayLessons(classLessons);
                 ret.add(classroom);
-
             }
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
