@@ -1,5 +1,6 @@
 package lithium.openstud.driver.core;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Classroom {
@@ -15,6 +16,7 @@ public class Classroom {
     private Lesson lessonNow;
     private Lesson nextLesson;
     private int weight;
+    private List<Lesson> todayLessons;
 
     public double getLatitude() {
         return latitude;
@@ -110,6 +112,14 @@ public class Classroom {
 
     public void setNextLesson(Lesson nextLesson) {
         this.nextLesson = nextLesson;
+    }
+
+    public List<Lesson> getTodayLessons() {
+        return todayLessons;
+    }
+
+    public void setTodayLessons(List<Lesson> todayLessons) {
+        this.todayLessons = todayLessons;
     }
 
     @Override
