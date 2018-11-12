@@ -17,12 +17,14 @@ public class Classroom {
     private Lesson nextLesson;
     private int weight;
     private List<Lesson> todayLessons;
+    private boolean hasCoordinates;
 
     public double getLatitude() {
         return latitude;
     }
 
     public void setLatitude(double latitude) {
+        hasCoordinates = true;
         this.latitude = latitude;
     }
 
@@ -31,6 +33,7 @@ public class Classroom {
     }
 
     public void setLongitude(double longitude) {
+        hasCoordinates = true;
         this.longitude = longitude;
     }
 
@@ -120,6 +123,10 @@ public class Classroom {
 
     public void setTodayLessons(List<Lesson> todayLessons) {
         this.todayLessons = todayLessons;
+    }
+
+    public boolean hasCoordinates(){
+        return hasCoordinates;
     }
 
     @Override
