@@ -91,6 +91,17 @@ public class OpenstudHelper {
         return events;
     }
 
+    public static List<Event> generateEventsFromTimetable(List<Lesson> timetable) {
+        List<Event> events = new LinkedList<>();
+        for (Lesson lesson : timetable) {
+            Event ev = new Event(lesson.getName(),lesson.getStart(), lesson.getEnd(), EventType.LESSON);
+            ev.setTeacher(lesson.getTeacher());
+            ev.setWhere(lesson.getWhere());
+            events.add(ev);
+        }
+        return events;
+    }
+
     static List<Event> generateEvents(List<ExamReservation> reservations, List<ExamReservation> avaiableReservations) {
         List<Event> events = new LinkedList<>();
         for (ExamReservation res : reservations) {
