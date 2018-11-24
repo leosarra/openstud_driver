@@ -357,7 +357,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -439,7 +439,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -461,7 +461,7 @@ public class Openstud {
             log(Level.SEVERE, e);
             throw new OpenstudConnectionException(e);
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -591,7 +591,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -700,7 +700,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -798,7 +798,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -848,7 +848,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -900,7 +900,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -964,7 +964,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -1016,7 +1016,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -1071,7 +1071,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -1158,7 +1158,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -1246,7 +1246,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -1334,7 +1334,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -1381,7 +1381,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
@@ -1444,7 +1444,7 @@ public class Openstud {
             log(Level.SEVERE, connectionException);
             throw connectionException;
         } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
