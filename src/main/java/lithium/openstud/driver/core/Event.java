@@ -14,8 +14,9 @@ public class Event {
     private LocalDateTime end;
     private LocalDate startReservations;
     private LocalDate endReservations;
+    private LocalDate examDate;
     private EventType eventType;
-
+    private ExamReservation res;
 
 
     public Event(String description, LocalDateTime start, LocalDateTime end, EventType eventType){
@@ -89,6 +90,22 @@ public class Event {
         this.where = where;
     }
 
+    public LocalDate getExamDate() {
+        return examDate;
+    }
+
+    public void setExamDate(LocalDate examDate) {
+        this.examDate = examDate;
+    }
+
+    public ExamReservation getRes() {
+        return res;
+    }
+
+    public void setRes(ExamReservation res) {
+        this.res = res;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -99,6 +116,7 @@ public class Event {
                 ", end=" + end +
                 ", startReservations=" + startReservations +
                 ", endReservations=" + endReservations +
+                ", examDate=" + examDate +
                 ", eventType=" + eventType +
                 '}';
     }
@@ -115,11 +133,12 @@ public class Event {
                 Objects.equals(end, event.end) &&
                 Objects.equals(startReservations, event.startReservations) &&
                 Objects.equals(endReservations, event.endReservations) &&
+                Objects.equals(examDate, event.examDate) &&
                 eventType == event.eventType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(description, teacher, where, start, end, startReservations, endReservations, eventType);
+        return Objects.hash(description, teacher, where, start, end, startReservations, endReservations, examDate, eventType);
     }
 }
