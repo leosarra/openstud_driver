@@ -98,11 +98,11 @@ public class Event {
         this.examDate = examDate;
     }
 
-    public ExamReservation getRes() {
+    public ExamReservation getReservation() {
         return res;
     }
 
-    public void setRes(ExamReservation res) {
+    public void setReservation(ExamReservation res) {
         this.res = res;
     }
 
