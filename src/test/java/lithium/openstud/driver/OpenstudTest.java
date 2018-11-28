@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
@@ -175,6 +174,5 @@ public class OpenstudTest
         osb.login();
         List<Tax> list=osb.getUnpaidTaxes();
         assertNotNull(list);
-        assertFalse(list.isEmpty());
     }
 }
