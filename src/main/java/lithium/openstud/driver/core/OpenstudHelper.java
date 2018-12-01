@@ -35,9 +35,15 @@ public class OpenstudHelper {
                 cfu += exam.getCfu();
             }
         }
-        if (cfu == 0 || sum == 0) return -1;
+        if (cfu == 0 || sum == 0) return 0;
         return sum / cfu;
     }
+
+    public static int computeBaseGraduation(List<ExamDone> list, int laude) {
+        double result = (computeWeightedAverage(list,laude)*110)/30;
+        return (int) Math.ceil(result);
+    }
+
 
     public static double computeArithmeticAverage(List<ExamDone> list, int laude) {
         int num = 0;
