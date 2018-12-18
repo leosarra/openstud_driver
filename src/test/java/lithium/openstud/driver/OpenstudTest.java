@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
@@ -104,7 +105,7 @@ public class OpenstudTest
         osb.login();
         List<ExamDoable> list=osb.getExamsDoable();
         Map<String, List<Lesson>> map = osb.getTimetable(list);
-                assertNotNull(map);
+        assertNotNull(map);
     }
 
 
@@ -128,8 +129,7 @@ public class OpenstudTest
     public void testClassroomInfos() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
         osb.login();
-        List<Classroom> list=osb.getClassRoom("San pietro");
-        System.out.println(list);
+        List<Classroom> list=osb.getClassRoom("San pietro", true);
         assertNotNull(list);
     }
 
