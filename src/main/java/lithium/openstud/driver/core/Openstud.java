@@ -35,12 +35,16 @@ public class Openstud {
     private Logger logger;
     private OkHttpClient client;
     private String key;
+    private int waitTimeClassroomRequest;
+    private int limitSearch;
 
     public Openstud() {
         super();
     }
 
-    Openstud(String webEndpoint, String endpointTimetable, String studentID, String studentPassword, Logger logger, int retryCounter, int connectionTimeout, int readTimeout, int writeTimeout, boolean readyState, OpenstudHelper.Mode mode) {
+    Openstud(OpenstudHelper.Mode mode, String webEndpoint, String endpointTimetable, String studentID, String studentPassword,
+             Logger logger, int retryCounter, int connectionTimeout,
+             int readTimeout, int writeTimeout, boolean readyState, int waitTimeClassroomRequest, int limitSearch) {
         this.maxTries = retryCounter;
         this.endpointAPI = webEndpoint;
         this.studentID = studentID;
@@ -48,6 +52,8 @@ public class Openstud {
         this.studentPassword = studentPassword;
         this.logger = logger;
         this.isReady = readyState;
+        this.waitTimeClassroomRequest = waitTimeClassroomRequest;
+        this.limitSearch = limitSearch;
         if (mode == OpenstudHelper.Mode.WEB) key = "1nf0r1cc1";
         else key = "r4g4zz3tt1";
         client = new OkHttpClient.Builder()
@@ -1253,15 +1259,16 @@ public class Openstud {
     }
 
 
-    public List<Classroom> getClassRoom(String query) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+    public List<Classroom> getClassRoom(String query, boolean expandSearch) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
         if (!isReady()) return null;
         int count = 0;
         List<Classroom> ret;
         while (true) {
             try {
-                ret = _getClassroom(query);
+                ret = _getClassroom(query, expandSearch);
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isRateLimit()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1271,7 +1278,7 @@ public class Openstud {
         return ret;
     }
 
-    private List<Classroom> _getClassroom(String query) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    private List<Classroom> _getClassroom(String query, boolean expandSearch) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Classroom> ret = new LinkedList<>();
         try {
             Request req = new Request.Builder().url(endpointTimetable +"classroom/search?q="+ query.replace(" ","%20")).build();
@@ -1282,6 +1289,7 @@ public class Openstud {
             JSONArray array = new JSONArray(body);
             LocalDateTime now = LocalDateTime.now();
             for (int i = 0; i<array.length(); i++) {
+                if(i==limitSearch) break;
                 JSONObject object = array.getJSONObject(i);
                 Classroom classroom = new Classroom();
                 for (String info : object.keySet()) {
@@ -1317,6 +1325,10 @@ public class Openstud {
                     }
 
                 }
+                if (!expandSearch) {
+                    ret.add(classroom);
+                    continue;
+                }
 
                 List<Lesson> classLessons = getClassroomTimetable(classroom.getInternalId(), LocalDate.now());
                 for(Lesson lesson : classLessons) {
@@ -1328,6 +1340,7 @@ public class Openstud {
                 }
                 classroom.setTodayLessons(classLessons);
                 ret.add(classroom);
+                Thread.sleep(waitTimeClassroomRequest);
             }
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
@@ -1337,6 +1350,8 @@ public class Openstud {
             OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
             log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return ret;
     }
@@ -1350,6 +1365,7 @@ public class Openstud {
                 ret = _getClassroomTimetable(id,date);
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isRateLimit()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1367,6 +1383,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
             String body = resp.body().string();
+            if (body.contains("maximum request limit")) throw new OpenstudInvalidResponseException("Request rate limit reached").setRateLimitType();
             log(Level.INFO, body);
             JSONArray array = new JSONArray(body);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
@@ -1397,6 +1414,7 @@ public class Openstud {
                 ret = _getTimetable(exams);
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isRateLimit()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1424,6 +1442,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
             String body = resp.body().string();
+            if (body.contains("maximum request limit")) throw new OpenstudInvalidResponseException("Request rate limit reached").setRateLimitType();
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
