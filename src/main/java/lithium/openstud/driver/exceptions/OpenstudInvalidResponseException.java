@@ -17,4 +17,9 @@ public class OpenstudInvalidResponseException extends OpenstudBaseResponseExcept
         return this;
     }
 
+    public OpenstudInvalidResponseException setRateLimitType() {
+        super.setRateLimitType();
+        return this;
+    }
+
 }
