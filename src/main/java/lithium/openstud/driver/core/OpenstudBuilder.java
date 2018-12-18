@@ -16,6 +16,17 @@ public class OpenstudBuilder {
     private Logger logger;
     private boolean readyState = false;
     private OpenstudHelper.Mode mode = OpenstudHelper.Mode.MOBILE;
+    private int limitSearchResults = 13;
+    private int classroomWaitRequest = 200;
+
+    public void setLimitSearchResults(int limitSearchResults) {
+        this.limitSearchResults = limitSearchResults;
+    }
+
+    public void setClassroomWaitRequest(int millis) {
+        if (millis<0) return;
+        this.classroomWaitRequest = millis;
+    }
 
     public OpenstudBuilder setRetryCounter(int retryCounter) {
         this.retryCounter = retryCounter;
@@ -74,6 +85,6 @@ public class OpenstudBuilder {
     public Openstud build() {
         if (mode == OpenstudHelper.Mode.MOBILE) webEndpoint = "https://www.studenti.uniroma1.it/phxdroidws";
         else if (mode == OpenstudHelper.Mode.WEB) webEndpoint = "https://www.studenti.uniroma1.it/phoenixws";
-        return new Openstud(webEndpoint, timetableEndpoint, studentID, password, logger, retryCounter, connectTimeout, readTimeout, writeTimeout, readyState, mode);
+        return new Openstud(mode, webEndpoint, timetableEndpoint, studentID, password, logger, retryCounter, connectTimeout, readTimeout, writeTimeout, readyState, classroomWaitRequest, limitSearchResults);
     }
 }
