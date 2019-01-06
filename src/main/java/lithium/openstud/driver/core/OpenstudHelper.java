@@ -139,7 +139,7 @@ public class OpenstudHelper {
         return events;
     }
 
-    public static List<ExamDone> sortByDate(List<ExamDone> list, boolean ascending) {
+    public static List<ExamDone> sortExamByDate(List<ExamDone> list, boolean ascending) {
         Collections.sort(list, (o1, o2) -> {
             if (o1.getDate() == null && o2.getDate() == null) return 0;
             if (ascending)
@@ -150,6 +150,22 @@ public class OpenstudHelper {
                 if (o1.getDate() == null) return -1;
                 else if (o2.getDate() == null) return 1;
                 else return o2.getDate().compareTo(o1.getDate());
+            }
+        });
+        return list;
+    }
+
+    public static List<ExamReservation> sortReservationByDate(List<ExamReservation> list, boolean ascending) {
+        Collections.sort(list, (o1, o2) -> {
+            if (o1.getExamDate() == null && o2.getExamDate() == null) return 0;
+            if (ascending)
+                if (o1.getExamDate() == null) return 1;
+                else if (o2.getExamDate() == null) return -1;
+                else return o1.getExamDate().compareTo(o2.getExamDate());
+            else {
+                if (o1.getExamDate() == null) return -1;
+                else if (o2.getExamDate() == null) return 1;
+                else return o2.getExamDate().compareTo(o1.getExamDate());
             }
         });
         return list;
@@ -171,7 +187,7 @@ public class OpenstudHelper {
         return list;
     }
 
-    public static List<ExamDone> sortByGrade(List<ExamDone> list, boolean ascending) {
+    public static List<ExamDone> sortExamByGrade(List<ExamDone> list, boolean ascending) {
         Collections.sort(list, (o1, o2) -> {
             if (ascending)
                 return Integer.compare(o1.getResult(), o2.getResult());
