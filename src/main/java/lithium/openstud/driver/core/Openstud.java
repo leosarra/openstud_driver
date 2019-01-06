@@ -734,7 +734,7 @@ public class Openstud {
                 throw invalidCredentials;
             }
         }
-        return OpenstudHelper.sortByDate(exams, false);
+        return OpenstudHelper.sortExamByDate(exams, false);
     }
 
     private List<ExamDone> _getExamsDone() throws OpenstudConnectionException, OpenstudInvalidResponseException {
@@ -848,7 +848,7 @@ public class Openstud {
             response = response.getJSONObject("ritorno");
             if (!response.has("appelli") || response.isNull("appelli")) throw new OpenstudInvalidResponseException("Infostud response is not valid. Maybe the server is not working");
             JSONArray array = response.getJSONArray("appelli");
-            return OpenstudHelper.extractReservations(array);
+            return OpenstudHelper.sortReservationByDate(OpenstudHelper.extractReservations(array),true);
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             log(Level.SEVERE, connectionException);
@@ -915,7 +915,7 @@ public class Openstud {
     public Pair<Integer, String> insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
         int count = 0;
-        Pair<Integer, String> pr = null;
+        Pair<Integer, String> pr;
         boolean refresh = false;
         while (true) {
             try {
