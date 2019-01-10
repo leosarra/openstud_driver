@@ -8,6 +8,7 @@ public class OpenstudBuilder {
     private int retryCounter = 3;
     private String webEndpoint = "https://www.studenti.uniroma1.it/phxdroidws";
     private String timetableEndpoint = "https://gomp.sapienzaapps.it/";
+    private String newsEndpoint = "https://news-infostud.apps.os.sapienzaapps.it/";
     private int connectTimeout = 10;
     private int writeTimeout = 10;
     private int readTimeout = 30;
@@ -81,10 +82,12 @@ public class OpenstudBuilder {
     public void setTimetableEndpoint(String timetableEndpoint) {
         this.timetableEndpoint = timetableEndpoint;
     }
-
+    public void setNewsEndpoint(String newsEndpoint) {
+        this.newsEndpoint = newsEndpoint;
+    }
     public Openstud build() {
         if (mode == OpenstudHelper.Mode.MOBILE) webEndpoint = "https://www.studenti.uniroma1.it/phxdroidws";
         else if (mode == OpenstudHelper.Mode.WEB) webEndpoint = "https://www.studenti.uniroma1.it/phoenixws";
-        return new Openstud(mode, webEndpoint, timetableEndpoint, studentID, password, logger, retryCounter, connectTimeout, readTimeout, writeTimeout, readyState, classroomWaitRequest, limitSearchResults);
+        return new Openstud(mode, webEndpoint, timetableEndpoint, newsEndpoint, studentID, password, logger, retryCounter, connectTimeout, readTimeout, writeTimeout, readyState, classroomWaitRequest, limitSearchResults);
     }
 }
