@@ -1,5 +1,7 @@
 package lithium.openstud.driver.core;
 
+import org.broadbear.link.preview.SourceContent;
+import org.broadbear.link.preview.TextCrawler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
@@ -23,6 +25,11 @@ public class OpenstudHelper {
     }
 
     private static Logger log;
+
+    static String getDescriptionNews(String url) {
+        SourceContent sc = TextCrawler.scrape(url,0);
+        return sc.getDescription();
+    }
 
     public static double computeWeightedAverage(List<ExamDone> list, int laude) {
         double cfu = 0;
