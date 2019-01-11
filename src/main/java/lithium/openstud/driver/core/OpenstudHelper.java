@@ -1,5 +1,6 @@
 package lithium.openstud.driver.core;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.broadbear.link.preview.SourceContent;
 import org.broadbear.link.preview.TextCrawler;
 import org.json.JSONArray;
@@ -29,6 +30,13 @@ public class OpenstudHelper {
     static String getDescriptionNews(String url) {
         SourceContent sc = TextCrawler.scrape(url,0);
         return sc.getDescription();
+    }
+
+    static boolean isValidUrl(String url){
+        if (url==null) return false;
+        String[] schemes = {"http","https"};
+        UrlValidator urlValidator = new UrlValidator(schemes);
+        return urlValidator.isValid(url);
     }
 
     public static double computeWeightedAverage(List<ExamDone> list, int laude) {
