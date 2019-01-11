@@ -10,6 +10,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -1518,7 +1521,14 @@ public class Openstud {
                             el.setTitle(obj.getString(info));
                     }
                 }
-                if (withDescription && el.getUrl()!= null) el.setDescription(OpenstudHelper.getDescriptionNews(el.getUrl()));
+                if (!OpenstudHelper.isValidUrl(el.getUrl())) continue;
+                if (withDescription && el.getUrl()!= null) {
+                    Document doc = Jsoup.connect(el.getUrl()).get();
+                    Element start = doc.getElementsByAttributeValueEnding("class", "testosommario").first();
+                    if(start!= null) {
+                        el.setDescription(start.getElementsByClass("field-item even").first().text());
+                    }
+                }
                 el.setLocale(locale);
                 ret.add(el);
             }
