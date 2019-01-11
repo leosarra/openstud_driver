@@ -1,5 +1,7 @@
 package lithium.openstud.driver.core;
 
+import java.util.Objects;
+
 public class News {
     private String imageUrl;
     private String title;
@@ -56,5 +58,22 @@ public class News {
                 ", locale='" + locale + '\'' +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        News news = (News) o;
+        return Objects.equals(imageUrl, news.imageUrl) &&
+                Objects.equals(title, news.title) &&
+                Objects.equals(url, news.url) &&
+                Objects.equals(locale, news.locale) &&
+                Objects.equals(description, news.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(imageUrl, title, url, locale, description);
     }
 }
