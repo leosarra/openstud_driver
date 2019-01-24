@@ -98,6 +98,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) return;
             String body = resp.body().string();
+            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
             JSONObject response = new JSONObject(body);
             if (!response.has("output") || response.getString("output").isEmpty()) return;
             setToken(response.getString("output"));
@@ -128,6 +129,7 @@ public class Openstud {
             try {
                 return _getSecurityQuestion();
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -145,6 +147,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
             if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
             if (body.contains("Impossibile recuperare la password per email")) return null;
             log(Level.INFO, body);
@@ -169,6 +172,7 @@ public class Openstud {
             try {
                 return _recoverPassword(answer);
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -239,6 +243,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
             if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
             if (body.contains("Impossibile recuperare la password per email")) return -1;
             log(Level.INFO, body);
@@ -342,6 +347,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (body.contains("Matricola Errata"))
@@ -387,6 +393,7 @@ public class Openstud {
                 isee = _getCurrentIsee();
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -412,6 +419,7 @@ public class Openstud {
                 history = _getIseeHistory();
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -491,6 +499,7 @@ public class Openstud {
                 st = _getInfoStudent();
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -626,6 +635,7 @@ public class Openstud {
                 return OpenstudHelper.generateEvents(reservations, avaiableReservations);
             }catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
+                    if (e.isMaintenance()) throw e;
                     log(Level.SEVERE, e);
                     throw e;
                 }
@@ -652,6 +662,7 @@ public class Openstud {
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
+                    if (e.isMaintenance()) throw e;
                     log(Level.SEVERE, e);
                     throw e;
                 }
@@ -730,6 +741,7 @@ public class Openstud {
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
+                    if (e.isMaintenance()) throw e;
                     log(Level.SEVERE, e);
                     throw e;
                 }
@@ -828,6 +840,7 @@ public class Openstud {
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
+                    if (e.isMaintenance()) throw e;
                     log(Level.SEVERE, e);
                     throw e;
                 }
@@ -879,6 +892,7 @@ public class Openstud {
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
+                    if (e.isMaintenance()) throw e;
                     log(Level.SEVERE, e);
                     throw e;
                 }
@@ -932,6 +946,7 @@ public class Openstud {
                 }
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -993,6 +1008,7 @@ public class Openstud {
                 ret = _deleteReservation(res);
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1045,6 +1061,7 @@ public class Openstud {
                 pdf = _getPdf(reservation);
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1100,6 +1117,7 @@ public class Openstud {
                 taxes = _getPaidTaxes();
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1187,6 +1205,7 @@ public class Openstud {
                 taxes = _getUnpaidTaxes();
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
