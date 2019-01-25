@@ -72,7 +72,7 @@ public class Openstud {
         this.token = token;
     }
 
-    private String getToken() {
+    private synchronized String getToken() {
         return this.token;
     }
 
