@@ -1,5 +1,6 @@
 package lithium.openstud.driver.core;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
@@ -23,6 +24,14 @@ public class OpenstudHelper {
     }
 
     private static Logger log;
+
+
+    static boolean isValidUrl(String url){
+        if (url==null) return false;
+        String[] schemes = {"http","https"};
+        UrlValidator urlValidator = new UrlValidator(schemes);
+        return urlValidator.isValid(url);
+    }
 
     public static double computeWeightedAverage(List<ExamDone> list, int laude) {
         double cfu = 0;

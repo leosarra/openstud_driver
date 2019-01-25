@@ -10,6 +10,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -28,6 +31,7 @@ public class Openstud {
     private int maxTries;
     private String endpointAPI;
     private String endpointTimetable;
+    private String endpointNews;
     private volatile String token;
     private String studentPassword;
     private String studentID;
@@ -42,13 +46,14 @@ public class Openstud {
         super();
     }
 
-    Openstud(OpenstudHelper.Mode mode, String webEndpoint, String endpointTimetable, String studentID, String studentPassword,
+    Openstud(OpenstudHelper.Mode mode, String webEndpoint, String endpointTimetable, String newsEndpoint, String studentID, String studentPassword,
              Logger logger, int retryCounter, int connectionTimeout,
              int readTimeout, int writeTimeout, boolean readyState, int waitTimeClassroomRequest, int limitSearch) {
         this.maxTries = retryCounter;
         this.endpointAPI = webEndpoint;
         this.studentID = studentID;
         this.endpointTimetable = endpointTimetable;
+        this.endpointNews = newsEndpoint;
         this.studentPassword = studentPassword;
         this.logger = logger;
         this.isReady = readyState;
@@ -67,7 +72,7 @@ public class Openstud {
         this.token = token;
     }
 
-    private String getToken() {
+    private synchronized String getToken() {
         return this.token;
     }
 
@@ -93,6 +98,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) return;
             String body = resp.body().string();
+            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
             JSONObject response = new JSONObject(body);
             if (!response.has("output") || response.getString("output").isEmpty()) return;
             setToken(response.getString("output"));
@@ -123,6 +129,7 @@ public class Openstud {
             try {
                 return _getSecurityQuestion();
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -140,6 +147,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
             if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
             if (body.contains("Impossibile recuperare la password per email")) return null;
             log(Level.INFO, body);
@@ -164,6 +172,7 @@ public class Openstud {
             try {
                 return _recoverPassword(answer);
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -234,6 +243,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
             if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
             if (body.contains("Impossibile recuperare la password per email")) return -1;
             log(Level.INFO, body);
@@ -337,6 +347,7 @@ public class Openstud {
             Response resp = client.newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
             log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (body.contains("Matricola Errata"))
@@ -382,6 +393,7 @@ public class Openstud {
                 isee = _getCurrentIsee();
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -407,6 +419,7 @@ public class Openstud {
                 history = _getIseeHistory();
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -486,6 +499,7 @@ public class Openstud {
                 st = _getInfoStudent();
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -621,6 +635,7 @@ public class Openstud {
                 return OpenstudHelper.generateEvents(reservations, avaiableReservations);
             }catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
+                    if (e.isMaintenance()) throw e;
                     log(Level.SEVERE, e);
                     throw e;
                 }
@@ -647,6 +662,7 @@ public class Openstud {
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
+                    if (e.isMaintenance()) throw e;
                     log(Level.SEVERE, e);
                     throw e;
                 }
@@ -725,6 +741,7 @@ public class Openstud {
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
+                    if (e.isMaintenance()) throw e;
                     log(Level.SEVERE, e);
                     throw e;
                 }
@@ -823,6 +840,7 @@ public class Openstud {
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
+                    if (e.isMaintenance()) throw e;
                     log(Level.SEVERE, e);
                     throw e;
                 }
@@ -874,6 +892,7 @@ public class Openstud {
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == maxTries) {
+                    if (e.isMaintenance()) throw e;
                     log(Level.SEVERE, e);
                     throw e;
                 }
@@ -927,6 +946,7 @@ public class Openstud {
                 }
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -988,6 +1008,7 @@ public class Openstud {
                 ret = _deleteReservation(res);
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1040,6 +1061,7 @@ public class Openstud {
                 pdf = _getPdf(reservation);
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1095,6 +1117,7 @@ public class Openstud {
                 taxes = _getPaidTaxes();
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1182,6 +1205,7 @@ public class Openstud {
                 taxes = _getUnpaidTaxes();
                 break;
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1259,13 +1283,13 @@ public class Openstud {
     }
 
 
-    public List<Classroom> getClassRoom(String query, boolean expandSearch) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+    public List<Classroom> getClassRoom(String query, boolean withTimetable) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
         if (!isReady()) return null;
         int count = 0;
         List<Classroom> ret;
         while (true) {
             try {
-                ret = _getClassroom(query, expandSearch);
+                ret = _getClassroom(query, withTimetable);
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (e.isRateLimit()) throw e;
@@ -1278,7 +1302,7 @@ public class Openstud {
         return ret;
     }
 
-    private List<Classroom> _getClassroom(String query, boolean expandSearch) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    private List<Classroom> _getClassroom(String query, boolean withTimetable) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Classroom> ret = new LinkedList<>();
         try {
             Request req = new Request.Builder().url(endpointTimetable +"classroom/search?q="+ query.replace(" ","%20")).build();
@@ -1325,22 +1349,20 @@ public class Openstud {
                     }
 
                 }
-                if (!expandSearch) {
-                    ret.add(classroom);
-                    continue;
-                }
-
-                List<Lesson> classLessons = getClassroomTimetable(classroom.getInternalId(), LocalDate.now());
-                for(Lesson lesson : classLessons) {
-                    if(lesson.getStart().isBefore(now) && lesson.getEnd().isAfter(now)) classroom.setLessonNow(lesson);
-                    else if (lesson.getStart().isAfter(now)) {
-                        classroom.setNextLesson(lesson);
-                        break;
+                if(withTimetable) {
+                    List<Lesson> classLessons = getClassroomTimetable(classroom.getInternalId(), LocalDate.now());
+                    for(Lesson lesson : classLessons) {
+                        if(lesson.getStart().isBefore(now) && lesson.getEnd().isAfter(now)) classroom.setLessonNow(lesson);
+                        else if (lesson.getStart().isAfter(now)) {
+                            classroom.setNextLesson(lesson);
+                            break;
+                        }
                     }
+                    classroom.setTodayLessons(classLessons);
+                    ret.add(classroom);
+                    Thread.sleep(waitTimeClassroomRequest);
                 }
-                classroom.setTodayLessons(classLessons);
                 ret.add(classroom);
-                Thread.sleep(waitTimeClassroomRequest);
             }
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
@@ -1354,6 +1376,11 @@ public class Openstud {
             e.printStackTrace();
         }
         return ret;
+    }
+
+    public List<Lesson> getClassroomTimetable(Classroom room, LocalDate date) throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        if (room == null) return new LinkedList<>();
+        return getClassroomTimetable(room.getInternalId(), date);
     }
 
     public List<Lesson> getClassroomTimetable(int id, LocalDate date) throws OpenstudConnectionException, OpenstudInvalidResponseException {
@@ -1408,7 +1435,6 @@ public class Openstud {
         if (!isReady()) return null;
         int count = 0;
         Map<String, List<Lesson>> ret;
-        boolean refresh = false;
         while (true) {
             try {
                 ret = _getTimetable(exams);
@@ -1468,6 +1494,76 @@ public class Openstud {
             throw invalidResponse;
         }
     }
+
+
+    public List<News> getNews(String locale, boolean withDescription) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+        int count = 0;
+        List<News> ret;
+        while (true) {
+            try {
+                ret = _getNews(locale, withDescription);
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (e.isRateLimit()) throw e;
+                if (++count == maxTries) {
+                    log(Level.SEVERE, e);
+                    throw e;
+                }
+            }
+        }
+        return ret;
+    }
+
+
+    private List<News> _getNews(String locale, boolean withDescription) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        try {
+            Request req = new Request.Builder().url(endpointNews +"/"+locale+"/news.json").build();
+            Response resp = client.newCall(req).execute();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
+            String body = resp.body().string();
+            if (body.contains("maximum request limit")) throw new OpenstudInvalidResponseException("Request rate limit reached").setRateLimitType();
+            log(Level.INFO, body);
+            JSONArray array = new JSONArray(body);
+            List<News> ret = new LinkedList<>();
+            for(int i = 0; i<array.length();i++) {
+                JSONObject obj = array.getJSONObject(i);
+                News el = new News();
+                for (String info : obj.keySet()) {
+                    switch (info){
+                        case "image":
+                            el.setImageUrl(obj.getString(info));
+                            break;
+                        case "url":
+                            el.setUrl(obj.getString(info));
+                            break;
+                        case "title":
+                            el.setTitle(obj.getString(info));
+                    }
+                }
+                if (!OpenstudHelper.isValidUrl(el.getUrl())) continue;
+                if (withDescription && el.getUrl()!= null) {
+                    Document doc = Jsoup.connect(el.getUrl()).get();
+                    Element start = doc.getElementsByAttributeValueEnding("class", "testosommario").first();
+                    if(start!= null) {
+                        el.setDescription(start.getElementsByClass("field-item even").first().text());
+                    }
+                }
+                el.setLocale(locale);
+                ret.add(el);
+            }
+            return ret;
+
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE, connectionException);
+            throw connectionException;
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
+            log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
+
 
     String getPassword() {
         return studentPassword;
