@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -1514,42 +1515,34 @@ public class Openstud {
         return ret;
     }
 
-
     private List<News> _getNews(String locale, boolean withDescription) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        String website_url = "https://www.uniroma1.it";
+        if(locale == null)
+            locale = "en";
         try {
-            Request req = new Request.Builder().url(endpointNews +"/"+locale+"/news.json").build();
-            Response resp = client.newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
-            String body = resp.body().string();
-            if (body.contains("maximum request limit")) throw new OpenstudInvalidResponseException("Request rate limit reached").setRateLimitType();
-            log(Level.INFO, body);
-            JSONArray array = new JSONArray(body);
+            Document doc = Jsoup.connect(String.format("%s/%s/tutte-le-notizie", website_url, locale)).get();
+            Elements boxes = doc.getElementsByClass("box-news");
             List<News> ret = new LinkedList<>();
-            for(int i = 0; i<array.length();i++) {
-                JSONObject obj = array.getJSONObject(i);
-                News el = new News();
-                for (String info : obj.keySet()) {
-                    switch (info){
-                        case "image":
-                            el.setImageUrl(obj.getString(info));
-                            break;
-                        case "url":
-                            el.setUrl(obj.getString(info));
-                            break;
-                        case "title":
-                            el.setTitle(obj.getString(info));
-                    }
-                }
-                if (!OpenstudHelper.isValidUrl(el.getUrl())) continue;
-                if (withDescription && el.getUrl()!= null) {
-                    Document doc = Jsoup.connect(el.getUrl()).get();
+            for(Element box : boxes){
+                News news = new News();
+                news.setTitle(box.getElementsByTag("img").attr("title"));
+                // handle empty news
+                if(news.getTitle().isEmpty())
+                    continue;
+                news.setUrl(website_url + box.getElementsByTag("a").attr("href").trim());
+                news.setImageUrl(box.getElementsByTag("img").attr("src"));
+
+                ret.add(news);
+            }
+            if(withDescription){
+                for (News news : ret){
+                    if (!OpenstudHelper.isValidUrl(news.getUrl()))
+                        continue;
+                    doc = Jsoup.connect(news.getUrl()).get();
                     Element start = doc.getElementsByAttributeValueEnding("class", "testosommario").first();
-                    if(start!= null) {
-                        el.setDescription(start.getElementsByClass("field-item even").first().text());
-                    }
+                    if (start != null)
+                        news.setDescription(start.getElementsByClass("field-item even").first().text());
                 }
-                el.setLocale(locale);
-                ret.add(el);
             }
             return ret;
 
