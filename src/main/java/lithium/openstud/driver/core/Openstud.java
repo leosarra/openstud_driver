@@ -18,13 +18,11 @@ import org.jsoup.select.Elements;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.format.DateTimeFormatterBuilder;
 import org.threeten.bp.format.DateTimeParseException;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1590,9 +1588,9 @@ public class Openstud {
         }
     }
 
-    public List<NewsEvent> getNewsEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+    public List<Event> getNewsEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException  {
         int count = 0;
-        List<NewsEvent> ret;
+        List<Event> ret;
         while (true) {
             try {
                 ret = _getNewsEvents();
@@ -1608,13 +1606,19 @@ public class Openstud {
         return ret;
     }
 
-    private List<NewsEvent> _getNewsEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    private List<Event> _getNewsEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
-            List<NewsEvent> ret = new LinkedList<>();
+            List<Event> ret = new LinkedList<>();
 
             String website_url = "https://www.uniroma1.it/it/newsletter";
             Document doc = Jsoup.connect(website_url).get();
             Elements events = doc.getElementsByClass("event");
+            DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                    .appendOptional(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm"))
+                    .appendOptional(DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm"))
+                    .appendOptional(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))
+                    .appendOptional(DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm"))
+                    .toFormatter(Locale.ENGLISH);
             for(Element event: events){
                 Elements views = event.getElementsByClass("views-field");
                 if(views.size() != 5){
@@ -1622,21 +1626,23 @@ public class Openstud {
                     log(Level.SEVERE, invalidResponse);
                     throw invalidResponse;
                 }
-                NewsEvent newsEvent = new NewsEvent();
-                newsEvent.setDate(views.remove(0).getElementsByTag("a").text());
-                newsEvent.setHour(views.remove(0).getElementsByTag("a").text());
+                Event ev  = new Event(EventType.NEWS);
+                String date = views.remove(0).getElementsByTag("a").text().replace(",","");
+                String time = views.remove(0).getElementsByTag("a").text();
+                System.out.println(date+" "+time);
+                ev.setStart(LocalDateTime.parse(date+" "+time,formatter));
                 Elements description = views.remove(0).getElementsByTag("a");
-                newsEvent.setDescription(description.text());
-                newsEvent.setUrl(description.attr("href"));
-                newsEvent.setWhere(views.remove(0).getElementsByTag("a").text());
-                newsEvent.setRoom(views.remove(0).getElementsByTag("a").text());
-                doc = Jsoup.connect(newsEvent.getUrl()).get();
+                ev.setDescription(description.text());
+                ev.setUrl(description.attr("href"));
+                ev.setWhere(views.remove(0).getElementsByTag("a").text());
+                ev.setRoom(views.remove(0).getElementsByTag("a").text());
+                doc = Jsoup.connect(ev.getUrl()).get();
                 Element image = doc.getElementsByClass("field-type-image").first();
                 if(image!=null){
-                    newsEvent.setImageUrl(image.getElementsByTag("img").first().attr("src"));
+                    ev.setImageUrl(image.getElementsByTag("img").first().attr("src"));
                 }
 
-                ret.add(newsEvent);
+                ret.add(ev);
             }
             return ret;
 
