@@ -1522,6 +1522,7 @@ public class Openstud {
     private List<News> _getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         if(locale == null)
             locale = "en";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
         try {
             List<News> ret = new LinkedList<>();
             int startPage = 0;
@@ -1567,8 +1568,13 @@ public class Openstud {
                         news.setDescription(start.getElementsByClass("field-item even").first().text());
                 }
                 Element date = doc.getElementsByClass("date-display-single").first();
-                if(date!=null)
-                    news.setDate(date.text());
+                if(date!=null) {
+                    try {
+                        news.setDate(LocalDate.parse(date.text().substring(date.text().indexOf(",")+1).trim(),formatter));
+                    } catch (DateTimeParseException e) {
+                        e.printStackTrace();
+                    }
+                }
                 news.setImageUrl(doc.getElementsByClass("img-responsive").attr("src"));
             }
             return ret;

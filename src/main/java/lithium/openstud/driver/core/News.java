@@ -1,5 +1,7 @@
 package lithium.openstud.driver.core;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.Objects;
 
 public class News {
@@ -9,7 +11,7 @@ public class News {
     private String url;
     private String locale;
     private String description;
-    private String date;
+    private LocalDate date;
 
     public String getDescription() {
         return description;
@@ -59,11 +61,11 @@ public class News {
         this.smallImageUrl = smallUrl;
     }
 
-    public String getDate(){
+    public LocalDate getDate(){
         return date;
     }
 
-    public void setDate(String date){
+    public void setDate(LocalDate date){
         this.date = date;
     }
 
