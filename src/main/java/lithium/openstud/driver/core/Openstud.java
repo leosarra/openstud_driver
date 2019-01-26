@@ -10,9 +10,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -1495,13 +1497,12 @@ public class Openstud {
         }
     }
 
-
-    public List<News> getNews(String locale, boolean withDescription) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+    public List<News> getNews(String locale, boolean withDescription, int limit, int page, int maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
         int count = 0;
         List<News> ret;
         while (true) {
             try {
-                ret = _getNews(locale, withDescription);
+                ret = _getNews(locale, withDescription, limit, page, maxPage, query);
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (e.isRateLimit()) throw e;
@@ -1514,42 +1515,57 @@ public class Openstud {
         return ret;
     }
 
-
-    private List<News> _getNews(String locale, boolean withDescription) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    private List<News> _getNews(String locale, boolean withDescription, int limit, int page, int maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        if(locale == null)
+            locale = "en";
         try {
-            Request req = new Request.Builder().url(endpointNews +"/"+locale+"/news.json").build();
-            Response resp = client.newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
-            String body = resp.body().string();
-            if (body.contains("maximum request limit")) throw new OpenstudInvalidResponseException("Request rate limit reached").setRateLimitType();
-            log(Level.INFO, body);
-            JSONArray array = new JSONArray(body);
             List<News> ret = new LinkedList<>();
-            for(int i = 0; i<array.length();i++) {
-                JSONObject obj = array.getJSONObject(i);
-                News el = new News();
-                for (String info : obj.keySet()) {
-                    switch (info){
-                        case "image":
-                            el.setImageUrl(obj.getString(info));
-                            break;
-                        case "url":
-                            el.setUrl(obj.getString(info));
-                            break;
-                        case "title":
-                            el.setTitle(obj.getString(info));
+            int startPage = 0;
+            int endPage = maxPage;
+            if(page != -1){
+                startPage = page;
+                endPage = startPage + 1;
+            }
+            String website_url = "https://www.uniroma1.it";
+            String page_key = "page";
+            String query_key = "search_api_views_fulltext";
+            boolean shouldStop = false;
+            for(int i = startPage; i < endPage && !shouldStop; i++){
+                Connection connection = Jsoup.connect(String.format("%s/%s/tutte-le-notizie", website_url, locale))
+                        .data(page_key, i+"");
+                if(query!= null)
+                    connection = connection.data(query_key, query);
+                Document doc = connection.get();
+                Elements boxes = doc.getElementsByClass("box-news");
+                for(Element box : boxes){
+                    News news = new News();
+                    news.setTitle(box.getElementsByTag("img").attr("title"));
+                    // handle empty news
+                    if(news.getTitle().isEmpty())
+                        continue;
+                    news.setLocale(locale);
+                    news.setUrl(website_url + box.getElementsByTag("a").attr("href").trim());
+                    news.setSmallUrl(box.getElementsByTag("img").attr("src"));
+                    ret.add(news);
+                    if(limit != -1 && ret.size() >= limit){
+                        shouldStop = true;
+                        break;
                     }
                 }
-                if (!OpenstudHelper.isValidUrl(el.getUrl())) continue;
-                if (withDescription && el.getUrl()!= null) {
-                    Document doc = Jsoup.connect(el.getUrl()).get();
+            }
+            for (News news : ret){
+                if (!OpenstudHelper.isValidUrl(news.getUrl()))
+                    continue;
+                Document doc = Jsoup.connect(news.getUrl()).get();
+                if(withDescription){
                     Element start = doc.getElementsByAttributeValueEnding("class", "testosommario").first();
-                    if(start!= null) {
-                        el.setDescription(start.getElementsByClass("field-item even").first().text());
-                    }
+                    if (start != null)
+                        news.setDescription(start.getElementsByClass("field-item even").first().text());
                 }
-                el.setLocale(locale);
-                ret.add(el);
+                Element date = doc.getElementsByClass("date-display-single").first();
+                if(date!=null)
+                    news.setDate(date.text());
+                news.setImageUrl(doc.getElementsByClass("img-responsive").attr("src"));
             }
             return ret;
 
