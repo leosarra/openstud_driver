@@ -22,4 +22,9 @@ public class OpenstudInvalidResponseException extends OpenstudBaseResponseExcept
         return this;
     }
 
+    public OpenstudInvalidResponseException setHTMLType() {
+        super.setHTMLType();
+        return this;
+    }
+
 }

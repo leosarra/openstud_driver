@@ -1509,7 +1509,7 @@ public class Openstud {
                 ret = _getNews(locale, withDescription, limit, page, maxPage, query);
                 break;
             } catch (OpenstudInvalidResponseException e) {
-                if (e.isRateLimit()) throw e;
+                //if (e.isHTMLError()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1590,6 +1590,66 @@ public class Openstud {
         }
     }
 
+    public List<NewsEvent> getNewsEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+        int count = 0;
+        List<NewsEvent> ret;
+        while (true) {
+            try {
+                ret = _getNewsEvents();
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (e.isHTMLError()) throw e;
+                if (++count == maxTries) {
+                    log(Level.SEVERE, e);
+                    throw e;
+                }
+            }
+        }
+        return ret;
+    }
+
+    private List<NewsEvent> _getNewsEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        try {
+            List<NewsEvent> ret = new LinkedList<>();
+
+            String website_url = "https://www.uniroma1.it/it/newsletter";
+            Document doc = Jsoup.connect(website_url).get();
+            Elements events = doc.getElementsByClass("event");
+            for(Element event: events){
+                Elements views = event.getElementsByClass("views-field");
+                if(views.size() != 5){
+                    OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException("invalid HTML").setHTMLType();
+                    log(Level.SEVERE, invalidResponse);
+                    throw invalidResponse;
+                }
+                NewsEvent newsEvent = new NewsEvent();
+                newsEvent.setDate(views.remove(0).getElementsByTag("a").text());
+                newsEvent.setHour(views.remove(0).getElementsByTag("a").text());
+                Elements description = views.remove(0).getElementsByTag("a");
+                newsEvent.setDescription(description.text());
+                newsEvent.setUrl(description.attr("href"));
+                newsEvent.setWhere(views.remove(0).getElementsByTag("a").text());
+                newsEvent.setRoom(views.remove(0).getElementsByTag("a").text());
+                doc = Jsoup.connect(newsEvent.getUrl()).get();
+                Element image = doc.getElementsByClass("field-type-image").first();
+                if(image!=null){
+                    newsEvent.setImageUrl(image.getElementsByTag("img").first().attr("src"));
+                }
+
+                ret.add(newsEvent);
+            }
+            return ret;
+
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE, connectionException);
+            throw connectionException;
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
+            log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
 
     String getPassword() {
         return studentPassword;
@@ -1598,6 +1658,5 @@ public class Openstud {
     String getStudentID(){
         return studentID;
     }
-
 
 }
