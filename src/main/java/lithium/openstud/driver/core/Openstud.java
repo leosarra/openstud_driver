@@ -1496,28 +1496,14 @@ public class Openstud {
     }
 
     public List<News> getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
-        int count = 0;
         if (limit == null && page == null && maxPage == null) throw new IllegalStateException("limit, page and maxpage can't be all null");
         if (limit==null) limit=-1;
         if (page==null) page=-1;
         if (maxPage==null) maxPage=-1;
-        List<News> ret;
-        while (true) {
-            try {
-                ret = _getNews(locale, withDescription, limit, page, maxPage, query);
-                break;
-            } catch (OpenstudInvalidResponseException e) {
-                //if (e.isHTMLError()) throw e;
-                if (++count == maxTries) {
-                    log(Level.SEVERE, e);
-                    throw e;
-                }
-            }
-        }
-        return ret;
+        return  _getNews(locale, withDescription, limit, page, maxPage, query);
     }
 
-    private List<News> _getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    private List<News> _getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage, String query) throws OpenstudConnectionException {
         if(locale == null)
             locale = "en";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
@@ -1581,29 +1567,11 @@ public class Openstud {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             log(Level.SEVERE, connectionException);
             throw connectionException;
-        } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
-            log(Level.SEVERE, invalidResponse);
-            throw invalidResponse;
         }
     }
 
     public List<Event> getNewsEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException  {
-        int count = 0;
-        List<Event> ret;
-        while (true) {
-            try {
-                ret = _getNewsEvents();
-                break;
-            } catch (OpenstudInvalidResponseException e) {
-                if (e.isHTMLError()) throw e;
-                if (++count == maxTries) {
-                    log(Level.SEVERE, e);
-                    throw e;
-                }
-            }
-        }
-        return ret;
+        return _getNewsEvents();
     }
 
     private List<Event> _getNewsEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException {
@@ -1619,17 +1587,13 @@ public class Openstud {
                     .appendOptional(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))
                     .appendOptional(DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm"))
                     .toFormatter(Locale.ENGLISH);
+            int failed = 0;
             for(Element event: events){
                 Elements views = event.getElementsByClass("views-field");
-                if(views.size() != 5){
-                    OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException("invalid HTML").setHTMLType();
-                    log(Level.SEVERE, invalidResponse);
-                    throw invalidResponse;
-                }
+                if(views.size() != 5) failed++;
                 Event ev  = new Event(EventType.NEWS);
                 String date = views.remove(0).getElementsByTag("a").text().replace(",","");
                 String time = views.remove(0).getElementsByTag("a").text();
-                System.out.println(date+" "+time);
                 ev.setStart(LocalDateTime.parse(date+" "+time,formatter));
                 Elements description = views.remove(0).getElementsByTag("a");
                 ev.setDescription(description.text());
@@ -1641,8 +1605,12 @@ public class Openstud {
                 if(image!=null){
                     ev.setImageUrl(image.getElementsByTag("img").first().attr("src"));
                 }
-
                 ret.add(ev);
+            }
+            if (failed == events.size()) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException("invalid HTML").setHTMLType();
+                log(Level.SEVERE, invalidResponse);
+                throw invalidResponse;
             }
             return ret;
 
@@ -1650,10 +1618,6 @@ public class Openstud {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             log(Level.SEVERE, connectionException);
             throw connectionException;
-        } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
-            log(Level.SEVERE, invalidResponse);
-            throw invalidResponse;
         }
     }
 
