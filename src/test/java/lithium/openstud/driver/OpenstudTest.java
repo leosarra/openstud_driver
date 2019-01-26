@@ -171,9 +171,7 @@ public class OpenstudTest
     @Test
     public void testGetNews() throws OpenstudInvalidResponseException, OpenstudConnectionException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        List<News> list=osb.getNews("it", true, -1, 0,-1);
-        for(News news : list)
-            System.out.println(news);
+        List<News> list=osb.getNews("it", true, -1, 0,-1, null);
         assertNotNull(list);
         assertFalse(list.isEmpty());
     }

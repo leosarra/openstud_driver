@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -1496,12 +1497,12 @@ public class Openstud {
         }
     }
 
-    public List<News> getNews(String locale, boolean withDescription, int limit, int page, int maxPage) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+    public List<News> getNews(String locale, boolean withDescription, int limit, int page, int maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
         int count = 0;
         List<News> ret;
         while (true) {
             try {
-                ret = _getNews(locale, withDescription, limit, page, maxPage);
+                ret = _getNews(locale, withDescription, limit, page, maxPage, query);
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (e.isRateLimit()) throw e;
@@ -1514,8 +1515,7 @@ public class Openstud {
         return ret;
     }
 
-    private List<News> _getNews(String locale, boolean withDescription, int limit, int page, int maxPage) throws OpenstudInvalidResponseException, OpenstudConnectionException {
-        String website_url = "https://www.uniroma1.it";
+    private List<News> _getNews(String locale, boolean withDescription, int limit, int page, int maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         if(locale == null)
             locale = "en";
         try {
@@ -1526,11 +1526,16 @@ public class Openstud {
                 startPage = page;
                 endPage = startPage + 1;
             }
+            String website_url = "https://www.uniroma1.it";
+            String page_key = "page";
+            String query_key = "search_api_views_fulltext";
             boolean shouldStop = false;
             for(int i = startPage; i < endPage && !shouldStop; i++){
-                Document doc = Jsoup.connect(String.format("%s/%s/tutte-le-notizie", website_url, locale))
-                        .data("page", i+"")
-                        .get();
+                Connection connection = Jsoup.connect(String.format("%s/%s/tutte-le-notizie", website_url, locale))
+                        .data(page_key, i+"");
+                if(query!= null)
+                    connection = connection.data(query_key, query);
+                Document doc = connection.get();
                 Elements boxes = doc.getElementsByClass("box-news");
                 for(Element box : boxes){
                     News news = new News();
