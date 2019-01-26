@@ -8,8 +8,8 @@ import java.util.Objects;
 
 public class Event {
     private String description;
-    private String teacher; //May come in handy in the future
-    private String where; //for the future
+    private String teacher;
+    private String where;
     private LocalDateTime start;
     private LocalDateTime end;
     private LocalDate startReservations;
@@ -17,7 +17,9 @@ public class Event {
     private LocalDate examDate;
     private EventType eventType;
     private ExamReservation res;
-
+    private String url;
+    private String imageUrl;
+    private String room;
 
     public Event(String description, LocalDateTime start, LocalDateTime end, EventType eventType){
         this.description = description;
@@ -25,6 +27,11 @@ public class Event {
         this.end = end;
         this.eventType = eventType;
     }
+
+    public Event(EventType eventType){
+        this.eventType = eventType;
+    }
+
 
     public String getDescription() {
         return description;
@@ -106,6 +113,30 @@ public class Event {
         this.res = res;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getRoom() {
+        return room;
+    }
+
+    void setRoom(String room) {
+        this.room = room;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -118,6 +149,9 @@ public class Event {
                 ", endReservations=" + endReservations +
                 ", examDate=" + examDate +
                 ", eventType=" + eventType +
+                ", imageUrl=" + imageUrl +
+                ", url=" + url +
+                ", room=" + room +
                 '}';
     }
 
@@ -134,11 +168,14 @@ public class Event {
                 Objects.equals(startReservations, event.startReservations) &&
                 Objects.equals(endReservations, event.endReservations) &&
                 Objects.equals(examDate, event.examDate) &&
+                Objects.equals(imageUrl, event.imageUrl) &&
+                Objects.equals(url, event.url) &&
+                Objects.equals(room, event.room) &&
                 eventType == event.eventType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(description, teacher, where, start, end, startReservations, endReservations, examDate, eventType);
+        return Objects.hash(description, teacher, where, start, end, startReservations, endReservations, examDate, eventType, imageUrl, url, room);
     }
 }
