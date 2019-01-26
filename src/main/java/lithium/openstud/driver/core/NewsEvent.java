@@ -4,18 +4,20 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class NewsEvent{
-    private LocalDate date;
+    // to local date
+    private String date;
+    private String hour;
     private String description;
     private String where;
     private String room;
     private String url;
 
-    public LocalDate getDate()
+    public String getDate()
     {
         return date;
     }
 
-    public void setDate(LocalDate date)
+    public void setDate(String date)
     {
         this.date = date;
     }
@@ -79,5 +81,22 @@ public class NewsEvent{
     public int hashCode()
     {
         return Objects.hash(date, description, where, room, url);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "NewsEvent{" + "date=" + date + ", description='" + description + '\'' + ", where='" + where + '\'' +
+                ", room='" + room + '\'' + ", url='" + url + '\'' + '}';
+    }
+
+    public String getHour()
+    {
+        return hour;
+    }
+
+    public void setHour(String hour)
+    {
+        this.hour = hour;
     }
 }
