@@ -4,10 +4,12 @@ import java.util.Objects;
 
 public class News {
     private String imageUrl;
+    private String smallUrl;
     private String title;
     private String url;
     private String locale;
     private String description;
+    private String date;
 
     public String getDescription() {
         return description;
@@ -49,14 +51,32 @@ public class News {
         this.url = url;
     }
 
+    public String getSmallUrl(){
+        return smallUrl;
+    }
+
+    public void setSmallUrl(String smallUrl){
+        this.smallUrl = smallUrl;
+    }
+
+    public String getDate(){
+        return date;
+    }
+
+    public void setDate(String date){
+        this.date = date;
+    }
+
     @Override
-    public String toString() {
+    public String toString(){
         return "News{" +
                 "imageUrl='" + imageUrl + '\'' +
                 ", title='" + title + '\'' +
                 ", url='" + url + '\'' +
                 ", locale='" + locale + '\'' +
                 ", description='" + description + '\'' +
+                ", smallUrl='" + smallUrl + '\'' +
+                ", date='" + date + '\'' +
                 '}';
     }
 
@@ -66,14 +86,16 @@ public class News {
         if (o == null || getClass() != o.getClass()) return false;
         News news = (News) o;
         return Objects.equals(imageUrl, news.imageUrl) &&
+                Objects.equals(smallUrl, news.smallUrl) &&
                 Objects.equals(title, news.title) &&
                 Objects.equals(url, news.url) &&
                 Objects.equals(locale, news.locale) &&
-                Objects.equals(description, news.description);
+                Objects.equals(description, news.description) &&
+                Objects.equals(date, news.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(imageUrl, title, url, locale, description);
+        return Objects.hash(imageUrl, smallUrl, title, url, locale, description, date);
     }
 }

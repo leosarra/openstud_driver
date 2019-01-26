@@ -1529,20 +1529,104 @@ public class Openstud {
                 // handle empty news
                 if(news.getTitle().isEmpty())
                     continue;
+                news.setLocale(locale);
                 news.setUrl(website_url + box.getElementsByTag("a").attr("href").trim());
-                news.setImageUrl(box.getElementsByTag("img").attr("src"));
+                news.setSmallUrl(box.getElementsByTag("img").attr("src"));
 
                 ret.add(news);
             }
-            if(withDescription){
-                for (News news : ret){
-                    if (!OpenstudHelper.isValidUrl(news.getUrl()))
-                        continue;
-                    doc = Jsoup.connect(news.getUrl()).get();
+            for (News news : ret){
+                if (!OpenstudHelper.isValidUrl(news.getUrl()))
+                    continue;
+                doc = Jsoup.connect(news.getUrl()).get();
+                if(withDescription){
                     Element start = doc.getElementsByAttributeValueEnding("class", "testosommario").first();
                     if (start != null)
                         news.setDescription(start.getElementsByClass("field-item even").first().text());
                 }
+                Element date = doc.getElementsByClass("date-display-single").first();
+                if(date!=null)
+                    news.setDate(date.text());
+                news.setImageUrl(doc.getElementsByClass("img-responsive").attr("src"));
+            }
+            return ret;
+
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            log(Level.SEVERE, connectionException);
+            throw connectionException;
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
+            log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
+
+    public List<News> getNews(String locale, boolean withDescription, int limit, int page, int maxPage) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+        int count = 0;
+        List<News> ret;
+        while (true) {
+            try {
+                ret = _getNews(locale, withDescription, limit, page, maxPage);
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (e.isRateLimit()) throw e;
+                if (++count == maxTries) {
+                    log(Level.SEVERE, e);
+                    throw e;
+                }
+            }
+        }
+        return ret;
+    }
+
+    private List<News> _getNews(String locale, boolean withDescription, int limit, int page, int maxPage) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        String website_url = "https://www.uniroma1.it";
+        if(locale == null)
+            locale = "en";
+        try {
+            List<News> ret = new LinkedList<>();
+            int startPage = 0;
+            int endPage = maxPage;
+            if(page != -1){
+                startPage = page;
+                endPage = startPage + 1;
+            }
+            boolean shouldStop = false;
+            for(int i = startPage; i < endPage && !shouldStop; i++){
+                Document doc = Jsoup.connect(String.format("%s/%s/tutte-le-notizie", website_url, locale))
+                        .data("page", i+"")
+                        .get();
+                Elements boxes = doc.getElementsByClass("box-news");
+                for(Element box : boxes){
+                    News news = new News();
+                    news.setTitle(box.getElementsByTag("img").attr("title"));
+                    // handle empty news
+                    if(news.getTitle().isEmpty())
+                        continue;
+                    news.setLocale(locale);
+                    news.setUrl(website_url + box.getElementsByTag("a").attr("href").trim());
+                    news.setSmallUrl(box.getElementsByTag("img").attr("src"));
+                    ret.add(news);
+                    if(limit != -1 && ret.size() >= limit){
+                        shouldStop = true;
+                        break;
+                    }
+                }
+            }
+            for (News news : ret){
+                if (!OpenstudHelper.isValidUrl(news.getUrl()))
+                    continue;
+                Document doc = Jsoup.connect(news.getUrl()).get();
+                if(withDescription){
+                    Element start = doc.getElementsByAttributeValueEnding("class", "testosommario").first();
+                    if (start != null)
+                        news.setDescription(start.getElementsByClass("field-item even").first().text());
+                }
+                Element date = doc.getElementsByClass("date-display-single").first();
+                if(date!=null)
+                    news.setDate(date.text());
+                news.setImageUrl(doc.getElementsByClass("img-responsive").attr("src"));
             }
             return ret;
 
