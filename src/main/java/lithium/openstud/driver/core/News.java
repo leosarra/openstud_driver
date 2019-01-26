@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class News {
     private String imageUrl;
-    private String smallUrl;
+    private String smallImageUrl;
     private String title;
     private String url;
     private String locale;
@@ -51,12 +51,12 @@ public class News {
         this.url = url;
     }
 
-    public String getSmallUrl(){
-        return smallUrl;
+    public String getSmallImageUrl(){
+        return smallImageUrl;
     }
 
-    public void setSmallUrl(String smallUrl){
-        this.smallUrl = smallUrl;
+    void setSmallImageUrl(String smallUrl){
+        this.smallImageUrl = smallUrl;
     }
 
     public String getDate(){
@@ -75,7 +75,7 @@ public class News {
                 ", url='" + url + '\'' +
                 ", locale='" + locale + '\'' +
                 ", description='" + description + '\'' +
-                ", smallUrl='" + smallUrl + '\'' +
+                ", smallImageUrl='" + smallImageUrl + '\'' +
                 ", date='" + date + '\'' +
                 '}';
     }
@@ -86,7 +86,7 @@ public class News {
         if (o == null || getClass() != o.getClass()) return false;
         News news = (News) o;
         return Objects.equals(imageUrl, news.imageUrl) &&
-                Objects.equals(smallUrl, news.smallUrl) &&
+                Objects.equals(smallImageUrl, news.smallImageUrl) &&
                 Objects.equals(title, news.title) &&
                 Objects.equals(url, news.url) &&
                 Objects.equals(locale, news.locale) &&
@@ -96,6 +96,6 @@ public class News {
 
     @Override
     public int hashCode() {
-        return Objects.hash(imageUrl, smallUrl, title, url, locale, description, date);
+        return Objects.hash(imageUrl, smallImageUrl, title, url, locale, description, date);
     }
 }
