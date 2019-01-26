@@ -1503,7 +1503,7 @@ public class Openstud {
         return  _getNews(locale, withDescription, limit, page, maxPage, query);
     }
 
-    private List<News> _getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage, String query) throws OpenstudConnectionException {
+    private List<News> _getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage, String query) throws OpenstudConnectionException, OpenstudInvalidResponseException {
         if(locale == null)
             locale = "en";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
@@ -1519,6 +1519,8 @@ public class Openstud {
             String page_key = "page";
             String query_key = "search_api_views_fulltext";
             boolean shouldStop = false;
+            int iterations = 0;
+            int miss = 0;
             for(int i = startPage; i < endPage && !shouldStop; i++){
                 Connection connection = Jsoup.connect(String.format("%s/%s/tutte-le-notizie", website_url, locale))
                         .data(page_key, i+"");
@@ -1541,10 +1543,17 @@ public class Openstud {
                         break;
                     }
                 }
+                if (boxes.isEmpty()) miss++;
+                iterations++;
             }
+            if (iterations == miss) {
+                OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException("invalid HTML").setHTMLType();
+                log(Level.SEVERE, invalidResponse);
+                throw invalidResponse;
+            }
+            LinkedList<News> ignored = new LinkedList<>();
             for (News news : ret){
-                if (!OpenstudHelper.isValidUrl(news.getUrl()))
-                    continue;
+                if (!OpenstudHelper.isValidUrl(news.getUrl())) ignored.add(news);
                 Document doc = Jsoup.connect(news.getUrl()).get();
                 if(withDescription){
                     Element start = doc.getElementsByAttributeValueEnding("class", "testosommario").first();
@@ -1561,6 +1570,7 @@ public class Openstud {
                 }
                 news.setImageUrl(doc.getElementsByClass("img-responsive").attr("src"));
             }
+            ret.removeAll(ignored);
             return ret;
 
         } catch (IOException e) {
