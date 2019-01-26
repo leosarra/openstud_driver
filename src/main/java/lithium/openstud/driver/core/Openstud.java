@@ -1497,8 +1497,12 @@ public class Openstud {
         }
     }
 
-    public List<News> getNews(String locale, boolean withDescription, int limit, int page, int maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+    public List<News> getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
         int count = 0;
+        if (limit == null && page == null && maxPage == null) throw new IllegalStateException("limit, page and maxpage can't be all null");
+        if (limit==null) limit=-1;
+        if (page==null) page=-1;
+        if (maxPage==null) maxPage=-1;
         List<News> ret;
         while (true) {
             try {
@@ -1515,7 +1519,7 @@ public class Openstud {
         return ret;
     }
 
-    private List<News> _getNews(String locale, boolean withDescription, int limit, int page, int maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    private List<News> _getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         if(locale == null)
             locale = "en";
         try {
@@ -1545,7 +1549,7 @@ public class Openstud {
                         continue;
                     news.setLocale(locale);
                     news.setUrl(website_url + box.getElementsByTag("a").attr("href").trim());
-                    news.setSmallUrl(box.getElementsByTag("img").attr("src"));
+                    news.setSmallImageUrl(box.getElementsByTag("img").attr("src"));
                     ret.add(news);
                     if(limit != -1 && ret.size() >= limit){
                         shouldStop = true;
