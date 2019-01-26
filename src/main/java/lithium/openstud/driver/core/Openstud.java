@@ -1611,6 +1611,11 @@ public class Openstud {
             Elements events = doc.getElementsByClass("event");
             for(Element event: events){
                 Elements views = event.getElementsByClass("views-field");
+                if(views.size() != 5){
+                    OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException("invalid HTML");
+                    log(Level.SEVERE, invalidResponse);
+                    throw invalidResponse;
+                }
                 NewsEvent newsEvent = new NewsEvent();
                 newsEvent.setDate(views.remove(0).getElementsByTag("a").text());
                 newsEvent.setHour(views.remove(0).getElementsByTag("a").text());
@@ -1619,6 +1624,11 @@ public class Openstud {
                 newsEvent.setUrl(description.attr("href"));
                 newsEvent.setWhere(views.remove(0).getElementsByTag("a").text());
                 newsEvent.setRoom(views.remove(0).getElementsByTag("a").text());
+                doc = Jsoup.connect(newsEvent.getUrl()).get();
+                Element image = doc.getElementsByClass("field-type-image").first();
+                if(image!=null){
+                    newsEvent.setImageUrl(image.getElementsByTag("img").first().attr("src"));
+                }
 
                 ret.add(newsEvent);
             }

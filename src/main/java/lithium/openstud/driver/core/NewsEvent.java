@@ -11,6 +11,8 @@ public class NewsEvent{
     private String where;
     private String room;
     private String url;
+    private String imageUrl;
+
 
     public String getDate()
     {
@@ -74,20 +76,21 @@ public class NewsEvent{
                 Objects.equals(description, newsEvent.description) &&
                 Objects.equals(where, newsEvent.where) &&
                 Objects.equals(room, newsEvent.room) &&
-                Objects.equals(url, newsEvent.url);
+                Objects.equals(url, newsEvent.url) &&
+                Objects.equals(imageUrl, newsEvent.imageUrl);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(date, description, where, room, url);
+        return Objects.hash(date, description, where, room, url, imageUrl);
     }
 
     @Override
     public String toString()
     {
         return "NewsEvent{" + "date=" + date + ", description='" + description + '\'' + ", where='" + where + '\'' +
-                ", room='" + room + '\'' + ", url='" + url + '\'' + '}';
+                ", room='" + room + '\'' + ", url='" + url + '\'' + imageUrl + '\'' + '}';
     }
 
     public String getHour()
@@ -98,5 +101,15 @@ public class NewsEvent{
     public void setHour(String hour)
     {
         this.hour = hour;
+    }
+
+    public String getImageUrl()
+    {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl)
+    {
+        this.imageUrl = imageUrl;
     }
 }
