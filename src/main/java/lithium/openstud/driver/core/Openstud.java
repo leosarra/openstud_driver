@@ -1509,7 +1509,7 @@ public class Openstud {
                 ret = _getNews(locale, withDescription, limit, page, maxPage, query);
                 break;
             } catch (OpenstudInvalidResponseException e) {
-                if (e.isRateLimit()) throw e;
+                //if (e.isHTMLError()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1592,7 +1592,7 @@ public class Openstud {
                 ret = _getNewsEvents();
                 break;
             } catch (OpenstudInvalidResponseException e) {
-                if (e.isRateLimit()) throw e;
+                if (e.isHTMLError()) throw e;
                 if (++count == maxTries) {
                     log(Level.SEVERE, e);
                     throw e;
@@ -1612,7 +1612,7 @@ public class Openstud {
             for(Element event: events){
                 Elements views = event.getElementsByClass("views-field");
                 if(views.size() != 5){
-                    OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException("invalid HTML");
+                    OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException("invalid HTML").setHTMLType();
                     log(Level.SEVERE, invalidResponse);
                     throw invalidResponse;
                 }
