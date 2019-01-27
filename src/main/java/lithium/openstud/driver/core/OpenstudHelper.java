@@ -23,8 +23,6 @@ public class OpenstudHelper {
         MOBILE, WEB
     }
 
-    private static Logger log;
-
 
     static boolean isValidUrl(String url){
         if (url==null) return false;
@@ -426,7 +424,4 @@ public class OpenstudHelper {
         return list;
     }
 
-    protected static void setLogger(Logger log) {
-        OpenstudHelper.log = log;
-    }
 }
