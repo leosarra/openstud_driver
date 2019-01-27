@@ -1506,7 +1506,11 @@ public class Openstud {
     private List<News> _getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage, String query) throws OpenstudConnectionException, OpenstudInvalidResponseException {
         if(locale == null)
             locale = "en";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy").withLocale(Locale.ITALIAN);
+        Locale localeFormatter;
+        if (locale.toLowerCase().equals("it")) localeFormatter = Locale.ITALIAN;
+        else localeFormatter = Locale.ENGLISH;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy").withLocale(localeFormatter);
         try {
             List<News> ret = new LinkedList<>();
             int startPage = 0;
