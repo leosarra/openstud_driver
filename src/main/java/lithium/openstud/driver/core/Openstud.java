@@ -1605,13 +1605,13 @@ public class Openstud {
             for(Element event: events){
                 Elements views = event.getElementsByClass("views-field");
                 if(views.size() != 5) failed++;
-                Event ev  = new Event(EventType.NEWS);
+                Event ev  = new Event(EventType.THEATRE);
                 String date = views.remove(0).getElementsByTag("a").text().replace(",","");
                 String time = views.remove(0).getElementsByTag("a").text();
                 ev.setStart(LocalDateTime.parse(date+" "+time,formatter));
-                Elements description = views.remove(0).getElementsByTag("a");
-                ev.setDescription(description.text());
-                ev.setUrl(description.attr("href"));
+                Elements title = views.remove(0).getElementsByTag("a");
+                ev.setTitle(title.text());
+                ev.setUrl(title.attr("href"));
                 ev.setWhere(views.remove(0).getElementsByTag("a").text());
                 ev.setRoom(views.remove(0).getElementsByTag("a").text());
                 doc = Jsoup.connect(ev.getUrl()).get();
@@ -1619,6 +1619,8 @@ public class Openstud {
                 if(image!=null){
                     ev.setImageUrl(image.getElementsByTag("img").first().attr("src"));
                 }
+                Element description = doc.getElementsByClass("article-body").first();
+                if (description != null) ev.setDescription(description.text());
                 ret.add(ev);
             }
             if (failed == events.size()) {

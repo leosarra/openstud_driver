@@ -7,6 +7,7 @@ import org.threeten.bp.LocalDateTime;
 import java.util.Objects;
 
 public class Event {
+    private String title;
     private String description;
     private String teacher;
     private String where;
@@ -32,6 +33,14 @@ public class Event {
         this.eventType = eventType;
     }
 
+
+    public String getTitle() {
+        return title;
+    }
+
+    void setTitle(String title) {
+        this.title = title;
+    }
 
     public String getDescription() {
         return description;
@@ -140,6 +149,7 @@ public class Event {
     @Override
     public String toString() {
         return "Event{" +
+                "title='" + title + '\'' +
                 "description='" + description + '\'' +
                 ", teacher='" + teacher + '\'' +
                 ", where='" + where + '\'' +
@@ -171,11 +181,12 @@ public class Event {
                 Objects.equals(imageUrl, event.imageUrl) &&
                 Objects.equals(url, event.url) &&
                 Objects.equals(room, event.room) &&
+                Objects.equals(title, event.title) &&
                 eventType == event.eventType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(description, teacher, where, start, end, startReservations, endReservations, examDate, eventType, imageUrl, url, room);
+        return Objects.hash(description, teacher, where, start, end, startReservations, endReservations, examDate, eventType, imageUrl, url, room, title);
     }
 }
