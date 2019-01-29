@@ -1584,11 +1584,11 @@ public class Openstud {
         }
     }
 
-    public List<Event> getNewsEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException  {
-        return _getNewsEvents();
+    public List<Event> getNewsletterEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+        return _getNewsletterEvents();
     }
 
-    private List<Event> _getNewsEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    private List<Event> _getNewsletterEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
             List<Event> ret = new LinkedList<>();
 
@@ -1604,11 +1604,19 @@ public class Openstud {
             int failed = 0;
             for(Element event: events){
                 Elements views = event.getElementsByClass("views-field");
-                if(views.size() != 5) failed++;
-                Event ev  = new Event(EventType.THEATRE);
+                if(views.size() != 5) {
+                    failed++;
+                    continue;
+                }
+                Event ev  = new Event(EventType.NEWSLETTER);
                 String date = views.remove(0).getElementsByTag("a").text().replace(",","");
                 String time = views.remove(0).getElementsByTag("a").text();
-                ev.setStart(LocalDateTime.parse(date+" "+time,formatter));
+                try {
+                    ev.setStart(LocalDateTime.parse(date+" "+time,formatter));
+                } catch (DateTimeParseException e) {
+                    failed++;
+                    continue;
+                }
                 Elements title = views.remove(0).getElementsByTag("a");
                 ev.setTitle(title.text());
                 ev.setUrl(title.attr("href"));

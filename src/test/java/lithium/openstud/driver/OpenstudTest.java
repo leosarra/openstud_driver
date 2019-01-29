@@ -169,17 +169,26 @@ public class OpenstudTest
     }
 
     @Test
-    public void testGetNews() throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    public void testGetNewsEnglish() throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
+        List<News> list=osb.getNews("en", true, null, 0, null, null);
+        assertNotNull(list);
+        assertFalse(list.isEmpty());
+    }
+
+    @Test
+    public void testGetNewsItalian() throws OpenstudInvalidResponseException, OpenstudConnectionException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
         List<News> list=osb.getNews("it", true, null, 0, null, null);
         assertNotNull(list);
         assertFalse(list.isEmpty());
     }
 
+
     @Test
-    public void testGetNewsEvents() throws OpenstudInvalidResponseException, OpenstudConnectionException {
+    public void testGetNewsEventsEnglish() throws OpenstudInvalidResponseException, OpenstudConnectionException {
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        List<Event> list=osb.getNewsEvents();
+        List<Event> list=osb.getNewsletterEvents();
         assertNotNull(list);
         assertFalse(list.isEmpty());
     }
