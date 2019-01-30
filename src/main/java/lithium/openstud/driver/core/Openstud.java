@@ -4,7 +4,6 @@ package lithium.openstud.driver.core;
 import lithium.openstud.driver.exceptions.*;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
@@ -27,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Openstud implements Authenticator {
+public class Openstud implements Authenticator, Personal {
     private int maxTries;
     private String endpointAPI;
     private String endpointTimetable;
@@ -43,6 +42,7 @@ public class Openstud implements Authenticator {
     private int limitSearch;
 
     private OpenAuthenticator authenticator;
+    private OpenPersonal personal;
 
     public Openstud() {
         super();
@@ -69,6 +69,7 @@ public class Openstud implements Authenticator {
                 .readTimeout(readTimeout, TimeUnit.SECONDS).retryOnConnectionFailure(true)
                 .build();
         authenticator = new OpenAuthenticator(this);
+        personal = new OpenPersonal(this);
     }
 
     int getMaxTries(){
@@ -79,7 +80,7 @@ public class Openstud implements Authenticator {
         this.token = token;
     }
 
-    private synchronized String getToken() {
+    synchronized String getToken() {
         return this.token;
     }
 
@@ -95,7 +96,7 @@ public class Openstud implements Authenticator {
         return isReady;
     }
 
-    private synchronized void refreshToken() throws OpenstudRefreshException, OpenstudInvalidResponseException {
+    synchronized void refreshToken() throws OpenstudRefreshException, OpenstudInvalidResponseException {
         try {
             if (!StringUtils.isNumeric(studentID)) throw new OpenstudRefreshException("Student ID is not valid");
             RequestBody formBody = new FormBody.Builder()
@@ -265,136 +266,10 @@ public class Openstud implements Authenticator {
     }
 
 
+    @Override
     public Student getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
-        if (!isReady()) return null;
-        int count = 0;
-        Student st;
-        boolean refresh = false;
-        while (true) {
-            try {
-                if (refresh) refreshToken();
-                refresh = true;
-                st = _getInfoStudent();
-                break;
-            } catch (OpenstudInvalidResponseException e) {
-                if (e.isMaintenance()) throw e;
-                if (++count == maxTries) {
-                    log(Level.SEVERE, e);
-                    throw e;
-                }
-            } catch (OpenstudRefreshException e) {
-                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
-                log(Level.SEVERE, invalidCredentials);
-                throw invalidCredentials;
-            }
-        }
-        return st;
+        return personal.getInfoStudent();
     }
-
-    private Student _getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException {
-        try {
-            Request req = new Request.Builder().url(endpointAPI + "/studente/" + studentID + "?ingresso=" + getToken()).build();
-            Response resp = client.newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
-            if (!response.has("ritorno"))
-                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
-            response = response.getJSONObject("ritorno");
-            Student st = new Student();
-            st.setStudentID(studentID);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            for (String element : response.keySet()) {
-                if (response.isNull(element)) continue;
-                switch (element) {
-                    case "codiceFiscale":
-                        st.setCF(response.getString("codiceFiscale"));
-                        break;
-                    case "cognome":
-                        st.setLastName(StringUtils.capitalize(response.getString("cognome").toLowerCase()));
-                        break;
-                    case "nome":
-                        st.setFirstName(StringUtils.capitalize(response.getString("nome").toLowerCase()));
-                        break;
-                    case "dataDiNascita":
-                        String dateBirth = response.getString("dataDiNascita");
-                        if (!(dateBirth == null || dateBirth.isEmpty())) {
-                            try {
-                                st.setBirthDate(LocalDate.parse(response.getString("dataDiNascita"), formatter));
-                            } catch (DateTimeParseException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        break;
-                    case "comuneDiNasciata":
-                        st.setBirthCity(response.getString("comuneDiNasciata"));
-                        break;
-                    case "luogoDiNascita":
-                        st.setBirthPlace(response.getString("luogoDiNascita"));
-                        break;
-                    case "annoCorso":
-                        st.setCourseYear(response.getString("annoCorso"));
-                        break;
-                    case "primaIscr":
-                        st.setFirstEnrollment(response.getString("primaIscr"));
-                        break;
-                    case "ultIscr":
-                        st.setLastEnrollment(response.getString("ultIscr"));
-                        break;
-                    case "facolta":
-                        st.setDepartmentName(response.getString("facolta"));
-                        break;
-                    case "nomeCorso":
-                        st.setCourseName(response.getString("nomeCorso"));
-                        break;
-                    case "annoAccaAtt":
-                        st.setAcademicYear(response.getInt("annoAccaAtt"));
-                        break;
-                    case "codCorso":
-                        st.setCodeCourse(response.getInt("codCorso"));
-                        break;
-                    case "tipoStudente":
-                        st.setTypeStudent(response.getInt("tipoStudente"));
-                        break;
-                    case "tipoIscrizione":
-                        st.setStudentStatus(response.getString("tipoIscrizione"));
-                        break;
-                    case "isErasmus":
-                        st.setErasmus(response.getBoolean("isErasmus"));
-                        break;
-                    case "nazioneNascita":
-                        st.setNation(response.getString("nazioneNascita"));
-                        break;
-                    case "creditiTotali":
-                        String cfu = response.getString("creditiTotali");
-                        if (NumberUtils.isDigits(cfu)) st.setCfu(Integer.parseInt(cfu));
-                        break;
-                    case "indiMailIstituzionale":
-                        st.setEmail(response.getString("indiMailIstituzionale"));
-                    case "sesso":
-                        st.setGender(response.getString("sesso"));
-                        break;
-                    case "annoAccaCors":
-                        st.setAcademicYearCourse(response.getInt("annoAccaCors"));
-                        break;
-                    case "cittadinanza":
-                        st.setCitizenship(response.getString("cittadinanza"));
-                        break;
-                }
-            }
-            return st;
-        } catch (IOException e) {
-            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
-            log(Level.SEVERE, connectionException);
-            throw connectionException;
-        } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
-            log(Level.SEVERE, invalidResponse);
-            throw invalidResponse;
-        }
-    }
-
 
     public List<Event> getCalendarEvents(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
