@@ -61,6 +61,7 @@ public class Openstud implements Authenticator, Personal, NewsHandler, TaxHandle
         newsHandler = new OpenNewsHandler(this);
         taxHandler = new OpenTaxHandler(this);
         classroomHandler = new OpenClassroomHandler(this);
+        examHandler = new OpenExamHandler(this);
     }
 
     String getPassword() {
