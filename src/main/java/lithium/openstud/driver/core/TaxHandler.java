@@ -14,5 +14,12 @@ public interface TaxHandler
     List<Tax> getPaidTaxes() throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;
 
+    Isee getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException,
+            OpenstudInvalidCredentialsException;
+
+    List<Isee> getIseeHistory() throws OpenstudConnectionException, OpenstudInvalidResponseException,
+            OpenstudInvalidCredentialsException;
+
+
 
     }

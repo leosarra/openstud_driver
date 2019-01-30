@@ -207,4 +207,111 @@ public class OpenTaxHandler implements TaxHandler
             throw invalidResponse;
         }
     }
+
+    public Isee getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!os.isReady()) return null;
+        int count = 0;
+        Isee isee;
+        boolean refresh = false;
+        while (true) {
+            try {
+                if (refresh) os.refreshToken();
+                refresh = true;
+                isee = _getCurrentIsee();
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
+                if (++count == os.getMaxTries()) {
+                    os.log(Level.SEVERE, e);
+                    throw e;
+                }
+            } catch (OpenstudRefreshException e) {
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                os.log(Level.SEVERE, invalidCredentials);
+                throw invalidCredentials;
+            }
+        }
+        return isee;
+    }
+
+    private Isee _getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        try {
+            Request req = new Request.Builder().url(os.getEndpointAPI() + "/contabilita/" + os.getStudentID() +
+                    "/isee?ingresso=" + os.getToken()).build();
+            Response resp = os.getClient().newCall(req).execute();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            String body = resp.body().string();
+            os.log(Level.INFO, body);
+            JSONObject response = new JSONObject(body);
+            if (!response.has("risultato"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            response = response.getJSONObject("risultato");
+            return OpenstudHelper.extractIsee(response);
+        } catch (IOException e) {
+            os.log(Level.SEVERE, e);
+            throw new OpenstudConnectionException(e);
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
+            os.log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
+
+    public List<Isee> getIseeHistory() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!os.isReady()) return null;
+        int count = 0;
+        List<Isee> history;
+        boolean refresh = false;
+        while (true) {
+            try {
+                if (refresh) os.refreshToken();
+                refresh = true;
+                history = _getIseeHistory();
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
+                if (++count == os.getMaxTries()) {
+                    os.log(Level.SEVERE, e);
+                    throw e;
+                }
+            } catch (OpenstudRefreshException e) {
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                os.log(Level.SEVERE, invalidCredentials);
+                throw invalidCredentials;
+            }
+        }
+        return history;
+    }
+
+    private List<Isee> _getIseeHistory() throws OpenstudConnectionException, OpenstudInvalidResponseException {
+        try {
+            Request req = new Request.Builder().url(os.getEndpointAPI() + "/contabilita/" + os.getStudentID() +
+                    "/listaIsee?ingresso=" + os.getToken()).build();
+            Response resp = os.getClient().newCall(req).execute();
+            List<Isee> list = new LinkedList<>();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            String body = resp.body().string();
+            os.log(Level.INFO, body);
+            JSONObject response = new JSONObject(body);
+            if (!response.has("risultatoLista"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            response = response.getJSONObject("risultatoLista");
+            if (!response.has("risultati") || response.isNull("risultati")) return new LinkedList<>();
+            JSONArray array = response.getJSONArray("risultati");
+            for (int i = 0; i < array.length(); i++) {
+                Isee result = OpenstudHelper.extractIsee(array.getJSONObject(i));
+                if (result == null) continue;
+                list.add(OpenstudHelper.extractIsee(array.getJSONObject(i)));
+            }
+            return list;
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            os.log(Level.SEVERE, connectionException);
+            throw connectionException;
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
+            os.log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
 }

@@ -156,110 +156,11 @@ public class Openstud implements Authenticator, Personal, NewsHandler, TaxHandle
     }
 
 
-    public Isee getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
-        if (!isReady()) return null;
-        int count = 0;
-        Isee isee;
-        boolean refresh = false;
-        while (true) {
-            try {
-                if (refresh) refreshToken();
-                refresh = true;
-                isee = _getCurrentIsee();
-                break;
-            } catch (OpenstudInvalidResponseException e) {
-                if (e.isMaintenance()) throw e;
-                if (++count == maxTries) {
-                    log(Level.SEVERE, e);
-                    throw e;
-                }
-            } catch (OpenstudRefreshException e) {
-                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
-                log(Level.SEVERE, invalidCredentials);
-                throw invalidCredentials;
-            }
-        }
-        return isee;
-    }
 
-    public List<Isee> getIseeHistory() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
-        if (!isReady()) return null;
-        int count = 0;
-        List<Isee> history;
-        boolean refresh = false;
-        while (true) {
-            try {
-                if (refresh) refreshToken();
-                refresh = true;
-                history = _getIseeHistory();
-                break;
-            } catch (OpenstudInvalidResponseException e) {
-                if (e.isMaintenance()) throw e;
-                if (++count == maxTries) {
-                    log(Level.SEVERE, e);
-                    throw e;
-                }
-            } catch (OpenstudRefreshException e) {
-                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
-                log(Level.SEVERE, invalidCredentials);
-                throw invalidCredentials;
-            }
-        }
-        return history;
-    }
 
-    private List<Isee> _getIseeHistory() throws OpenstudConnectionException, OpenstudInvalidResponseException {
-        try {
-            Request req = new Request.Builder().url(endpointAPI + "/contabilita/" + studentID + "/listaIsee?ingresso=" + getToken()).build();
-            Response resp = client.newCall(req).execute();
-            List<Isee> list = new LinkedList<>();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
-            if (!response.has("risultatoLista"))
-                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
-            response = response.getJSONObject("risultatoLista");
-            if (!response.has("risultati") || response.isNull("risultati")) return new LinkedList<>();
-            JSONArray array = response.getJSONArray("risultati");
-            for (int i = 0; i < array.length(); i++) {
-                Isee result = OpenstudHelper.extractIsee(array.getJSONObject(i));
-                if (result == null) continue;
-                list.add(OpenstudHelper.extractIsee(array.getJSONObject(i)));
-            }
-            return list;
-        } catch (IOException e) {
-            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
-            log(Level.SEVERE, connectionException);
-            throw connectionException;
-        } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
-            log(Level.SEVERE, invalidResponse);
-            throw invalidResponse;
-        }
-    }
 
-    private Isee _getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException {
-        try {
-            Request req = new Request.Builder().url(endpointAPI + "/contabilita/" + studentID + "/isee?ingresso=" + getToken()).build();
-            Response resp = client.newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
-            if (!response.has("risultato"))
-                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
-            response = response.getJSONObject("risultato");
-            return OpenstudHelper.extractIsee(response);
-        } catch (IOException e) {
-            log(Level.SEVERE, e);
-            throw new OpenstudConnectionException(e);
-        } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
-            log(Level.SEVERE, invalidResponse);
-            throw invalidResponse;
-        }
-    }
+
+
 
 
     @Override
@@ -1032,7 +933,7 @@ public class Openstud implements Authenticator, Personal, NewsHandler, TaxHandle
     {
         this.isReady = isReady;
     }
-    
+
     @Override
     public List<News> getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage,
                               String query) throws OpenstudInvalidResponseException, OpenstudConnectionException
@@ -1056,5 +957,17 @@ public class Openstud implements Authenticator, Personal, NewsHandler, TaxHandle
     public List<Tax> getPaidTaxes() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException
     {
         return taxHandler.getPaidTaxes();
+    }
+
+    @Override
+    public Isee getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException
+    {
+        return taxHandler.getCurrentIsee();
+    }
+
+    @Override
+    public List<Isee> getIseeHistory() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException
+    {
+        return taxHandler.getIseeHistory();
     }
 }
