@@ -18,4 +18,7 @@ public interface Authenticator
 
     void login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException,
             OpenstudInvalidResponseException, OpenstudUserNotEnabledException;
-}
+
+    void refreshToken() throws OpenstudRefreshException, OpenstudInvalidResponseException;
+
+    }

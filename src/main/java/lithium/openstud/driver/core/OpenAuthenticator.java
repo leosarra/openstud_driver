@@ -21,6 +21,41 @@ public class OpenAuthenticator implements Authenticator
     }
 
     @Override
+    public synchronized void refreshToken() throws OpenstudRefreshException, OpenstudInvalidResponseException {
+        try {
+            if (!StringUtils.isNumeric(os.getStudentID())) throw new OpenstudRefreshException("Student ID is not valid");
+            RequestBody formBody = new FormBody.Builder()
+                    .add("key", os.getKey()).add("matricola", String.valueOf(os.getStudentID())).add("stringaAutenticazione", os.getStudentPassword()).build();
+            Request req = new Request.Builder().url(os.getEndpointAPI() + "/autenticazione").header("Accept", "application/json")
+                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
+            Response resp = os.getClient().newCall(req).execute();
+            if (resp.body() == null) return;
+            String body = resp.body().string();
+            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
+            JSONObject response = new JSONObject(body);
+            if (!response.has("output") || response.getString("output").isEmpty()) return;
+            os.setToken(response.getString("output"));
+            if (response.has("esito")) {
+                switch (response.getJSONObject("esito").getInt("flagEsito")) {
+                    case -4:
+                        throw new OpenstudRefreshException("Invalid credentials when refreshing token");
+                    case -2:
+                        throw new OpenstudRefreshException("Password expired").setPasswordExpiredType();
+                    case -1:
+                        throw new OpenstudRefreshException("Invalid credentials when refreshing token");
+                    case 0:
+                        break;
+                    default:
+                        throw new OpenstudInvalidResponseException("Infostud is not working as intended");
+                }
+            }
+        } catch (IOException | JSONException e) {
+            os.log(Level.SEVERE, e);
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public String getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         int count = 0;
         if (os.getStudentID() == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
