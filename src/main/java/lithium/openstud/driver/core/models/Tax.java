@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.models;
 
 import org.threeten.bp.LocalDate;
 
@@ -24,7 +24,7 @@ public class Tax {
         return code;
     }
 
-    protected void setCode(String code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
@@ -32,7 +32,7 @@ public class Tax {
         return codeCourse;
     }
 
-    protected void setCodeCourse(String codeCourse) {
+    public void setCodeCourse(String codeCourse) {
         this.codeCourse = codeCourse;
     }
 
@@ -40,7 +40,7 @@ public class Tax {
         return descriptionCourse;
     }
 
-    protected void setDescriptionCourse(String descriptionCourse) {
+    public void setDescriptionCourse(String descriptionCourse) {
         this.descriptionCourse = descriptionCourse;
     }
 
@@ -48,7 +48,7 @@ public class Tax {
         return amount;
     }
 
-    protected void setAmount(double amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -56,7 +56,7 @@ public class Tax {
         return paymentDate;
     }
 
-    protected void setPaymentDate(LocalDate paymentDate) {
+    public void setPaymentDate(LocalDate paymentDate) {
         this.paymentDate = paymentDate;
     }
 
@@ -64,7 +64,7 @@ public class Tax {
         return expirationDate;
     }
 
-    protected void setExpirationDate(LocalDate expirationDate) {
+    public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
     }
 
@@ -72,7 +72,7 @@ public class Tax {
         return paymentDescriptionList;
     }
 
-    protected void setPaymentDescriptionList(List<PaymentDescription> paymentDescriptionList) {
+    public void setPaymentDescriptionList(List<PaymentDescription> paymentDescriptionList) {
         this.paymentDescriptionList = paymentDescriptionList;
     }
 
@@ -80,7 +80,7 @@ public class Tax {
         return academicYear;
     }
 
-    protected void setAcademicYear(int academicYear) {
+    public void setAcademicYear(int academicYear) {
         this.academicYear = academicYear;
     }
 

@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.models;
 
 import java.util.Objects;
 
@@ -12,7 +12,7 @@ public class PaymentDescription {
         return description;
     }
 
-    protected void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -20,7 +20,7 @@ public class PaymentDescription {
         return amount;
     }
 
-    protected void setAmount(Double amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
@@ -28,7 +28,7 @@ public class PaymentDescription {
         return amountPaid;
     }
 
-    protected void setAmountPaid(Double amountPaid) {
+    public void setAmountPaid(Double amountPaid) {
         this.amountPaid = amountPaid;
     }
 
@@ -36,7 +36,7 @@ public class PaymentDescription {
         return academicYear;
     }
 
-    protected void setAcademicYear(String academicYear) {
+    public void setAcademicYear(String academicYear) {
         this.academicYear = academicYear;
     }
 

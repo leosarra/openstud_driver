@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.models;
 
 import org.threeten.bp.LocalDate;
 
@@ -33,7 +33,7 @@ public class Student {
         return studentStatus;
     }
 
-    protected void setStudentStatus(String studentStatus) {
+    public void setStudentStatus(String studentStatus) {
         this.studentStatus = studentStatus;
     }
 
@@ -41,7 +41,7 @@ public class Student {
         return birthPlace;
     }
 
-    protected void setBirthPlace(String birthPlace) {
+    public void setBirthPlace(String birthPlace) {
         this.birthPlace = birthPlace;
     }
 
@@ -49,7 +49,7 @@ public class Student {
         return citizenship;
     }
 
-    protected void setCitizenship(String citizenship) {
+    public void setCitizenship(String citizenship) {
         this.citizenship = citizenship;
     }
 
@@ -57,7 +57,7 @@ public class Student {
         return email;
     }
 
-    protected void setEmail(String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -65,7 +65,7 @@ public class Student {
         return cfu;
     }
 
-    protected void setCfu(int cfu) {
+    public void setCfu(int cfu) {
         this.cfu = cfu;
     }
 
@@ -73,7 +73,7 @@ public class Student {
         return CF;
     }
 
-    protected void setCF(String CF) {
+    public void setCF(String CF) {
         this.CF = CF;
     }
 
@@ -81,7 +81,7 @@ public class Student {
         return firstName;
     }
 
-    protected void setFirstName(String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
@@ -89,7 +89,7 @@ public class Student {
         return lastName;
     }
 
-    protected void setLastName(String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
@@ -97,7 +97,7 @@ public class Student {
         return birthDate;
     }
 
-    protected void setBirthDate(LocalDate birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -105,7 +105,7 @@ public class Student {
         return birthCity;
     }
 
-    protected void setBirthCity(String birthCity) {
+    public void setBirthCity(String birthCity) {
         this.birthCity = birthCity;
     }
 
@@ -113,7 +113,7 @@ public class Student {
         return courseYear;
     }
 
-    protected void setCourseYear(String courseYear) {
+    public void setCourseYear(String courseYear) {
         this.courseYear = courseYear;
     }
 
@@ -121,7 +121,7 @@ public class Student {
         return firstEnrollment;
     }
 
-    protected void setFirstEnrollment(String firstEnrollment) {
+    public void setFirstEnrollment(String firstEnrollment) {
         this.firstEnrollment = firstEnrollment;
     }
 
@@ -129,7 +129,7 @@ public class Student {
         return lastEnrollment;
     }
 
-    protected void setLastEnrollment(String lastEnrollment) {
+    public void setLastEnrollment(String lastEnrollment) {
         this.lastEnrollment = lastEnrollment;
     }
 
@@ -137,7 +137,7 @@ public class Student {
         return departmentName;
     }
 
-    protected void setDepartmentName(String departmentName) {
+    public void setDepartmentName(String departmentName) {
         this.departmentName = departmentName;
     }
 
@@ -145,7 +145,7 @@ public class Student {
         return courseName;
     }
 
-    protected void setCourseName(String courseName) {
+    public void setCourseName(String courseName) {
         this.courseName = courseName;
     }
 
@@ -153,7 +153,7 @@ public class Student {
         return nation;
     }
 
-    protected void setNation(String nation) {
+    public void setNation(String nation) {
         this.nation = nation;
     }
 
@@ -161,7 +161,7 @@ public class Student {
         return academicYear;
     }
 
-    protected void setAcademicYear(int academicYear) {
+    public void setAcademicYear(int academicYear) {
         this.academicYear = academicYear;
     }
 
@@ -169,7 +169,7 @@ public class Student {
         return academicYearCourse;
     }
 
-    protected void setAcademicYearCourse(int academicYearCourse) {
+    public void setAcademicYearCourse(int academicYearCourse) {
         this.academicYearCourse = academicYearCourse;
     }
 
@@ -177,7 +177,7 @@ public class Student {
         return studentID;
     }
 
-    protected void setStudentID(String studentID) {
+    public void setStudentID(String studentID) {
         this.studentID = studentID;
     }
 
@@ -185,7 +185,7 @@ public class Student {
         return codeCourse;
     }
 
-    protected void setCodeCourse(int codeCourse) {
+    public void setCodeCourse(int codeCourse) {
         this.codeCourse = codeCourse;
     }
 
@@ -193,7 +193,7 @@ public class Student {
         return typeStudent;
     }
 
-    protected void setTypeStudent(int typeStudent) {
+    public void setTypeStudent(int typeStudent) {
         this.typeStudent = typeStudent;
     }
 
@@ -201,7 +201,7 @@ public class Student {
         return gender;
     }
 
-    protected void setGender(String gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
@@ -209,7 +209,7 @@ public class Student {
         return isErasmus;
     }
 
-    protected void setErasmus(boolean erasmus) {
+    public void setErasmus(boolean erasmus) {
         isErasmus = erasmus;
     }
 

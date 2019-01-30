@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.models;
 
 import java.util.List;
 import java.util.Objects;

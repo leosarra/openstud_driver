@@ -1,5 +1,6 @@
 package lithium.openstud.driver.core;
 
+import lithium.openstud.driver.core.models.*;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,14 +18,11 @@ import java.util.logging.Logger;
 
 public class OpenstudHelper {
 
-
-
     public enum Mode {
         MOBILE, WEB
     }
 
-
-    static boolean isValidUrl(String url){
+    public static boolean isValidUrl(String url){
         if (url==null) return false;
         String[] schemes = {"http","https"};
         UrlValidator urlValidator = new UrlValidator(schemes);
@@ -50,7 +48,6 @@ public class OpenstudHelper {
         double result = (computeWeightedAverage(list,laude)*110)/30;
         return (int) Math.ceil(result);
     }
-
 
     public static double computeArithmeticAverage(List<ExamDone> list, int laude) {
         int num = 0;
@@ -115,7 +112,8 @@ public class OpenstudHelper {
         return events;
     }
 
-    static List<Event> generateEvents(List<ExamReservation> reservations, List<ExamReservation> avaiableReservations) {
+    public static List<Event> generateEvents(List<ExamReservation> reservations,
+                                             List<ExamReservation> avaiableReservations) {
         List<Event> events = new LinkedList<>();
         for (ExamReservation res : reservations) {
             Event ev = new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), null, EventType.RESERVED);
@@ -205,7 +203,7 @@ public class OpenstudHelper {
         return list;
     }
 
-    protected static Lesson extractLesson(JSONObject response, DateTimeFormatter formatter) {
+    public static Lesson extractLesson(JSONObject response, DateTimeFormatter formatter) {
         Lesson lesson = new Lesson();
         for (String lessonInfo : response.keySet()) {
             if (response.isNull(lessonInfo)) continue;
@@ -237,7 +235,7 @@ public class OpenstudHelper {
         return lesson;
     }
 
-    protected static Isee extractIsee(JSONObject response) {
+    public static Isee extractIsee(JSONObject response) {
         Isee res = new Isee();
         for (String element : response.keySet()) {
             switch (element) {
@@ -284,7 +282,7 @@ public class OpenstudHelper {
         return res;
     }
 
-    protected static List<PaymentDescription> extractPaymentDescriptionList(JSONArray array, Logger logger) {
+    public static List<PaymentDescription> extractPaymentDescriptionList(JSONArray array, Logger logger) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         List<PaymentDescription> list = new LinkedList<>();
         if (array == null) return list;
@@ -322,7 +320,7 @@ public class OpenstudHelper {
         return list;
     }
 
-    protected static List<ExamReservation> extractReservations(JSONArray array) {
+    public static List<ExamReservation> extractReservations(JSONArray array) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         List<ExamReservation> list = new LinkedList<>();
         for (int i = 0; i < array.length(); i++) {

@@ -1,5 +1,7 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.handlers;
 
+import lithium.openstud.driver.core.Openstud;
+import lithium.openstud.driver.core.internals.AuthenticationHandler;
 import lithium.openstud.driver.exceptions.*;
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -12,10 +14,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.logging.Level;
 
-public class OpenAuthenticator implements Authenticator
+public class OpenAuthenticationHandler implements AuthenticationHandler
 {
     private Openstud os;
-    OpenAuthenticator(Openstud openstud)
+    public OpenAuthenticationHandler(Openstud openstud)
     {
         this.os = openstud;
     }

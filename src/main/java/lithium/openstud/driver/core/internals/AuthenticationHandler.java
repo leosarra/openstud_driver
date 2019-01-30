@@ -1,8 +1,8 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.internals;
 
 import lithium.openstud.driver.exceptions.*;
 
-public interface Authenticator
+public interface AuthenticationHandler
 {
     String getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;

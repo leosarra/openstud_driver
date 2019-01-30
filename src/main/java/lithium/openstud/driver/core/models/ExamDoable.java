@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.models;
 
 import java.util.Objects;
 
@@ -10,7 +10,7 @@ public class ExamDoable extends Exam {
         return courseCode;
     }
 
-    protected void setCourseCode(String courseCode) {
+    public void setCourseCode(String courseCode) {
         this.courseCode = courseCode;
     }
 
@@ -18,7 +18,7 @@ public class ExamDoable extends Exam {
         return moduleCode;
     }
 
-    protected void setModuleCode(String moduleCode) {
+    public void setModuleCode(String moduleCode) {
         this.moduleCode = moduleCode;
     }
 

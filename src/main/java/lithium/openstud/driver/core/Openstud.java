@@ -1,5 +1,8 @@
 package lithium.openstud.driver.core;
 
+import lithium.openstud.driver.core.handlers.*;
+import lithium.openstud.driver.core.internals.*;
+import lithium.openstud.driver.core.models.*;
 import lithium.openstud.driver.exceptions.*;
 import okhttp3.*;
 import org.apache.commons.lang3.tuple.Pair;
@@ -10,7 +13,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Openstud implements Authenticator, Personal, NewsHandler, TaxHandler, ClassroomHandler, ExamHandler {
+public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler, TaxHandler, ClassroomHandler, ExamHandler
+{
     private int maxTries;
     private String endpointAPI;
     private String endpointTimetable;
@@ -25,8 +29,8 @@ public class Openstud implements Authenticator, Personal, NewsHandler, TaxHandle
     private int waitTimeClassroomRequest;
     private int limitSearch;
 
-    private OpenAuthenticator authenticator;
-    private OpenPersonal personal;
+    private OpenAuthenticationHandler authenticator;
+    private OpenBioHandler personal;
     private OpenNewsHandler newsHandler;
     private OpenTaxHandler taxHandler;
     private OpenClassroomHandler classroomHandler;
@@ -56,8 +60,8 @@ public class Openstud implements Authenticator, Personal, NewsHandler, TaxHandle
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
                 .readTimeout(readTimeout, TimeUnit.SECONDS).retryOnConnectionFailure(true)
                 .build();
-        authenticator = new OpenAuthenticator(this);
-        personal = new OpenPersonal(this);
+        authenticator = new OpenAuthenticationHandler(this);
+        personal = new OpenBioHandler(this);
         newsHandler = new OpenNewsHandler(this);
         taxHandler = new OpenTaxHandler(this);
         classroomHandler = new OpenClassroomHandler(this);
@@ -68,16 +72,16 @@ public class Openstud implements Authenticator, Personal, NewsHandler, TaxHandle
         return studentPassword;
     }
 
-    String getStudentID(){
+    public String getStudentID(){
         return studentID;
     }
 
-    String getEndpointAPI()
+    public String getEndpointAPI()
     {
         return endpointAPI;
     }
 
-    String getEndpointTimetable()
+    public String getEndpointTimetable()
     {
         return endpointTimetable;
     }
@@ -87,55 +91,55 @@ public class Openstud implements Authenticator, Personal, NewsHandler, TaxHandle
         return endpointNews;
     }
 
-    String getStudentPassword()
+    public String getStudentPassword()
     {
         return studentPassword;
     }
 
-    Logger getLogger()
+    public Logger getLogger()
     {
         return logger;
     }
 
-    OkHttpClient getClient()
+    public OkHttpClient getClient()
     {
         return client;
     }
 
-    String getKey()
+    public String getKey()
     {
         return key;
     }
 
-    int getWaitTimeClassroomRequest()
+    public int getWaitTimeClassroomRequest()
     {
         return waitTimeClassroomRequest;
     }
 
-    int getLimitSearch()
+    public int getLimitSearch()
     {
         return limitSearch;
     }
 
-    void setStudentPassword(String password)
+    public void setStudentPassword(String password)
     {
         studentPassword = password;
     }
 
-    void setReady(boolean isReady)
+    public void setReady(boolean isReady)
     {
         this.isReady = isReady;
     }
 
-    int getMaxTries(){
+    public int getMaxTries(){
         return maxTries;
     }
 
-    void setToken(String token) {
+    public void setToken(String token) {
         this.token = token;
     }
 
-    synchronized String getToken() {
+    public synchronized String getToken() {
         return this.token;
     }
 
@@ -143,7 +147,7 @@ public class Openstud implements Authenticator, Personal, NewsHandler, TaxHandle
         if (logger != null) logger.log(lvl, str);
     }
 
-    void log(Level lvl, Object obj) {
+    public void log(Level lvl, Object obj) {
         if (logger != null) logger.log(lvl, obj.toString());
     }
 

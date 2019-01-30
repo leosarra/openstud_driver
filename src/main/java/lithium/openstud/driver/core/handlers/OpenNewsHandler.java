@@ -1,5 +1,11 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.handlers;
 
+import lithium.openstud.driver.core.Openstud;
+import lithium.openstud.driver.core.OpenstudHelper;
+import lithium.openstud.driver.core.internals.NewsHandler;
+import lithium.openstud.driver.core.models.Event;
+import lithium.openstud.driver.core.models.EventType;
+import lithium.openstud.driver.core.models.News;
 import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 import org.jsoup.Connection;

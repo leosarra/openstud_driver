@@ -1,5 +1,8 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.handlers;
 
+import lithium.openstud.driver.core.Openstud;
+import lithium.openstud.driver.core.internals.BioHandler;
+import lithium.openstud.driver.core.models.Student;
 import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidCredentialsException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
@@ -17,11 +20,11 @@ import org.threeten.bp.format.DateTimeParseException;
 import java.io.IOException;
 import java.util.logging.Level;
 
-public class OpenPersonal implements Personal
+public class OpenBioHandler implements BioHandler
 {
     private Openstud os;
 
-    public OpenPersonal(Openstud os)
+    public OpenBioHandler(Openstud os)
     {
         this.os = os;
     }

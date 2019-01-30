@@ -1,6 +1,5 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.models;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 public class NewsEvent{

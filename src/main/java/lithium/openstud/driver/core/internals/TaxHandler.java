@@ -1,5 +1,7 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.internals;
 
+import lithium.openstud.driver.core.models.Isee;
+import lithium.openstud.driver.core.models.Tax;
 import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidCredentialsException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;

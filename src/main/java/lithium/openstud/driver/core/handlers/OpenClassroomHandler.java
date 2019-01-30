@@ -1,5 +1,11 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.handlers;
 
+import lithium.openstud.driver.core.Openstud;
+import lithium.openstud.driver.core.OpenstudHelper;
+import lithium.openstud.driver.core.internals.ClassroomHandler;
+import lithium.openstud.driver.core.models.Classroom;
+import lithium.openstud.driver.core.models.ExamDoable;
+import lithium.openstud.driver.core.models.Lesson;
 import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 import okhttp3.Request;
