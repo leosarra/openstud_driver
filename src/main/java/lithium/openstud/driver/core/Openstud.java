@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Openstud {
+public class Openstud implements Authenticator {
     private int maxTries;
     private String endpointAPI;
     private String endpointTimetable;
@@ -41,6 +41,8 @@ public class Openstud {
     private String key;
     private int waitTimeClassroomRequest;
     private int limitSearch;
+
+    private OpenAuthenticator authenticator;
 
     public Openstud() {
         super();
@@ -66,9 +68,14 @@ public class Openstud {
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
                 .readTimeout(readTimeout, TimeUnit.SECONDS).retryOnConnectionFailure(true)
                 .build();
+        authenticator = new OpenAuthenticator(this);
     }
 
-    private void setToken(String token) {
+    int getMaxTries(){
+        return maxTries;
+    }
+
+    void setToken(String token) {
         this.token = token;
     }
 
@@ -76,11 +83,11 @@ public class Openstud {
         return this.token;
     }
 
-    private void log(Level lvl, String str) {
+    void log(Level lvl, String str) {
         if (logger != null) logger.log(lvl, str);
     }
 
-    private void log(Level lvl, Object obj) {
+    void log(Level lvl, Object obj) {
         if (logger != null) logger.log(lvl, obj.toString());
     }
 
@@ -122,264 +129,35 @@ public class Openstud {
         }
     }
 
-    public String getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
-        int count = 0;
-        if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
-        while (true) {
-            try {
-                return _getSecurityQuestion();
-            } catch (OpenstudInvalidResponseException e) {
-                if (e.isMaintenance()) throw e;
-                if (++count == maxTries) {
-                    log(Level.SEVERE, e);
-                    throw e;
-                }
-            }
-        }
-    }
+    /*
+    / Open Authentication
+    */
 
-    private String _getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
-        try {
-            RequestBody formBody = new FormBody.Builder()
-                    .add("matricola", String.valueOf(studentID)).build();
-            Request req = new Request.Builder().url(endpointAPI + "/pwd/recuperaDomanda/matricola").header("Accept", "application/json")
-                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
-            Response resp = client.newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
-            if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
-            if (body.contains("Impossibile recuperare la password per email")) return null;
-            log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
-            if (response.isNull("risultato"))
-                throw new OpenstudInvalidResponseException("Infostud response is not valid.");
-            return response.getString("risultato");
-        } catch (IOException e) {
-            log(Level.SEVERE, e);
-            throw new OpenstudConnectionException(e);
-        } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-            log(Level.SEVERE, invalidResponse);
-            throw invalidResponse;
-        }
-    }
-
-    public int recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
-        int count = 0;
-        if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
-        while (true) {
-            try {
-                return _recoverPassword(answer);
-            } catch (OpenstudInvalidResponseException e) {
-                if (e.isMaintenance()) throw e;
-                if (++count == maxTries) {
-                    log(Level.SEVERE, e);
-                    throw e;
-                }
-            }
-        }
-    }
-
-    public void resetPassword(String new_password) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
-        int count = 0;
-        if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
-        while (true) {
-            try {
-                _resetPassword(new_password);
-                break;
-            } catch (OpenstudInvalidResponseException e) {
-                if (++count == maxTries) {
-                    log(Level.SEVERE, e);
-                    throw e;
-                }
-            }
-        }
-    }
-
-    private void _resetPassword(String new_password) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
-        try {
-            RequestBody formBody = new FormBody.Builder()
-                    .add("oldPwd", studentPassword)
-                    .add("newPwd", new_password)
-                    .add("confermaPwd", new_password)   //TODO confirmation should be passed as second param?
-                    .build();
-
-            Request req = new Request.Builder().url(endpointAPI + "/pwd/" + studentID + "/reset").header("Accept", "application/json")
-                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
-            Response resp = client.newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
-            if (response.isNull("codiceErrore") || response.isNull("risultato"))
-                throw new OpenstudInvalidResponseException("Infostud response is not valid.");
-
-            String error_code = response.getString("codiceErrore");
-            boolean result = response.getBoolean("risultato");
-            if(error_code.equals("000") && result) {
-                studentPassword = new_password; // TODO check this
-                return;
-            }
-
-            throw new OpenstudInvalidCredentialsException("Answer is not correct");
-
-        } catch (IOException e) {
-            log(Level.SEVERE, e);
-            throw new OpenstudConnectionException(e);
-        } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-            log(Level.SEVERE, invalidResponse);
-            throw invalidResponse;
-        }
-    }
-
-    private int _recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
-        try {
-            RequestBody formBody = new FormBody.Builder()
-                    .add("matricola", String.valueOf(studentID)).add("risposta", answer).build();
-            Request req = new Request.Builder().url(endpointAPI + "/pwd/recupera/matricola").header("Accept", "application/json")
-                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
-            Response resp = client.newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
-            if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
-            if (body.contains("Impossibile recuperare la password per email")) return -1;
-            log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
-            if (response.isNull("livelloErrore"))
-                throw new OpenstudInvalidResponseException("Infostud response is not valid.");
-            switch (response.getInt("livelloErrore")) {
-                case 3:
-                    throw new OpenstudInvalidAnswerException("Answer is not correct");
-                case 0:
-                    break;
-                default:
-                    throw new OpenstudInvalidResponseException("Infostud is not working as expected");
-            }
-        } catch (IOException e) {
-            log(Level.SEVERE, e);
-            throw new OpenstudConnectionException(e);
-        } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
-            log(Level.SEVERE, invalidResponse);
-            throw invalidResponse;
-        }
-        return 0;
-    }
-
-    public int recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
-        int count=0;
-        if (studentID==null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
-        while(true){
-            try {
-                return _recoverPasswordWithEmail(email, answer);
-            } catch (OpenstudInvalidResponseException e) {
-                if (++count == maxTries) {
-                    log(Level.SEVERE,e);
-                    throw e;
-                }
-            }
-        }
-    }
-
-    private int _recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
-        try {
-            RequestBody formBody = new FormBody.Builder()
-                    .add("matricola",String.valueOf(studentID)).add("email", email).add("risposta",answer).build();
-            Request req = new Request.Builder().url(endpointAPI+"/pwd/recupera/matricola").header("Accept","application/json")
-                    .header("Content-EventType","application/x-www-form-urlencoded").post(formBody).build();
-            Response resp = client.newCall(req).execute();
-            if(resp.body()==null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
-            if (body.contains("Impossibile recuperare la password per email")) return -1;
-            log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
-            if (response.isNull("livelloErrore"))
-                throw new OpenstudInvalidResponseException("Infostud response is not valid.");
-            switch (response.getInt("livelloErrore")) {
-                case 3:
-                    throw new OpenstudInvalidAnswerException("Answer is not correct");
-                case 0:
-                    break;
-                default:
-                    throw new OpenstudInvalidResponseException("Infostud is not working as expected");
-            }
-        } catch (IOException e) {
-            log(Level.SEVERE,e);
-            throw new OpenstudConnectionException(e);
-        } catch (JSONException e){
-            OpenstudInvalidResponseException invalidResponse= new OpenstudInvalidResponseException(e);
-            log(Level.SEVERE,invalidResponse);
-            throw invalidResponse;
-        }
-        return 0;
-    }
-
-
+    @Override
     public void login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
-        int count = 0;
-        if (studentPassword == null || studentPassword.isEmpty())
-            throw new OpenstudInvalidCredentialsException("Password can't be left empty");
-        if (studentID == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
-        while (true) {
-            try {
-                _login();
-                break;
-            } catch (OpenstudInvalidResponseException e) {
-                if (++count == maxTries) {
-                    log(Level.SEVERE, e);
-                    throw e;
-                }
-            }
-        }
+        authenticator.login();
     }
 
-    private synchronized void _login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
-        try {
-            if (!StringUtils.isNumeric(studentID)) throw new OpenstudInvalidCredentialsException("Student ID is not valid");
-            RequestBody formBody = new FormBody.Builder()
-                    .add("key", key).add("matricola", String.valueOf(studentID)).add("stringaAutenticazione", studentPassword).build();
-            Request req = new Request.Builder().url(endpointAPI + "/autenticazione").header("Accept", "application/json")
-                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
-            Response resp = client.newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
-            log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
-            if (body.contains("Matricola Errata"))
-                throw new OpenstudInvalidCredentialsException("Student ID is not valid");
-            else if (!response.has("output"))
-                throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            setToken(response.getString("output"));
-            if (response.has("esito")) {
-                switch (response.getJSONObject("esito").getInt("flagEsito")) {
-                    case -4:
-                        throw new OpenstudUserNotEnabledException("User is not enabled to use Infostud service.");
-                    case -2:
-                        throw new OpenstudInvalidCredentialsException("Password expired").setPasswordExpiredType();
-                    case -1:
-                        throw new OpenstudInvalidCredentialsException("Password not valid");
-                    case 0:
-                        break;
-                    default:
-                        throw new OpenstudInvalidResponseException("Infostud is not working as expected");
-                }
-            }
-        } catch (IOException e) {
-            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
-            log(Level.SEVERE, connectionException);
-            throw connectionException;
-        } catch (JSONException e) {
-            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
-            log(Level.SEVERE, invalidResponse);
-            throw invalidResponse;
-        }
-        isReady = true;
+    @Override
+    public String getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        return authenticator.getSecurityQuestion();
     }
+
+    @Override
+    public int recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
+        return authenticator.recoverPassword(answer);
+    }
+
+    @Override
+    public void resetPassword(String new_password) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        authenticator.resetPassword(new_password);
+    }
+
+    @Override
+    public int recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
+        return authenticator.recoverPasswordWithEmail(email, answer);
+    }
+
 
     public Isee getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!isReady()) return null;
@@ -1653,4 +1431,58 @@ public class Openstud {
         return studentID;
     }
 
+    String getEndpointAPI()
+    {
+        return endpointAPI;
+    }
+
+    public String getEndpointTimetable()
+    {
+        return endpointTimetable;
+    }
+
+    public String getEndpointNews()
+    {
+        return endpointNews;
+    }
+
+    String getStudentPassword()
+    {
+        return studentPassword;
+    }
+
+    public Logger getLogger()
+    {
+        return logger;
+    }
+
+    OkHttpClient getClient()
+    {
+        return client;
+    }
+
+    String getKey()
+    {
+        return key;
+    }
+
+    public int getWaitTimeClassroomRequest()
+    {
+        return waitTimeClassroomRequest;
+    }
+
+    public int getLimitSearch()
+    {
+        return limitSearch;
+    }
+
+    void setStudentPassword(String password)
+    {
+        studentPassword = password;
+    }
+
+    void setReady(boolean isReady)
+    {
+        this.isReady = isReady;
+    }
 }
