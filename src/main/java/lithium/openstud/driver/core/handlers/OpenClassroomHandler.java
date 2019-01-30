@@ -98,6 +98,8 @@ public class OpenClassroomHandler implements ClassroomHandler
                         case "weight":
                             classroom.setWeight(object.getInt(info));
                             break;
+                        default:
+                            break;
                     }
 
                 }

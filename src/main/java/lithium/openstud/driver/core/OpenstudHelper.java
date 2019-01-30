@@ -230,6 +230,8 @@ public class OpenstudHelper {
                 case "end":
                     lesson.setEnd(LocalDateTime.parse(response.getString(lessonInfo), formatter));
                     break;
+                default:
+                    break;
             }
         }
         return lesson;
@@ -276,6 +278,8 @@ public class OpenstudHelper {
                         }
                     }
                     break;
+                default:
+                    break;
             }
 
         }
@@ -312,6 +316,8 @@ public class OpenstudHelper {
                         } catch (NumberFormatException e) {
                             logger.log(Level.SEVERE, e.toString());
                         }
+                        break;
+                    default:
                         break;
                 }
             }
@@ -414,6 +420,8 @@ public class OpenstudHelper {
                         break;
                     case "SiglaModuloDidattico":
                         if (!obj.isNull("SiglaModuloDidattico")) res.setModule(obj.getString("SiglaModuloDidattico"));
+                        break;
+                    default:
                         break;
                 }
             }

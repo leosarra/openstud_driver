@@ -99,6 +99,8 @@ public class OpenExamHandler implements ExamHandler
                         case "ssd":
                             exam.setSsd(obj.getString("ssd"));
                             break;
+                        default:
+                            break;
                     }
                 }
                 list.add(exam);
@@ -198,6 +200,8 @@ public class OpenExamHandler implements ExamHandler
                             if (esito.has("valoreNominale")) exam.setNominalResult(esito.getString("valoreNominale"));
                             if (esito.has("valoreNonNominale") && !esito.isNull("valoreNonNominale"))
                                 exam.setResult(esito.getInt("valoreNonNominale"));
+                            break;
+                        default:
                             break;
                     }
                 }

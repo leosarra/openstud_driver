@@ -146,6 +146,8 @@ public class OpenBioHandler implements BioHandler
                     case "cittadinanza":
                         st.setCitizenship(response.getString("cittadinanza"));
                         break;
+                    default:
+                        break;
                 }
             }
             return st;

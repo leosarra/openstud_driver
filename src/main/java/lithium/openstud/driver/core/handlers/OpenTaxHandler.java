@@ -105,6 +105,8 @@ public class OpenTaxHandler implements TaxHandler
                         case "dataVers":
                             tax.setPaymentDate(LocalDate.parse(obj.getString("dataVers"), formatter));
                             break;
+                        default:
+                            break;
                     }
                 }
                 tax.setPaymentDescriptionList(OpenstudHelper.extractPaymentDescriptionList(obj.getJSONArray("causali"), os.getLogger()));
@@ -195,6 +197,8 @@ public class OpenTaxHandler implements TaxHandler
                         case "scadenza":
                             if (obj.getString("scadenza").equals("")) continue;
                             tax.setExpirationDate(LocalDate.parse(obj.getString("scadenza"), formatter));
+                            break;
+                        default:
                             break;
                     }
                 }
