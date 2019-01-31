@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core.handlers;
+package lithium.openstud.driver.core.providers.sapienza;
 
 import lithium.openstud.driver.core.Openstud;
 import lithium.openstud.driver.core.internals.AuthenticationHandler;
@@ -14,26 +14,19 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.logging.Level;
 
-public class OpenAuthenticationHandler implements AuthenticationHandler
-{
+public class SapienzaAuthenticationHandler implements AuthenticationHandler {
     private Openstud os;
-    public OpenAuthenticationHandler(Openstud openstud)
-    {
+
+    public SapienzaAuthenticationHandler(Openstud openstud) {
         this.os = openstud;
     }
 
     @Override
     public synchronized void refreshToken() throws OpenstudRefreshException, OpenstudInvalidResponseException {
         try {
-            if (!StringUtils.isNumeric(os.getStudentID())) throw new OpenstudRefreshException("Student ID is not valid");
-            RequestBody formBody = new FormBody.Builder()
-                    .add("key", os.getKey()).add("matricola", String.valueOf(os.getStudentID())).add("stringaAutenticazione", os.getStudentPassword()).build();
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/autenticazione").header("Accept", "application/json")
-                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) return;
-            String body = resp.body().string();
-            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
+            if (!StringUtils.isNumeric(os.getStudentID()))
+                throw new OpenstudRefreshException("Student ID is not valid");
+            String body = executeLoginRequest();
             JSONObject response = new JSONObject(body);
             if (!response.has("output") || response.getString("output").isEmpty()) return;
             os.setToken(response.getString("output"));
@@ -55,6 +48,19 @@ public class OpenAuthenticationHandler implements AuthenticationHandler
             os.log(Level.SEVERE, e);
             e.printStackTrace();
         }
+    }
+
+    private String executeLoginRequest() throws IOException, OpenstudInvalidResponseException {
+        RequestBody formBody = new FormBody.Builder()
+                .add("key", os.getKey()).add("matricola", String.valueOf(os.getStudentID())).add("stringaAutenticazione", os.getStudentPassword()).build();
+        Request req = new Request.Builder().url(os.getEndpointAPI() + "/autenticazione").header("Accept", "application/json")
+                .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
+        Response resp = os.getClient().newCall(req).execute();
+        if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+        String body = resp.body().string();
+        if (body.contains("the page you are looking for is currently unavailable"))
+            throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
+        return body;
     }
 
     @Override
@@ -83,7 +89,8 @@ public class OpenAuthenticationHandler implements AuthenticationHandler
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
-            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
+            if (body.contains("the page you are looking for is currently unavailable"))
+                throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
             if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
             if (body.contains("Impossibile recuperare la password per email")) return null;
             os.log(Level.INFO, body);
@@ -102,7 +109,7 @@ public class OpenAuthenticationHandler implements AuthenticationHandler
     }
 
     @Override
-    public int recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
+    public boolean recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
         int count = 0;
         if (os.getStudentID() == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
@@ -118,18 +125,15 @@ public class OpenAuthenticationHandler implements AuthenticationHandler
         }
     }
 
-    private int _recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
+    private boolean _recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola", String.valueOf(os.getStudentID())).add("risposta", answer).build();
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/pwd/recupera/matricola").header("Accept", "application/json")
-                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
+            String body = executeRecoveryRequest(formBody);
+            if (body.contains("the page you are looking for is currently unavailable"))
+                throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
             if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
-            if (body.contains("Impossibile recuperare la password per email")) return -1;
+            if (body.contains("Impossibile recuperare la password per email")) return false;
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("livelloErrore"))
@@ -150,7 +154,15 @@ public class OpenAuthenticationHandler implements AuthenticationHandler
             os.log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
-        return 0;
+        return true;
+    }
+
+    private String executeRecoveryRequest(RequestBody formBody) throws IOException, OpenstudInvalidResponseException {
+        Request req = new Request.Builder().url(os.getEndpointAPI() + "/pwd/recupera/matricola").header("Accept", "application/json")
+                .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
+        Response resp = os.getClient().newCall(req).execute();
+        if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+        return resp.body().string();
     }
 
     @Override
@@ -175,7 +187,7 @@ public class OpenAuthenticationHandler implements AuthenticationHandler
             RequestBody formBody = new FormBody.Builder()
                     .add("oldPwd", os.getStudentPassword())
                     .add("newPwd", new_password)
-                    .add("confermaPwd", new_password)   //TODO confirmation should be passed as second param?
+                    .add("confermaPwd", new_password)
                     .build();
 
             Request req = new Request.Builder().url(os.getEndpointAPI() + "/pwd/" + os.getStudentID() + "/reset").header("Accept", "application/json")
@@ -190,8 +202,8 @@ public class OpenAuthenticationHandler implements AuthenticationHandler
 
             String error_code = response.getString("codiceErrore");
             boolean result = response.getBoolean("risultato");
-            if(error_code.equals("000") && result) {
-                os.setStudentPassword(new_password); // TODO check this
+            if (error_code.equals("000") && result) {
+                os.setStudentPassword(new_password);
                 return;
             }
 
@@ -207,32 +219,28 @@ public class OpenAuthenticationHandler implements AuthenticationHandler
         }
     }
 
-    public int recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
-        int count=0;
-        if (os.getStudentID()==null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
-        while(true){
+    public boolean recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
+        int count = 0;
+        if (os.getStudentID() == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
+        while (true) {
             try {
                 return _recoverPasswordWithEmail(email, answer);
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == os.getMaxTries()) {
-                    os.log(Level.SEVERE,e);
+                    os.log(Level.SEVERE, e);
                     throw e;
                 }
             }
         }
     }
 
-    private int _recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
+    private boolean _recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException {
         try {
             RequestBody formBody = new FormBody.Builder()
-                    .add("matricola",String.valueOf(os.getStudentID())).add("email", email).add("risposta",answer).build();
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/pwd/recupera/matricola").header("Accept","application/json")
-                    .header("Content-EventType","application/x-www-form-urlencoded").post(formBody).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if(resp.body()==null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
+                    .add("matricola", String.valueOf(os.getStudentID())).add("email", email).add("risposta", answer).build();
+            String body = executeRecoveryRequest(formBody);
             if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
-            if (body.contains("Impossibile recuperare la password per email")) return -1;
+            if (body.contains("Impossibile recuperare la password per email")) return false;
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("livelloErrore"))
@@ -246,22 +254,22 @@ public class OpenAuthenticationHandler implements AuthenticationHandler
                     throw new OpenstudInvalidResponseException("Infostud is not working as expected");
             }
         } catch (IOException e) {
-            os.log(Level.SEVERE,e);
+            os.log(Level.SEVERE, e);
             throw new OpenstudConnectionException(e);
-        } catch (JSONException e){
-            OpenstudInvalidResponseException invalidResponse= new OpenstudInvalidResponseException(e);
-            os.log(Level.SEVERE,invalidResponse);
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e);
+            os.log(Level.SEVERE, invalidResponse);
             throw invalidResponse;
         }
-        return 0;
+        return true;
     }
 
 
     public void login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         int count = 0;
-        if (os.getStudentPassword()== null || os.getStudentPassword().isEmpty())
+        if (os.getStudentPassword() == null || os.getStudentPassword().isEmpty())
             throw new OpenstudInvalidCredentialsException("Password can't be left empty");
-        if (os.getStudentID()== null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
+        if (os.getStudentID() == null) throw new OpenstudInvalidResponseException("StudentID can't be left empty");
         while (true) {
             try {
                 _login();
@@ -277,15 +285,9 @@ public class OpenAuthenticationHandler implements AuthenticationHandler
 
     private synchronized void _login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         try {
-            if (!StringUtils.isNumeric(os.getStudentID())) throw new OpenstudInvalidCredentialsException("Student ID is not valid");
-            RequestBody formBody = new FormBody.Builder()
-                    .add("key", os.getKey()).add("matricola", String.valueOf(os.getStudentID())).add("stringaAutenticazione", os.getStudentPassword()).build();
-            Request req = new Request.Builder().url(os.getEndpointAPI()+ "/autenticazione").header("Accept", "application/json")
-                    .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            if (body.contains("the page you are looking for is currently unavailable")) throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
+            if (!StringUtils.isNumeric(os.getStudentID()))
+                throw new OpenstudInvalidCredentialsException("Student ID is not valid");
+            String body = executeLoginRequest();
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (body.contains("Matricola Errata"))

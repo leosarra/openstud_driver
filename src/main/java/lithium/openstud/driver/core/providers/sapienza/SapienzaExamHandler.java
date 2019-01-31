@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core.handlers;
+package lithium.openstud.driver.core.providers.sapienza;
 
 import lithium.openstud.driver.core.Openstud;
 import lithium.openstud.driver.core.OpenstudHelper;
@@ -25,26 +25,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class OpenExamHandler implements ExamHandler
-{
+public class SapienzaExamHandler implements ExamHandler {
     private Openstud os;
 
-    public OpenExamHandler(Openstud os)
-    {
+    public SapienzaExamHandler(Openstud os) {
         this.os = os;
     }
 
     @Override
-    public List<ExamDoable> getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException
-    {
+    public List<ExamDoable> getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
         List<ExamDoable> exams;
-        boolean refresh = false;
         while (true) {
             try {
-                if (refresh) os.refreshToken();
-                refresh = true;
+                if (count > 0) os.refreshToken();
                 exams = _getExamsDoable();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -65,11 +60,7 @@ public class OpenExamHandler implements ExamHandler
     private List<ExamDoable> _getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             Request req = new Request.Builder().url(os.getEndpointAPI() + "/studente/" + os.getStudentID() + "/insegnamentisostenibili?ingresso=" + os.getToken()).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            os.log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
+            JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
@@ -122,11 +113,9 @@ public class OpenExamHandler implements ExamHandler
         if (!os.isReady()) return null;
         int count = 0;
         List<ExamDone> exams;
-        boolean refresh = false;
         while (true) {
             try {
-                if (refresh) os.refreshToken();
-                refresh = true;
+                if (count > 0) os.refreshToken();
                 exams = _getExamsDone();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -147,11 +136,7 @@ public class OpenExamHandler implements ExamHandler
     private List<ExamDone> _getExamsDone() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             Request req = new Request.Builder().url(os.getEndpointAPI() + "/studente/" + os.getStudentID() + "/esami?ingresso=" + os.getToken()).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            os.log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
+            JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
@@ -224,11 +209,9 @@ public class OpenExamHandler implements ExamHandler
         if (!os.isReady()) return null;
         int count = 0;
         List<ExamReservation> reservations;
-        boolean refresh = false;
         while (true) {
             try {
-                if (refresh) os.refreshToken();
-                refresh = true;
+                if (count > 0) os.refreshToken();
                 reservations = _getActiveReservations();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -249,17 +232,14 @@ public class OpenExamHandler implements ExamHandler
     private List<ExamReservation> _getActiveReservations() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             Request req = new Request.Builder().url(os.getEndpointAPI() + "/studente/" + os.getStudentID() + "/prenotazioni?ingresso=" + os.getToken()).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            os.log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
+            JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
-            if (!response.has("appelli") || response.isNull("appelli")) throw new OpenstudInvalidResponseException("Infostud response is not valid. Maybe the server is not working");
+            if (!response.has("appelli") || response.isNull("appelli"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid. Maybe the server is not working");
             JSONArray array = response.getJSONArray("appelli");
-            return OpenstudHelper.sortReservationByDate(OpenstudHelper.extractReservations(array),true);
+            return OpenstudHelper.sortReservationByDate(SapienzaHelper.extractReservations(array), true);
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             os.log(Level.SEVERE, connectionException);
@@ -276,11 +256,9 @@ public class OpenExamHandler implements ExamHandler
         if (!os.isReady()) return null;
         int count = 0;
         List<ExamReservation> reservations;
-        boolean refresh = false;
         while (true) {
             try {
-                if (refresh) os.refreshToken();
-                refresh = true;
+                if (count > 0) os.refreshToken();
                 reservations = _getAvailableReservations(exam, student);
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -302,17 +280,13 @@ public class OpenExamHandler implements ExamHandler
         try {
             Request req = new Request.Builder().url(os.getEndpointAPI() + "/appello/ricerca?ingresso=" + os.getToken() + "&tipoRicerca=" + 4 + "&criterio=" + exam.getModuleCode() +
                     "&codiceCorso=" + exam.getCourseCode() + "&annoAccaAuto=" + student.getAcademicYearCourse()).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            os.log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
+            JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
             if (!response.has("appelli") || response.isNull("appelli")) return new LinkedList<>();
             JSONArray array = response.getJSONArray("appelli");
-            return OpenstudHelper.extractReservations(array);
+            return SapienzaHelper.extractReservations(array);
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             os.log(Level.SEVERE, connectionException);
@@ -329,11 +303,9 @@ public class OpenExamHandler implements ExamHandler
         if (!os.isReady()) return null;
         int count = 0;
         Pair<Integer, String> pr;
-        boolean refresh = false;
         while (true) {
             try {
-                if (refresh) os.refreshToken();
-                refresh = true;
+                if (count > 0) os.refreshToken();
                 pr = _insertReservation(res);
                 if (pr == null) {
                     if (!(++count == os.getMaxTries())) continue;
@@ -359,11 +331,7 @@ public class OpenExamHandler implements ExamHandler
             RequestBody reqbody = RequestBody.create(null, new byte[]{});
             Request req = new Request.Builder().url(os.getEndpointAPI() + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID()
                     + "/" + res.getCourseCode() + "?ingresso=" + os.getToken()).post(reqbody).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            os.log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
+            JSONObject response = checkResponse(req);
             String url = null;
             int flag = -1;
             String nota = null;
@@ -390,16 +358,22 @@ public class OpenExamHandler implements ExamHandler
         }
     }
 
+    private JSONObject checkResponse(Request req) throws IOException, OpenstudInvalidResponseException {
+        Response resp = os.getClient().newCall(req).execute();
+        if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+        String body = resp.body().string();
+        os.log(Level.INFO, body);
+        return new JSONObject(body);
+    }
+
     @Override
     public int deleteReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException, OpenstudInvalidCredentialsException {
         if (!os.isReady() || res.getReservationNumber() == -1) return -1;
         int count = 0;
         int ret;
-        boolean refresh = false;
         while (true) {
             try {
-                if (refresh) os.refreshToken();
-                refresh = true;
+                if (count > 0) os.refreshToken();
                 ret = _deleteReservation(res);
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -421,11 +395,7 @@ public class OpenExamHandler implements ExamHandler
         try {
             Request req = new Request.Builder().url(os.getEndpointAPI() + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID()
                     + "/" + os.getStudentID() + "/" + res.getReservationNumber() + "?ingresso=" + os.getToken()).delete().build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            os.log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
+            JSONObject response = checkResponse(req);
             int flag = -1;
             if (response.has("esito")) {
                 if (response.getJSONObject("esito").has("flagEsito")) {
@@ -449,11 +419,9 @@ public class OpenExamHandler implements ExamHandler
         if (!os.isReady() || reservation == null) return null;
         int count = 0;
         byte[] pdf;
-        boolean refresh = false;
         while (true) {
             try {
-                if (refresh) os.refreshToken();
-                refresh = true;
+                if (count > 0) os.refreshToken();
                 pdf = _getPdf(reservation);
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -475,11 +443,7 @@ public class OpenExamHandler implements ExamHandler
         try {
             Request req = new Request.Builder().url(os.getEndpointAPI() + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID() + "/"
                     + os.getStudentID() + "/pdf?ingresso=" + os.getToken()).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            String body = resp.body().string();
-            os.log(Level.INFO, body);
-            JSONObject response = new JSONObject(body);
+            JSONObject response = checkResponse(req);
             if (!response.has("risultato") || response.isNull("risultato"))
                 throw new OpenstudInvalidResponseException("Infostud answer is not valid, maybe the token is no longer valid");
             response = response.getJSONObject("risultato");
@@ -517,7 +481,7 @@ public class OpenExamHandler implements ExamHandler
                     avaiableReservations.addAll(_getAvailableReservations(exam, student));
                 }
                 return OpenstudHelper.generateEvents(reservations, avaiableReservations);
-            }catch (OpenstudInvalidResponseException e) {
+            } catch (OpenstudInvalidResponseException e) {
                 if (++count == os.getMaxTries()) {
                     if (e.isMaintenance()) throw e;
                     os.log(Level.SEVERE, e);

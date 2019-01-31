@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core.handlers;
+package lithium.openstud.driver.core.providers.sapienza;
 
 import lithium.openstud.driver.core.Openstud;
 import lithium.openstud.driver.core.OpenstudHelper;
@@ -24,18 +24,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class OpenClassroomHandler implements ClassroomHandler
-{
+public class SapienzaClassroomHandler implements ClassroomHandler {
     private Openstud os;
 
-    public OpenClassroomHandler(Openstud os)
-    {
+    public SapienzaClassroomHandler(Openstud os) {
         this.os = os;
     }
 
     @Override
-    public List<Classroom> getClassRoom(String query, boolean withTimetable) throws OpenstudInvalidResponseException, OpenstudConnectionException
-    {
+    public List<Classroom> getClassRoom(String query, boolean withTimetable) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         if (!os.isReady()) return null;
         int count = 0;
         while (true) {
@@ -54,21 +51,19 @@ public class OpenClassroomHandler implements ClassroomHandler
     private List<Classroom> _getClassroom(String query, boolean withTimetable) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Classroom> ret = new LinkedList<>();
         try {
-            Request req = new Request.Builder().url(os.getEndpointTimetable() +"classroom/search?q="+ query.replace(" ","%20")).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
-            String body = resp.body().string();
-            os.log(Level.INFO, body);
+            Request req = new Request.Builder().url(os.getEndpointTimetable() + "classroom/search?q=" + query.replace(" ", "%20")).build();
+            String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
             LocalDateTime now = LocalDateTime.now();
-            for (int i = 0; i<array.length(); i++) {
-                if(i==os.getLimitSearch()) break;
+            for (int i = 0; i < array.length(); i++) {
+                if (i == os.getLimitSearch()) break;
                 JSONObject object = array.getJSONObject(i);
                 Classroom classroom = parseClassroom(object);
-                if(withTimetable) {
+                if (withTimetable) {
                     List<Lesson> classLessons = getClassroomTimetable(classroom.getInternalId(), LocalDate.now());
-                    for(Lesson lesson : classLessons) {
-                        if(lesson.getStart().isBefore(now) && lesson.getEnd().isAfter(now)) classroom.setLessonNow(lesson);
+                    for (Lesson lesson : classLessons) {
+                        if (lesson.getStart().isBefore(now) && lesson.getEnd().isAfter(now))
+                            classroom.setLessonNow(lesson);
                         else if (lesson.getStart().isAfter(now)) {
                             classroom.setNextLesson(lesson);
                             break;
@@ -94,7 +89,17 @@ public class OpenClassroomHandler implements ClassroomHandler
         return ret;
     }
 
-    private Classroom parseClassroom(JSONObject object){
+    private String handleRequest(Request req) throws IOException, OpenstudInvalidResponseException {
+        Response resp = os.getClient().newCall(req).execute();
+        if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
+        String body = resp.body().string();
+        if (body.contains("maximum request limit"))
+            throw new OpenstudInvalidResponseException("Request rate limit reached").setRateLimitType();
+        os.log(Level.INFO, body);
+        return body;
+    }
+
+    private Classroom parseClassroom(JSONObject object) {
         Classroom classroom = new Classroom();
         for (String info : object.keySet()) {
             if (object.isNull(info)) continue;
@@ -145,7 +150,7 @@ public class OpenClassroomHandler implements ClassroomHandler
         int count = 0;
         while (true) {
             try {
-                return _getClassroomTimetable(id,date);
+                return _getClassroomTimetable(id, date);
             } catch (OpenstudInvalidResponseException e) {
                 if (e.isRateLimit()) throw e;
                 if (++count == os.getMaxTries()) {
@@ -159,17 +164,13 @@ public class OpenClassroomHandler implements ClassroomHandler
     private List<Lesson> _getClassroomTimetable(int id, LocalDate date) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Lesson> ret = new LinkedList<>();
         try {
-            Request req = new Request.Builder().url(os.getEndpointTimetable()+"events/"+date.getYear()+"/"+date.getMonthValue()+"/"+date.getDayOfMonth()+"/"+id).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
-            String body = resp.body().string();
-            if (body.contains("maximum request limit")) throw new OpenstudInvalidResponseException("Request rate limit reached").setRateLimitType();
-            os.log(Level.INFO, body);
+            Request req = new Request.Builder().url(os.getEndpointTimetable() + "events/" + date.getYear() + "/" + date.getMonthValue() + "/" + date.getDayOfMonth() + "/" + id).build();
+            String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
-            for (int i = 0; i<array.length(); i++){
+            for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                ret.add(OpenstudHelper.extractLesson(object, formatter));
+                ret.add(SapienzaHelper.extractLesson(object, formatter));
             }
             return OpenstudHelper.sortLessonsByStartDate(ret, true);
 
@@ -185,7 +186,7 @@ public class OpenClassroomHandler implements ClassroomHandler
     }
 
     @Override
-    public Map<String, List<Lesson>> getTimetable(List<ExamDoable> exams) throws OpenstudInvalidResponseException, OpenstudConnectionException  {
+    public Map<String, List<Lesson>> getTimetable(List<ExamDoable> exams) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         if (!os.isReady()) return null;
         int count = 0;
         Map<String, List<Lesson>> ret;
@@ -217,21 +218,17 @@ public class OpenClassroomHandler implements ClassroomHandler
                 builder.append(exam.getExamCode());
             }
             String codes = builder.toString();
-            Request req = new Request.Builder().url(os.getEndpointTimetable() +"lectures/"+ builder.toString()).build();
-            Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
-            String body = resp.body().string();
-            if (body.contains("maximum request limit")) throw new OpenstudInvalidResponseException("Request rate limit reached").setRateLimitType();
-            os.log(Level.INFO, body);
+            Request req = new Request.Builder().url(os.getEndpointTimetable() + "lectures/" + builder.toString()).build();
+            String body = handleRequest(req);
             JSONObject response = new JSONObject(body);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
             for (String examCode : response.keySet()) {
                 if (!codes.contains(examCode)) continue;
                 JSONArray array = response.getJSONArray(examCode);
                 LinkedList<Lesson> lessons = new LinkedList<>();
-                for (int i = 0; i<array.length(); i++) {
+                for (int i = 0; i < array.length(); i++) {
                     JSONObject object = array.getJSONObject(i);
-                    lessons.add(OpenstudHelper.extractLesson(object, formatter));
+                    lessons.add(SapienzaHelper.extractLesson(object, formatter));
                 }
                 ret.put(examCode, lessons);
             }

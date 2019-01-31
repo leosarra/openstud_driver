@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core.handlers;
+package lithium.openstud.driver.core.providers.sapienza;
 
 import lithium.openstud.driver.core.Openstud;
 import lithium.openstud.driver.core.internals.BioHandler;
@@ -20,12 +20,10 @@ import org.threeten.bp.format.DateTimeParseException;
 import java.io.IOException;
 import java.util.logging.Level;
 
-public class OpenBioHandler implements BioHandler
-{
+public class SapienzaBioHandler implements BioHandler {
     private Openstud os;
 
-    public OpenBioHandler(Openstud os)
-    {
+    public SapienzaBioHandler(Openstud os) {
         this.os = os;
     }
 
@@ -51,7 +49,7 @@ public class OpenBioHandler implements BioHandler
         }
     }
 
-    private Student _getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException{
+    private Student _getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             JSONObject response = getResponse();
             return parseStudent(response);
@@ -67,7 +65,7 @@ public class OpenBioHandler implements BioHandler
     }
 
     private JSONObject getResponse() throws IOException, OpenstudInvalidResponseException {
-        Request req = new Request.Builder().url(os.getEndpointAPI()+ "/studente/" + os.getStudentID()+ "?ingresso=" + os.getToken()).build();
+        Request req = new Request.Builder().url(os.getEndpointAPI() + "/studente/" + os.getStudentID() + "?ingresso=" + os.getToken()).build();
         Response resp = os.getClient().newCall(req).execute();
         if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
         String body = resp.body().string();
@@ -78,7 +76,7 @@ public class OpenBioHandler implements BioHandler
         return response.getJSONObject("ritorno");
     }
 
-    private Student parseStudent(JSONObject response){
+    private Student parseStudent(JSONObject response) {
         Student st = new Student();
         st.setStudentID(os.getStudentID());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");

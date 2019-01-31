@@ -7,13 +7,13 @@ public interface AuthenticationHandler
     String getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;
 
-    int recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException,
+    boolean recoverPassword(String answer) throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException;
 
     void resetPassword(String new_password) throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;
 
-    int recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException,
+    boolean recoverPasswordWithEmail(String email, String answer) throws OpenstudConnectionException,
             OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudInvalidAnswerException;
 
     void login() throws OpenstudInvalidCredentialsException, OpenstudConnectionException,
