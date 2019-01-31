@@ -125,7 +125,7 @@ public class Classroom {
         this.todayLessons = todayLessons;
     }
 
-    public boolean hasCoordinates(){
+    public boolean hasCoordinates() {
         return hasCoordinates;
     }
 

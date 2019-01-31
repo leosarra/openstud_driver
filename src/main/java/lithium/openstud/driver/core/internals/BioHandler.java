@@ -5,8 +5,7 @@ import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidCredentialsException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 
-public interface BioHandler
-{
+public interface BioHandler {
     Student getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;
 }

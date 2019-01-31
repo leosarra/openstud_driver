@@ -53,24 +53,24 @@ public class News {
         this.url = url;
     }
 
-    public String getSmallImageUrl(){
+    public String getSmallImageUrl() {
         return smallImageUrl;
     }
 
-    public void setSmallImageUrl(String smallUrl){
+    public void setSmallImageUrl(String smallUrl) {
         this.smallImageUrl = smallUrl;
     }
 
-    public LocalDate getDate(){
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date){
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "News{" +
                 "imageUrl='" + imageUrl + '\'' +
                 ", title='" + title + '\'' +

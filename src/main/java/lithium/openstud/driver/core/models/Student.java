@@ -214,8 +214,7 @@ public class Student {
     }
 
     public boolean isEnrolled() {
-        if (getTypeStudent() == -1) return false;
-        return true;
+        return getTypeStudent() != -1;
     }
 
     @Override

@@ -2,19 +2,12 @@ package lithium.openstud.driver.core;
 
 import lithium.openstud.driver.core.models.*;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
-import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.format.DateTimeFormatter;
-import org.threeten.bp.format.DateTimeParseException;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class OpenstudHelper {
 
@@ -23,12 +16,12 @@ public class OpenstudHelper {
     }
 
     public enum Provider {
-        MOBILE, WEB
+        SAPIENZA
     }
 
-    public static boolean isValidUrl(String url){
-        if (url==null) return false;
-        String[] schemes = {"http","https"};
+    public static boolean isValidUrl(String url) {
+        if (url == null) return false;
+        String[] schemes = {"http", "https"};
         UrlValidator urlValidator = new UrlValidator(schemes);
         return urlValidator.isValid(url);
     }
@@ -49,7 +42,7 @@ public class OpenstudHelper {
     }
 
     public static int computeBaseGraduation(List<ExamDone> list, int laude) {
-        double result = (computeWeightedAverage(list,laude)*110)/30;
+        double result = (computeWeightedAverage(list, laude) * 110) / 30;
         return (int) Math.ceil(result);
     }
 
@@ -91,12 +84,12 @@ public class OpenstudHelper {
         return done;
     }
 
-    public static List<Event> generateEventsFromTimetable(Map<String,List<Lesson>> timetable) {
+    public static List<Event> generateEventsFromTimetable(Map<String, List<Lesson>> timetable) {
         List<Event> events = new LinkedList<>();
         for (String code : timetable.keySet()) {
             List<Lesson> lessons = timetable.get(code);
             for (Lesson lesson : lessons) {
-                Event ev = new Event(lesson.getName(),lesson.getStart(), lesson.getEnd(), EventType.LESSON);
+                Event ev = new Event(lesson.getName(), lesson.getStart(), lesson.getEnd(), EventType.LESSON);
                 ev.setTeacher(lesson.getTeacher());
                 ev.setWhere(lesson.getWhere());
                 events.add(ev);
@@ -108,7 +101,7 @@ public class OpenstudHelper {
     public static List<Event> generateEventsFromTimetable(List<Lesson> timetable) {
         List<Event> events = new LinkedList<>();
         for (Lesson lesson : timetable) {
-            Event ev = new Event(lesson.getName(),lesson.getStart(), lesson.getEnd(), EventType.LESSON);
+            Event ev = new Event(lesson.getName(), lesson.getStart(), lesson.getEnd(), EventType.LESSON);
             ev.setTeacher(lesson.getTeacher());
             ev.setWhere(lesson.getWhere());
             events.add(ev);
@@ -182,14 +175,14 @@ public class OpenstudHelper {
 
     public static List<Lesson> sortLessonsByStartDate(List<Lesson> list, boolean ascending) {
         Collections.sort(list, (o1, o2) -> {
-            if (o1.getStart() == null && o2.getStart()  == null) return 0;
+            if (o1.getStart() == null && o2.getStart() == null) return 0;
             if (ascending)
-                if (o1.getStart()  == null) return 1;
-                else if (o2.getStart()  == null) return -1;
+                if (o1.getStart() == null) return 1;
+                else if (o2.getStart() == null) return -1;
                 else return o1.getStart().compareTo(o2.getStart());
             else {
                 if (o1.getStart() == null) return -1;
-                else if (o2.getStart()== null) return 1;
+                else if (o2.getStart() == null) return 1;
                 else return o2.getStart().compareTo(o1.getStart());
             }
         });

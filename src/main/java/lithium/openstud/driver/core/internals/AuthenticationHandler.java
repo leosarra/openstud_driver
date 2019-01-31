@@ -2,8 +2,7 @@ package lithium.openstud.driver.core.internals;
 
 import lithium.openstud.driver.exceptions.*;
 
-public interface AuthenticationHandler
-{
+public interface AuthenticationHandler {
     String getSecurityQuestion() throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;
 
@@ -21,4 +20,4 @@ public interface AuthenticationHandler
 
     void refreshToken() throws OpenstudRefreshException, OpenstudInvalidResponseException;
 
-    }
+}

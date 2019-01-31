@@ -22,14 +22,14 @@ public class Event {
     private String imageUrl;
     private String room;
 
-    public Event(String description, LocalDateTime start, LocalDateTime end, EventType eventType){
+    public Event(String description, LocalDateTime start, LocalDateTime end, EventType eventType) {
         this.description = description;
         this.start = start;
         this.end = end;
         this.eventType = eventType;
     }
 
-    public Event(EventType eventType){
+    public Event(EventType eventType) {
         this.eventType = eventType;
     }
 

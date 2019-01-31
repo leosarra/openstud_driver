@@ -10,8 +10,7 @@ import org.threeten.bp.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-public interface ClassroomHandler
-{
+public interface ClassroomHandler {
     List<Classroom> getClassRoom(String query, boolean withTimetable) throws OpenstudInvalidResponseException,
             OpenstudConnectionException;
 
@@ -24,4 +23,4 @@ public interface ClassroomHandler
             OpenstudConnectionException;
 
 
-    }
+}

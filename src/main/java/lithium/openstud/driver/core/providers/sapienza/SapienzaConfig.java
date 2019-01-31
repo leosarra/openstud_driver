@@ -12,6 +12,17 @@ public class SapienzaConfig implements ProviderConfig {
     private final boolean TAX_ENABLED = true;
     private final boolean REFRESH_ENABLED = true;
 
+    @Override
+    public String getEndpointAPI(OpenstudHelper.Mode mode) {
+        if (mode == OpenstudHelper.Mode.MOBILE) return "https://www.studenti.uniroma1.it/phxdroidws";
+        else return "https://www.studenti.uniroma1.it/phoenixws";
+    }
+
+    @Override
+    public String getEndpointTimetable(OpenstudHelper.Mode mode) {
+        return "https://gomp.sapienzaapps.it/";
+    }
+
     public boolean isAuthEnabled() {
         return AUTH_ENABLED;
     }

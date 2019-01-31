@@ -8,8 +8,7 @@ import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 
 import java.util.List;
 
-public interface TaxHandler
-{
+public interface TaxHandler {
     List<Tax> getUnpaidTaxes() throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;
 
@@ -23,5 +22,4 @@ public interface TaxHandler
             OpenstudInvalidCredentialsException;
 
 
-
-    }
+}

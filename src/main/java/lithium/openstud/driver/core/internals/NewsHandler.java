@@ -7,8 +7,7 @@ import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 
 import java.util.List;
 
-public interface NewsHandler
-{
+public interface NewsHandler {
     List<News> getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage,
                        String query) throws OpenstudInvalidResponseException, OpenstudConnectionException;
 
