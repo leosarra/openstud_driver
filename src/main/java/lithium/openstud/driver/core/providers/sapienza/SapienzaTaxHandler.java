@@ -81,8 +81,10 @@ public class SapienzaTaxHandler implements TaxHandler {
 
     private List<Tax> _getTaxes(boolean paid) throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/contabilita/" + os.getStudentID() +
-                    "/bollettinipagati?ingresso=" + os.getToken()).build();
+            String partial;
+            if (paid) partial = "bollettinipagati";
+            else partial = "bollettininonpagati";
+            Request req = new Request.Builder().url(String.format("%s/contabilita/%s/%s?ingresso=%s",os.getEndpointAPI(),os.getStudentID(),partial, os.getToken())).build();
             Response resp = os.getClient().newCall(req).execute();
             List<Tax> list = new LinkedList<>();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
@@ -97,7 +99,6 @@ public class SapienzaTaxHandler implements TaxHandler {
             if (!response.has("risultati") || response.isNull("risultati")) return new LinkedList<>();
             JSONArray array = response.getJSONArray("risultati");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            System.out.println(body);
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
                 Tax tax = new Tax();
@@ -184,8 +185,7 @@ public class SapienzaTaxHandler implements TaxHandler {
 
     private Isee _getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/contabilita/" + os.getStudentID() +
-                    "/isee?ingresso=" + os.getToken()).build();
+            Request req = new Request.Builder().url(String.format("%s/contabilita/%s/isee?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
@@ -231,8 +231,7 @@ public class SapienzaTaxHandler implements TaxHandler {
 
     private List<Isee> _getIseeHistory() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/contabilita/" + os.getStudentID() +
-                    "/listaIsee?ingresso=" + os.getToken()).build();
+            Request req = new Request.Builder().url(String.format("%s/contabilita/%s/listaIsee?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
             Response resp = os.getClient().newCall(req).execute();
             List<Isee> list = new LinkedList<>();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");

@@ -52,7 +52,7 @@ public class SapienzaBioHandler implements BioHandler {
     private Student _getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             JSONObject response = getResponse();
-            return parseStudent(response);
+            return SapienzaHelper.extractStudent(os,response);
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             os.log(Level.SEVERE, connectionException);
@@ -65,7 +65,7 @@ public class SapienzaBioHandler implements BioHandler {
     }
 
     private JSONObject getResponse() throws IOException, OpenstudInvalidResponseException {
-        Request req = new Request.Builder().url(os.getEndpointAPI() + "/studente/" + os.getStudentID() + "?ingresso=" + os.getToken()).build();
+        Request req = new Request.Builder().url(String.format("%s/studente/%s?ingresso=%s",os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
         Response resp = os.getClient().newCall(req).execute();
         if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
         String body = resp.body().string();
@@ -74,92 +74,5 @@ public class SapienzaBioHandler implements BioHandler {
         if (!response.has("ritorno"))
             throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
         return response.getJSONObject("ritorno");
-    }
-
-    private Student parseStudent(JSONObject response) {
-        Student st = new Student();
-        st.setStudentID(os.getStudentID());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        for (String element : response.keySet()) {
-            if (response.isNull(element)) continue;
-            switch (element) {
-                case "codiceFiscale":
-                    st.setCF(response.getString("codiceFiscale"));
-                    break;
-                case "cognome":
-                    st.setLastName(StringUtils.capitalize(response.getString("cognome").toLowerCase()));
-                    break;
-                case "nome":
-                    st.setFirstName(StringUtils.capitalize(response.getString("nome").toLowerCase()));
-                    break;
-                case "dataDiNascita":
-                    String dateBirth = response.getString("dataDiNascita");
-                    if (!(dateBirth == null || dateBirth.isEmpty())) {
-                        try {
-                            st.setBirthDate(LocalDate.parse(response.getString("dataDiNascita"), formatter));
-                        } catch (DateTimeParseException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
-                case "comuneDiNasciata":
-                    st.setBirthCity(response.getString("comuneDiNasciata"));
-                    break;
-                case "luogoDiNascita":
-                    st.setBirthPlace(response.getString("luogoDiNascita"));
-                    break;
-                case "annoCorso":
-                    st.setCourseYear(response.getString("annoCorso"));
-                    break;
-                case "primaIscr":
-                    st.setFirstEnrollment(response.getString("primaIscr"));
-                    break;
-                case "ultIscr":
-                    st.setLastEnrollment(response.getString("ultIscr"));
-                    break;
-                case "facolta":
-                    st.setDepartmentName(response.getString("facolta"));
-                    break;
-                case "nomeCorso":
-                    st.setCourseName(response.getString("nomeCorso"));
-                    break;
-                case "annoAccaAtt":
-                    st.setAcademicYear(response.getInt("annoAccaAtt"));
-                    break;
-                case "codCorso":
-                    st.setCodeCourse(response.getInt("codCorso"));
-                    break;
-                case "tipoStudente":
-                    st.setTypeStudent(response.getInt("tipoStudente"));
-                    break;
-                case "tipoIscrizione":
-                    st.setStudentStatus(response.getString("tipoIscrizione"));
-                    break;
-                case "isErasmus":
-                    st.setErasmus(response.getBoolean("isErasmus"));
-                    break;
-                case "nazioneNascita":
-                    st.setNation(response.getString("nazioneNascita"));
-                    break;
-                case "creditiTotali":
-                    String cfu = response.getString("creditiTotali");
-                    if (NumberUtils.isDigits(cfu)) st.setCfu(Integer.parseInt(cfu));
-                    break;
-                case "indiMailIstituzionale":
-                    st.setEmail(response.getString("indiMailIstituzionale"));
-                case "sesso":
-                    st.setGender(response.getString("sesso"));
-                    break;
-                case "annoAccaCors":
-                    st.setAcademicYearCourse(response.getInt("annoAccaCors"));
-                    break;
-                case "cittadinanza":
-                    st.setCitizenship(response.getString("cittadinanza"));
-                    break;
-                default:
-                    break;
-            }
-        }
-        return st;
     }
 }

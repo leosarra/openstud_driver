@@ -20,7 +20,7 @@ public class SapienzaConfig implements ProviderConfig {
 
     @Override
     public String getEndpointTimetable(OpenstudHelper.Mode mode) {
-        return "https://gomp.sapienzaapps.it/";
+        return "https://gomp.sapienzaapps.it";
     }
 
     public boolean isAuthEnabled() {
