@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.models;
 
 
 import org.threeten.bp.LocalDateTime;
@@ -14,7 +14,7 @@ public class Lesson {
         return name;
     }
 
-    protected void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -22,7 +22,7 @@ public class Lesson {
         return where;
     }
 
-    protected void setWhere(String where) {
+    public void setWhere(String where) {
         this.where = where;
     }
 
@@ -30,7 +30,7 @@ public class Lesson {
         return start;
     }
 
-    protected void setStart(LocalDateTime start) {
+    public void setStart(LocalDateTime start) {
         this.start = start;
     }
 
@@ -38,7 +38,7 @@ public class Lesson {
         return end;
     }
 
-    protected void setEnd(LocalDateTime end) {
+    public void setEnd(LocalDateTime end) {
         this.end = end;
     }
 

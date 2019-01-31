@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.models;
 
 
 import org.threeten.bp.LocalDate;
@@ -38,7 +38,7 @@ public class Event {
         return title;
     }
 
-    void setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -126,7 +126,7 @@ public class Event {
         return url;
     }
 
-    void setUrl(String url) {
+    public void setUrl(String url) {
         this.url = url;
     }
 
@@ -134,7 +134,7 @@ public class Event {
         return imageUrl;
     }
 
-    void setImageUrl(String imageUrl) {
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
@@ -142,7 +142,7 @@ public class Event {
         return room;
     }
 
-    void setRoom(String room) {
+    public void setRoom(String room) {
         this.room = room;
     }
 

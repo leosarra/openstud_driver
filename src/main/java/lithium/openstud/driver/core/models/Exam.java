@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.models;
 
 public abstract class Exam {
     private String description;
@@ -10,7 +10,7 @@ public abstract class Exam {
         return description;
     }
 
-    protected void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -18,7 +18,7 @@ public abstract class Exam {
         return examCode;
     }
 
-    protected void setExamCode(String examCode) {
+    public void setExamCode(String examCode) {
         this.examCode = examCode;
     }
 
@@ -26,7 +26,7 @@ public abstract class Exam {
         return ssd;
     }
 
-    protected void setSsd(String ssd) {
+    public void setSsd(String ssd) {
         this.ssd = ssd;
     }
 
@@ -34,7 +34,7 @@ public abstract class Exam {
         return cfu;
     }
 
-    protected void setCfu(int cfu) {
+    public void setCfu(int cfu) {
         this.cfu = cfu;
     }
 }

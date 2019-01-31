@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.models;
 
 
 import org.threeten.bp.LocalDate;
@@ -32,23 +32,23 @@ public class Isee {
         return isEditable;
     }
 
-    protected void setValue(double value) {
+    public void setValue(double value) {
         this.value = value;
     }
 
-    protected void setProtocol(String protocol) {
+    public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 
-    protected void setDateOperation(LocalDate dateOperation) {
+    public void setDateOperation(LocalDate dateOperation) {
         this.dateOperation = dateOperation;
     }
 
-    protected void setDateDeclaration(LocalDate dateDeclaration) {
+    public void setDateDeclaration(LocalDate dateDeclaration) {
         this.dateDeclaration = dateDeclaration;
     }
 
-    protected void setEditable(boolean editable) {
+    public void setEditable(boolean editable) {
         isEditable = editable;
     }
 

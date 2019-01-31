@@ -1,4 +1,4 @@
-package lithium.openstud.driver.core;
+package lithium.openstud.driver.core.models;
 
 
 import org.threeten.bp.LocalDate;
@@ -17,7 +17,7 @@ public class ExamDone extends Exam {
         return date;
     }
 
-    protected void setDate(LocalDate date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -25,7 +25,7 @@ public class ExamDone extends Exam {
         return year;
     }
 
-    protected void setYear(int year) {
+    public void setYear(int year) {
         this.year = year;
     }
 
@@ -33,7 +33,7 @@ public class ExamDone extends Exam {
         return nominalResult;
     }
 
-    protected void setNominalResult(String nominalResult) {
+    public void setNominalResult(String nominalResult) {
         this.nominalResult = nominalResult;
     }
 
@@ -41,7 +41,7 @@ public class ExamDone extends Exam {
         return result;
     }
 
-    protected void setResult(int result) {
+    public void setResult(int result) {
         this.result = result;
     }
 
@@ -49,7 +49,7 @@ public class ExamDone extends Exam {
         return passed;
     }
 
-    protected void setPassed(boolean passed) {
+    public void setPassed(boolean passed) {
         this.passed = passed;
     }
 
@@ -57,7 +57,7 @@ public class ExamDone extends Exam {
         return certified;
     }
 
-    protected void setCertified(boolean certified) {
+    public void setCertified(boolean certified) {
         this.certified = certified;
     }
 

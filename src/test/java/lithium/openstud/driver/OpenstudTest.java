@@ -1,6 +1,7 @@
 package lithium.openstud.driver;
 
 import lithium.openstud.driver.core.*;
+import lithium.openstud.driver.core.models.*;
 import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidCredentialsException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
@@ -9,7 +10,6 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
@@ -181,7 +181,10 @@ public class OpenstudTest
         Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
         List<News> list=osb.getNews("it", true, null, 0, null, null);
         assertNotNull(list);
+        int limit = 5;
+        list=osb.getNews("it", true, limit, null, null, null);
         assertFalse(list.isEmpty());
+        assertTrue(list.size() <= limit);
     }
 
 
