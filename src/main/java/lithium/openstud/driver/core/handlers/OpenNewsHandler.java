@@ -38,9 +38,6 @@ public class OpenNewsHandler implements NewsHandler
     public List<News> getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage, String query) throws OpenstudInvalidResponseException, OpenstudConnectionException
     {
         if (limit == null && page == null && maxPage == null) throw new IllegalStateException("limit, page and maxpage can't be all null");
-        if (limit==null) limit=-1;
-        if (page==null) page=-1;
-        if (maxPage==null) maxPage=-1;
         return  _getNews(locale, withDescription, limit, page, maxPage, query);
     }
 
@@ -55,8 +52,8 @@ public class OpenNewsHandler implements NewsHandler
         try {
             List<News> ret = new LinkedList<>();
             int startPage = 0;
-            int endPage = maxPage;
-            if(page != -1){
+            int endPage = maxPage == null? 1 : maxPage;
+            if(page != null){
                 startPage = page;
                 endPage = startPage + 1;
             }
@@ -83,7 +80,7 @@ public class OpenNewsHandler implements NewsHandler
                     news.setUrl(website_url + box.getElementsByTag("a").attr("href").trim());
                     news.setSmallImageUrl(box.getElementsByTag("img").attr("src"));
                     ret.add(news);
-                    if(limit != -1 && ret.size() >= limit){
+                    if(limit != null && ret.size() >= limit){
                         shouldStop = true;
                         break;
                     }

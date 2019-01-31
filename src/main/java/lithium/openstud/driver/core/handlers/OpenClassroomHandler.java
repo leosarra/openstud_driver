@@ -38,11 +38,9 @@ public class OpenClassroomHandler implements ClassroomHandler
     {
         if (!os.isReady()) return null;
         int count = 0;
-        List<Classroom> ret;
         while (true) {
             try {
-                ret = _getClassroom(query, withTimetable);
-                break;
+                return _getClassroom(query, withTimetable);
             } catch (OpenstudInvalidResponseException e) {
                 if (e.isRateLimit()) throw e;
                 if (++count == os.getMaxTries()) {
@@ -51,7 +49,6 @@ public class OpenClassroomHandler implements ClassroomHandler
                 }
             }
         }
-        return ret;
     }
 
     private List<Classroom> _getClassroom(String query, boolean withTimetable) throws OpenstudInvalidResponseException, OpenstudConnectionException {
@@ -67,42 +64,7 @@ public class OpenClassroomHandler implements ClassroomHandler
             for (int i = 0; i<array.length(); i++) {
                 if(i==os.getLimitSearch()) break;
                 JSONObject object = array.getJSONObject(i);
-                Classroom classroom = new Classroom();
-                for (String info : object.keySet()) {
-                    if (object.isNull(info)) continue;
-                    switch (info) {
-                        case "roominternalid":
-                            classroom.setInternalId(object.getInt(info));
-                            break;
-                        case "fullname":
-                            classroom.setFullName(object.getString(info));
-                            break;
-                        case "name":
-                            classroom.setName(object.getString(info));
-                            break;
-                        case "site":
-                            classroom.setWhere(object.getString(info));
-                            break;
-                        case "lat":
-                            classroom.setLatitude(object.getDouble(info));
-                            break;
-                        case "lng":
-                            classroom.setLongitude(object.getDouble(info));
-                            break;
-                        case "occupied":
-                            classroom.setOccupied(object.getBoolean(info));
-                            break;
-                        case "willbeoccupied":
-                            classroom.setWillBeOccupied(object.getBoolean(info));
-                            break;
-                        case "weight":
-                            classroom.setWeight(object.getInt(info));
-                            break;
-                        default:
-                            break;
-                    }
-
-                }
+                Classroom classroom = parseClassroom(object);
                 if(withTimetable) {
                     List<Lesson> classLessons = getClassroomTimetable(classroom.getInternalId(), LocalDate.now());
                     for(Lesson lesson : classLessons) {
@@ -132,6 +94,45 @@ public class OpenClassroomHandler implements ClassroomHandler
         return ret;
     }
 
+    private Classroom parseClassroom(JSONObject object){
+        Classroom classroom = new Classroom();
+        for (String info : object.keySet()) {
+            if (object.isNull(info)) continue;
+            switch (info) {
+                case "roominternalid":
+                    classroom.setInternalId(object.getInt(info));
+                    break;
+                case "fullname":
+                    classroom.setFullName(object.getString(info));
+                    break;
+                case "name":
+                    classroom.setName(object.getString(info));
+                    break;
+                case "site":
+                    classroom.setWhere(object.getString(info));
+                    break;
+                case "lat":
+                    classroom.setLatitude(object.getDouble(info));
+                    break;
+                case "lng":
+                    classroom.setLongitude(object.getDouble(info));
+                    break;
+                case "occupied":
+                    classroom.setOccupied(object.getBoolean(info));
+                    break;
+                case "willbeoccupied":
+                    classroom.setWillBeOccupied(object.getBoolean(info));
+                    break;
+                case "weight":
+                    classroom.setWeight(object.getInt(info));
+                    break;
+                default:
+                    break;
+            }
+        }
+        return classroom;
+    }
+
     @Override
     public List<Lesson> getClassroomTimetable(Classroom room, LocalDate date) throws OpenstudConnectionException, OpenstudInvalidResponseException {
         if (room == null) return new LinkedList<>();
@@ -142,11 +143,9 @@ public class OpenClassroomHandler implements ClassroomHandler
     public List<Lesson> getClassroomTimetable(int id, LocalDate date) throws OpenstudConnectionException, OpenstudInvalidResponseException {
         if (!os.isReady()) return null;
         int count = 0;
-        List<Lesson> ret;
         while (true) {
             try {
-                ret = _getClassroomTimetable(id,date);
-                break;
+                return _getClassroomTimetable(id,date);
             } catch (OpenstudInvalidResponseException e) {
                 if (e.isRateLimit()) throw e;
                 if (++count == os.getMaxTries()) {
@@ -155,8 +154,6 @@ public class OpenClassroomHandler implements ClassroomHandler
                 }
             }
         }
-        return ret;
-
     }
 
     private List<Lesson> _getClassroomTimetable(int id, LocalDate date) throws OpenstudInvalidResponseException, OpenstudConnectionException {
@@ -214,9 +211,8 @@ public class OpenClassroomHandler implements ClassroomHandler
             StringBuilder builder = new StringBuilder();
             boolean first = true;
             for (ExamDoable exam : exams) {
-                if (!first) {
+                if (!first)
                     builder.append(",");
-                }
                 first = false;
                 builder.append(exam.getExamCode());
             }
