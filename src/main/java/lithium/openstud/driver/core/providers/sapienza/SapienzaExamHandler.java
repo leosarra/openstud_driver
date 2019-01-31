@@ -59,7 +59,7 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private List<ExamDoable> _getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/studente/" + os.getStudentID() + "/insegnamentisostenibili?ingresso=" + os.getToken()).build();
+            Request req = new Request.Builder().url(String.format("%s/studente/%s/insegnamentisostenibili?ingresso=%s",os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
             JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
@@ -135,7 +135,7 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private List<ExamDone> _getExamsDone() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/studente/" + os.getStudentID() + "/esami?ingresso=" + os.getToken()).build();
+            Request req = new Request.Builder().url(String.format("%s/studente/%s/esami?ingresso=%s", os.getEndpointAPI(),os.getStudentID(),os.getToken())).build();
             JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
@@ -231,7 +231,7 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private List<ExamReservation> _getActiveReservations() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/studente/" + os.getStudentID() + "/prenotazioni?ingresso=" + os.getToken()).build();
+            Request req = new Request.Builder().url(String.format("%s/studente/%s/prenotazioni?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
             JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
@@ -278,8 +278,7 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private List<ExamReservation> _getAvailableReservations(ExamDoable exam, Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/appello/ricerca?ingresso=" + os.getToken() + "&tipoRicerca=" + 4 + "&criterio=" + exam.getModuleCode() +
-                    "&codiceCorso=" + exam.getCourseCode() + "&annoAccaAuto=" + student.getAcademicYearCourse()).build();
+            Request req = new Request.Builder().url(String.format("%s/appello/ricerca?ingresso=%s&tipoRicerca=%s&criterio=%s&codiceCorso=%s&annoAccaAuto=%s", os.getEndpointAPI(), os.getToken(), 4, exam.getModuleCode(), exam.getCourseCode(), student.getAcademicYearCourse())).build();
             JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
@@ -329,8 +328,7 @@ public class SapienzaExamHandler implements ExamHandler {
     private ImmutablePair<Integer, String> _insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
             RequestBody reqbody = RequestBody.create(null, new byte[]{});
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID()
-                    + "/" + res.getCourseCode() + "?ingresso=" + os.getToken()).post(reqbody).build();
+            Request req = new Request.Builder().url(String.format("%s/prenotazione/%s/%s/%s?ingresso=%s", os.getEndpointAPI(), res.getReportID(), res.getSessionID(),res.getCourseCode(), os.getToken())).post(reqbody).build();
             JSONObject response = checkResponse(req);
             String url = null;
             int flag = -1;
@@ -393,8 +391,8 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private int _deleteReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID()
-                    + "/" + os.getStudentID() + "/" + res.getReservationNumber() + "?ingresso=" + os.getToken()).delete().build();
+            Request req = new Request.Builder().url(String.format("%s/prenotazione/%s/%s/%s/%s?ingresso=%s",os.getEndpointAPI(), res.getReportID(), res.getSessionID(),
+                    os.getStudentID(), res.getReservationNumber(), os.getToken())).delete().build();
             JSONObject response = checkResponse(req);
             int flag = -1;
             if (response.has("esito")) {
@@ -441,8 +439,7 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private byte[] _getPdf(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
-            Request req = new Request.Builder().url(os.getEndpointAPI() + "/prenotazione/" + res.getReportID() + "/" + res.getSessionID() + "/"
-                    + os.getStudentID() + "/pdf?ingresso=" + os.getToken()).build();
+            Request req = new Request.Builder().url(String.format("%s/prenotazione/%s/%s/%s/pdf?ingresso=%s", os.getEndpointAPI(), res.getReportID(), res.getSessionID(), os.getStudentID(), os.getToken())).build();
             JSONObject response = checkResponse(req);
             if (!response.has("risultato") || response.isNull("risultato"))
                 throw new OpenstudInvalidResponseException("Infostud answer is not valid, maybe the token is no longer valid");
