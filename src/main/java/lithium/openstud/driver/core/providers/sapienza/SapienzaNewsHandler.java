@@ -145,7 +145,7 @@ public class SapienzaNewsHandler implements NewsHandler {
                     failed++;
                     continue;
                 }
-                Event ev = new Event(EventType.NEWSLETTER);
+                Event ev = new Event(EventType.THEATRE);
                 String date = views.remove(0).getElementsByTag("a").text().replace(",", "");
                 String time = views.remove(0).getElementsByTag("a").text();
                 try {
