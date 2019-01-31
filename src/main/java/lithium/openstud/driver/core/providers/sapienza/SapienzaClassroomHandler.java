@@ -51,7 +51,7 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
     private List<Classroom> _getClassroom(String query, boolean withTimetable) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Classroom> ret = new LinkedList<>();
         try {
-            Request req = new Request.Builder().url(String.format("%s/classroom/search?q=%s",os.getEndpointTimetable(), query.replace(" ", "%20"))).build();
+            Request req = new Request.Builder().url(String.format("%s/classroom/search?q=%s", os.getEndpointTimetable(), query.replace(" ", "%20"))).build();
             String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
             LocalDateTime now = LocalDateTime.now();
@@ -218,7 +218,7 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
                 builder.append(exam.getExamCode());
             }
             String codes = builder.toString();
-            Request req = new Request.Builder().url(String.format("%s/lectures/%s",os.getEndpointTimetable(),builder.toString())).build();
+            Request req = new Request.Builder().url(String.format("%s/lectures/%s", os.getEndpointTimetable(), builder.toString())).build();
             String body = handleRequest(req);
             JSONObject response = new JSONObject(body);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");

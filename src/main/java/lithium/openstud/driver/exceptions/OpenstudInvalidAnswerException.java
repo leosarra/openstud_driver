@@ -4,5 +4,8 @@ public class OpenstudInvalidAnswerException extends Exception {
     public OpenstudInvalidAnswerException(String message) {
         super(message);
     }
-    public OpenstudInvalidAnswerException(Exception e) { super(e); }
+
+    public OpenstudInvalidAnswerException(Exception e) {
+        super(e);
+    }
 }

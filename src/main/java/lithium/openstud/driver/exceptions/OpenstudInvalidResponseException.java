@@ -4,7 +4,10 @@ public class OpenstudInvalidResponseException extends OpenstudBaseResponseExcept
     public OpenstudInvalidResponseException(String message) {
         super(message);
     }
-    public OpenstudInvalidResponseException(Exception e) { super(e); }
+
+    public OpenstudInvalidResponseException(Exception e) {
+        super(e);
+    }
 
     @Override
     public OpenstudInvalidResponseException setJSONType() {

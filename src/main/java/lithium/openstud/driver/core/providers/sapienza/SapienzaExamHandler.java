@@ -59,7 +59,7 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private List<ExamDoable> _getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            Request req = new Request.Builder().url(String.format("%s/studente/%s/insegnamentisostenibili?ingresso=%s",os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
+            Request req = new Request.Builder().url(String.format("%s/studente/%s/insegnamentisostenibili?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
             JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
@@ -135,7 +135,7 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private List<ExamDone> _getExamsDone() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            Request req = new Request.Builder().url(String.format("%s/studente/%s/esami?ingresso=%s", os.getEndpointAPI(),os.getStudentID(),os.getToken())).build();
+            Request req = new Request.Builder().url(String.format("%s/studente/%s/esami?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
             JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
@@ -328,7 +328,7 @@ public class SapienzaExamHandler implements ExamHandler {
     private ImmutablePair<Integer, String> _insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
             RequestBody reqbody = RequestBody.create(null, new byte[]{});
-            Request req = new Request.Builder().url(String.format("%s/prenotazione/%s/%s/%s?ingresso=%s", os.getEndpointAPI(), res.getReportID(), res.getSessionID(),res.getCourseCode(), os.getToken())).post(reqbody).build();
+            Request req = new Request.Builder().url(String.format("%s/prenotazione/%s/%s/%s?ingresso=%s", os.getEndpointAPI(), res.getReportID(), res.getSessionID(), res.getCourseCode(), os.getToken())).post(reqbody).build();
             JSONObject response = checkResponse(req);
             String url = null;
             int flag = -1;
@@ -391,7 +391,7 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private int _deleteReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
-            Request req = new Request.Builder().url(String.format("%s/prenotazione/%s/%s/%s/%s?ingresso=%s",os.getEndpointAPI(), res.getReportID(), res.getSessionID(),
+            Request req = new Request.Builder().url(String.format("%s/prenotazione/%s/%s/%s/%s?ingresso=%s", os.getEndpointAPI(), res.getReportID(), res.getSessionID(),
                     os.getStudentID(), res.getReservationNumber(), os.getToken())).delete().build();
             JSONObject response = checkResponse(req);
             int flag = -1;

@@ -4,7 +4,10 @@ public class OpenstudRefreshException extends OpenstudBaseLoginException {
     public OpenstudRefreshException(String message) {
         super(message);
     }
-    public OpenstudRefreshException(Exception e) { super(e); }
+
+    public OpenstudRefreshException(Exception e) {
+        super(e);
+    }
 
     @Override
     public OpenstudRefreshException setPasswordExpiredType() {

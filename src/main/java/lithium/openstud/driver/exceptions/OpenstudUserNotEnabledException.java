@@ -4,5 +4,8 @@ public class OpenstudUserNotEnabledException extends Exception {
     public OpenstudUserNotEnabledException(String message) {
         super(message);
     }
-    public OpenstudUserNotEnabledException(Exception e) { super(e); }
+
+    public OpenstudUserNotEnabledException(Exception e) {
+        super(e);
+    }
 }

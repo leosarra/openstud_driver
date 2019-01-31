@@ -84,7 +84,7 @@ public class SapienzaTaxHandler implements TaxHandler {
             String partial;
             if (paid) partial = "bollettinipagati";
             else partial = "bollettininonpagati";
-            Request req = new Request.Builder().url(String.format("%s/contabilita/%s/%s?ingresso=%s",os.getEndpointAPI(),os.getStudentID(),partial, os.getToken())).build();
+            Request req = new Request.Builder().url(String.format("%s/contabilita/%s/%s?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), partial, os.getToken())).build();
             Response resp = os.getClient().newCall(req).execute();
             List<Tax> list = new LinkedList<>();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");

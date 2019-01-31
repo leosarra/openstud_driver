@@ -5,7 +5,9 @@ public class OpenstudInvalidCredentialsException extends OpenstudBaseLoginExcept
         super(message);
     }
 
-    public OpenstudInvalidCredentialsException(Exception e) { super(e); }
+    public OpenstudInvalidCredentialsException(Exception e) {
+        super(e);
+    }
 
     @Override
     public OpenstudInvalidCredentialsException setPasswordExpiredType() {

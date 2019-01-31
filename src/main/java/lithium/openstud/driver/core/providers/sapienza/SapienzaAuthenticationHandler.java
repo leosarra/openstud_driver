@@ -53,7 +53,7 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
     private String executeLoginRequest() throws IOException, OpenstudInvalidResponseException {
         RequestBody formBody = new FormBody.Builder()
                 .add("key", os.getKey()).add("matricola", os.getStudentID()).add("stringaAutenticazione", os.getStudentPassword()).build();
-        Request req = new Request.Builder().url(String.format("%s/autenticazione",os.getEndpointAPI())).header("Accept", "application/json")
+        Request req = new Request.Builder().url(String.format("%s/autenticazione", os.getEndpointAPI())).header("Accept", "application/json")
                 .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
         Response resp = os.getClient().newCall(req).execute();
         if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
@@ -84,7 +84,7 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
         try {
             RequestBody formBody = new FormBody.Builder()
                     .add("matricola", String.valueOf(os.getStudentID())).build();
-            Request req = new Request.Builder().url(String.format("%s/pwd/recuperaDomanda/matricola/",os.getEndpointAPI())).header("Accept", "application/json")
+            Request req = new Request.Builder().url(String.format("%s/pwd/recuperaDomanda/matricola/", os.getEndpointAPI())).header("Accept", "application/json")
                     .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
@@ -158,7 +158,7 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
     }
 
     private String executeRecoveryRequest(RequestBody formBody) throws IOException, OpenstudInvalidResponseException {
-        Request req = new Request.Builder().url(String.format("%s/pwd/recupera/matricola",os.getEndpointAPI())).header("Accept", "application/json")
+        Request req = new Request.Builder().url(String.format("%s/pwd/recupera/matricola", os.getEndpointAPI())).header("Accept", "application/json")
                 .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
         Response resp = os.getClient().newCall(req).execute();
         if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");

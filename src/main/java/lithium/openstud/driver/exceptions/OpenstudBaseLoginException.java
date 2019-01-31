@@ -2,8 +2,9 @@ package lithium.openstud.driver.exceptions;
 
 public abstract class OpenstudBaseLoginException extends Exception {
     public enum Type {
-        INVALID_PASSWORD, EXPIRED_PASSWORD;
+        INVALID_PASSWORD, EXPIRED_PASSWORD
     }
+
     Type type;
 
     OpenstudBaseLoginException(String message) {
@@ -22,20 +23,20 @@ public abstract class OpenstudBaseLoginException extends Exception {
         this.type = e.type;
     }
 
-    public boolean isPasswordExpired(){
+    public boolean isPasswordExpired() {
         return type == Type.EXPIRED_PASSWORD;
     }
 
-    public boolean isPasswordInvalid(){
+    public boolean isPasswordInvalid() {
         return type == Type.INVALID_PASSWORD;
     }
 
-    Exception setPasswordExpiredType(){
+    Exception setPasswordExpiredType() {
         type = Type.EXPIRED_PASSWORD;
         return this;
     }
 
-    Exception setPasswordInvalidType(){
+    Exception setPasswordInvalidType() {
         type = Type.INVALID_PASSWORD;
         return this;
     }

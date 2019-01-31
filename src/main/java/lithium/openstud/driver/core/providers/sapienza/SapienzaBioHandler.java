@@ -9,13 +9,8 @@ import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 import lithium.openstud.driver.exceptions.OpenstudRefreshException;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.format.DateTimeFormatter;
-import org.threeten.bp.format.DateTimeParseException;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -52,7 +47,7 @@ public class SapienzaBioHandler implements BioHandler {
     private Student _getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             JSONObject response = getResponse();
-            return SapienzaHelper.extractStudent(os,response);
+            return SapienzaHelper.extractStudent(os, response);
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             os.log(Level.SEVERE, connectionException);
@@ -65,7 +60,7 @@ public class SapienzaBioHandler implements BioHandler {
     }
 
     private JSONObject getResponse() throws IOException, OpenstudInvalidResponseException {
-        Request req = new Request.Builder().url(String.format("%s/studente/%s?ingresso=%s",os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
+        Request req = new Request.Builder().url(String.format("%s/studente/%s?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
         Response resp = os.getClient().newCall(req).execute();
         if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
         String body = resp.body().string();
