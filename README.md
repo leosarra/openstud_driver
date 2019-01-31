@@ -1,4 +1,4 @@
-# OpenStud Driver [![Build Status](https://travis-ci.com/LithiumSR/openstud_driver.svg?branch=master)](https://travis-ci.com/LithiumSR/openstud_driver) [![CodeFactor](https://www.codefactor.io/repository/github/lithiumsr/openstud_driver/badge)](https://www.codefactor.io/repository/github/lithiumsr/openstud_driver) [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+# OpenStud Driver [![Build Status](https://travis-ci.com/LithiumSR/openstud_driver.svg?branch=master)](https://travis-ci.com/LithiumSR/openstud_driver) [![CodeFactor](https://www.codefactor.io/repository/github/lithiumsr/openstud_driver/badge)](https://www.codefactor.io/repository/github/lithiumsr/openstud_driver) [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/LithiumSR/openstud_driver.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/LithiumSR/openstud_driver/context:java) [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 OpenStud driver is Java Libary to obtain infos from Sapienza University's Infostud.
 
