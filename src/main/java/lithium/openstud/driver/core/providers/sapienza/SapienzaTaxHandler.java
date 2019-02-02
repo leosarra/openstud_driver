@@ -105,40 +105,41 @@ public class SapienzaTaxHandler implements TaxHandler {
                 for (String element : obj.keySet()) {
                     switch (element) {
                         case "codiceBollettino":
-                            tax.setCode(obj.getString("codiceBollettino"));
+                            tax.setCode(obj.getString(element));
                             break;
                         case "corsoDiStudi":
-                            tax.setCodeCourse(obj.getString("corsoDiStudi"));
+                            tax.setCodeCourse(obj.getString(element));
                             break;
                         case "descCorsoDiStudi":
-                            tax.setDescriptionCourse(obj.getString("descCorsoDiStudi"));
+                            tax.setDescriptionCourse(obj.getString(element));
                             break;
                         case "impoVers":
                             try {
-                                double value = Double.parseDouble(obj.getString("impoVers"));
+                                double value = Double.parseDouble(obj.getString(element));
                                 tax.setAmount(value);
                             } catch (NumberFormatException e) {
                                 os.log(Level.SEVERE, e);
                             }
                             break;
                         case "annoAcca":
-                            tax.setAcademicYear(obj.getInt("annoAcca"));
+                            tax.setAcademicYear(obj.getInt(element));
                             break;
                         case "dataVers":
-                            tax.setPaymentDate(LocalDate.parse(obj.getString("dataVers"), formatter));
+                            if (!paid) break;
+                            tax.setPaymentDate(LocalDate.parse(obj.getString(element), formatter));
                             break;
                         case "importoBollettino":
                             if (obj.isNull(element)) break;
                             try {
-                                double value = Double.parseDouble(obj.getString("importoBollettino").replace(",", "."));
+                                double value = Double.parseDouble(obj.getString(element).replace(",", "."));
                                 tax.setAmount(value);
                             } catch (NumberFormatException e) {
                                 os.log(Level.SEVERE, e);
                             }
                             break;
                         case "scadenza":
-                            if (obj.getString("scadenza").equals("")) continue;
-                            tax.setExpirationDate(LocalDate.parse(obj.getString("scadenza"), formatter));
+                            if (obj.getString(element).isEmpty()) continue;
+                            tax.setExpirationDate(LocalDate.parse(obj.getString(element), formatter));
                             break;
                         default:
                             break;
