@@ -4,10 +4,12 @@ import lithium.openstud.driver.core.internals.*;
 import lithium.openstud.driver.core.models.*;
 import lithium.openstud.driver.core.providers.sapienza.*;
 import lithium.openstud.driver.exceptions.*;
+import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.tuple.Pair;
 import org.threeten.bp.LocalDate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -55,6 +57,7 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
                 .connectTimeout(builder.connectTimeout, TimeUnit.SECONDS)
                 .writeTimeout(builder.writeTimeout, TimeUnit.SECONDS)
                 .readTimeout(builder.readTimeout, TimeUnit.SECONDS).retryOnConnectionFailure(true)
+                .connectionSpecs(Collections.singletonList(ConnectionSpec.COMPATIBLE_TLS))
                 .build();
         init();
     }
