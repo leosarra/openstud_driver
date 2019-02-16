@@ -1,7 +1,6 @@
 package lithium.openstud.driver.exceptions;
 
 public class OpenstudInvalidResponseException extends OpenstudBaseResponseException {
-    private String tokenUsed;
     public OpenstudInvalidResponseException(String message) {
         super(message);
     }
@@ -30,15 +29,5 @@ public class OpenstudInvalidResponseException extends OpenstudBaseResponseExcept
         super.setHTMLType();
         return this;
     }
-
-    public OpenstudInvalidResponseException setTokenUsed(String token) {
-        tokenUsed = token;
-        return this;
-    }
-
-    public String getTokenUsed(){
-        return tokenUsed;
-    }
-
 
 }
