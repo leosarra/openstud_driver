@@ -36,12 +36,10 @@ public class SapienzaExamHandler implements ExamHandler {
     public List<ExamDoable> getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
-        boolean refreshRequired = true;
         List<ExamDoable> exams;
         while (true) {
             try {
-                if (count > 0 && refreshRequired) os.refreshToken();
-                refreshRequired = true;
+                if (count > 0) os.refreshToken();
                 exams = _getExamsDoable();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -50,7 +48,6 @@ public class SapienzaExamHandler implements ExamHandler {
                     os.log(Level.SEVERE, e);
                     throw e;
                 }
-                if (e.getTokenUsed() != null && !e.getTokenUsed().equals(os.getToken())) refreshRequired = false;
             } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 os.log(Level.SEVERE, invalidCredentials);
@@ -61,9 +58,8 @@ public class SapienzaExamHandler implements ExamHandler {
     }
 
     private List<ExamDoable> _getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException {
-        String token = os.getToken();
         try {
-            Request req = new Request.Builder().url(String.format("%s/studente/%s/insegnamentisostenibili?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), token)).build();
+            Request req = new Request.Builder().url(String.format("%s/studente/%s/insegnamentisostenibili?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
             JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid").setTokenUsed(token);
@@ -116,12 +112,10 @@ public class SapienzaExamHandler implements ExamHandler {
     public List<ExamDone> getExamsDone() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
-        boolean refreshRequired = true;
         List<ExamDone> exams;
         while (true) {
             try {
-                if (count > 0 && refreshRequired) os.refreshToken();
-                refreshRequired = true;
+                if (count > 0) os.refreshToken();
                 exams = _getExamsDone();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -130,7 +124,6 @@ public class SapienzaExamHandler implements ExamHandler {
                     os.log(Level.SEVERE, e);
                     throw e;
                 }
-                if (e.getTokenUsed() != null && !e.getTokenUsed().equals(os.getToken())) refreshRequired = false;
             } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 os.log(Level.SEVERE, invalidCredentials);
@@ -141,9 +134,8 @@ public class SapienzaExamHandler implements ExamHandler {
     }
 
     private List<ExamDone> _getExamsDone() throws OpenstudConnectionException, OpenstudInvalidResponseException {
-        String token = os.getToken();
         try {
-            Request req = new Request.Builder().url(String.format("%s/studente/%s/esami?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), token)).build();
+            Request req = new Request.Builder().url(String.format("%s/studente/%s/esami?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
             JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid").setTokenUsed(token);
@@ -216,12 +208,10 @@ public class SapienzaExamHandler implements ExamHandler {
     public List<ExamReservation> getActiveReservations() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
-        boolean refreshRequired = true;
         List<ExamReservation> reservations;
         while (true) {
             try {
-                if (count > 0 && refreshRequired) os.refreshToken();
-                refreshRequired = true;
+                if (count > 0) os.refreshToken();
                 reservations = _getActiveReservations();
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -230,7 +220,6 @@ public class SapienzaExamHandler implements ExamHandler {
                     os.log(Level.SEVERE, e);
                     throw e;
                 }
-                if (e.getTokenUsed() != null && !e.getTokenUsed().equals(os.getToken())) refreshRequired = false;
             } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 os.log(Level.SEVERE, invalidCredentials);
@@ -241,9 +230,8 @@ public class SapienzaExamHandler implements ExamHandler {
     }
 
     private List<ExamReservation> _getActiveReservations() throws OpenstudConnectionException, OpenstudInvalidResponseException {
-        String token = os.getToken();
         try {
-            Request req = new Request.Builder().url(String.format("%s/studente/%s/prenotazioni?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), token)).build();
+            Request req = new Request.Builder().url(String.format("%s/studente/%s/prenotazioni?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
             JSONObject response = checkResponse(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid").setTokenUsed(token);
@@ -267,12 +255,10 @@ public class SapienzaExamHandler implements ExamHandler {
     public List<ExamReservation> getAvailableReservations(ExamDoable exam, Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
-        boolean refreshRequired = true;
         List<ExamReservation> reservations;
         while (true) {
             try {
-                if (count > 0 && refreshRequired) os.refreshToken();
-                refreshRequired = true;
+                if (count > 0) os.refreshToken();
                 reservations = _getAvailableReservations(exam, student);
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -281,7 +267,6 @@ public class SapienzaExamHandler implements ExamHandler {
                     os.log(Level.SEVERE, e);
                     throw e;
                 }
-                if (e.getTokenUsed() != null && !e.getTokenUsed().equals(os.getToken())) refreshRequired = false;
             } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 os.log(Level.SEVERE, invalidCredentials);
@@ -317,12 +302,10 @@ public class SapienzaExamHandler implements ExamHandler {
     public Pair<Integer, String> insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
-        boolean refreshRequired = true;
         Pair<Integer, String> pr;
         while (true) {
             try {
-                if (count > 0 && refreshRequired) os.refreshToken();
-                refreshRequired = true;
+                if (count > 0) os.refreshToken();
                 pr = _insertReservation(res);
                 if (pr == null) {
                     if (!(++count == os.getMaxTries())) continue;
@@ -334,7 +317,6 @@ public class SapienzaExamHandler implements ExamHandler {
                     os.log(Level.SEVERE, e);
                     throw e;
                 }
-                if (e.getTokenUsed() != null && !e.getTokenUsed().equals(os.getToken())) refreshRequired = false;
             } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 os.log(Level.SEVERE, invalidCredentials);
@@ -388,12 +370,10 @@ public class SapienzaExamHandler implements ExamHandler {
     public int deleteReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException, OpenstudInvalidCredentialsException {
         if (!os.isReady() || res.getReservationNumber() == -1) return -1;
         int count = 0;
-        boolean refreshRequired = true;
         int ret;
         while (true) {
             try {
-                if (count > 0 && refreshRequired) os.refreshToken();
-                refreshRequired = true;
+                if (count > 0) os.refreshToken();
                 ret = _deleteReservation(res);
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -402,7 +382,6 @@ public class SapienzaExamHandler implements ExamHandler {
                     os.log(Level.SEVERE, e);
                     throw e;
                 }
-                if (e.getTokenUsed() != null && !e.getTokenUsed().equals(os.getToken())) refreshRequired = false;
             } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 os.log(Level.SEVERE, invalidCredentials);
@@ -440,12 +419,10 @@ public class SapienzaExamHandler implements ExamHandler {
     public byte[] getPdf(ExamReservation reservation) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady() || reservation == null) return null;
         int count = 0;
-        boolean refreshRequired = true;
         byte[] pdf;
         while (true) {
             try {
-                if (count > 0 && refreshRequired) os.refreshToken();
-                refreshRequired = true;
+                if (count > 0) os.refreshToken();
                 pdf = _getPdf(reservation);
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -454,7 +431,6 @@ public class SapienzaExamHandler implements ExamHandler {
                     os.log(Level.SEVERE, e);
                     throw e;
                 }
-                if (e.getTokenUsed() != null && !e.getTokenUsed().equals(os.getToken())) refreshRequired = false;
             } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 os.log(Level.SEVERE, invalidCredentials);
@@ -494,11 +470,11 @@ public class SapienzaExamHandler implements ExamHandler {
     public List<Event> getCalendarEvents(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
-        boolean refreshRequired = true;
+        boolean refresh = false;
         while (true) {
             try {
-                if (count > 0 && refreshRequired) os.refreshToken();
-                refreshRequired = true;
+                if (refresh) os.refreshToken();
+                refresh = true;
                 List<ExamDoable> exams = _getExamsDoable();
                 List<ExamReservation> reservations = _getActiveReservations();
                 List<ExamReservation> avaiableReservations = new LinkedList<>();
@@ -512,7 +488,6 @@ public class SapienzaExamHandler implements ExamHandler {
                     os.log(Level.SEVERE, e);
                     throw e;
                 }
-                if (e.getTokenUsed() != null && !e.getTokenUsed().equals(os.getToken())) refreshRequired = false;
             } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 os.log(Level.SEVERE, invalidCredentials);
