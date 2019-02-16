@@ -151,7 +151,7 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
     }
 
     @Override
-    public void refreshToken() throws OpenstudRefreshException, OpenstudInvalidResponseException {
+    public synchronized void refreshToken() throws OpenstudRefreshException, OpenstudInvalidResponseException {
         if (!config.isRefreshEnabled()) throw new IllegalStateException("Provider doesn't support this feature");
         authenticator.refreshToken();
     }
