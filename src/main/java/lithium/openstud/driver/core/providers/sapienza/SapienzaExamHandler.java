@@ -466,11 +466,9 @@ public class SapienzaExamHandler implements ExamHandler {
     public List<Event> getCalendarEvents(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
-        boolean refresh = false;
         while (true) {
             try {
-                if (refresh) os.refreshToken();
-                refresh = true;
+                if (count > 0) os.refreshToken();
                 List<ExamDoable> exams = _getExamsDoable();
                 List<ExamReservation> reservations = _getActiveReservations();
                 List<ExamReservation> avaiableReservations = new LinkedList<>();
