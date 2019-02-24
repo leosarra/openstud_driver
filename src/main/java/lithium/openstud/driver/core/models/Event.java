@@ -1,7 +1,6 @@
 package lithium.openstud.driver.core.models;
 
 
-import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
 import java.util.Objects;
@@ -13,21 +12,11 @@ public class Event {
     private String where;
     private LocalDateTime start;
     private LocalDateTime end;
-    private LocalDate startReservations;
-    private LocalDate endReservations;
-    private LocalDate examDate;
     private EventType eventType;
     private ExamReservation res;
     private String url;
     private String imageUrl;
     private String room;
-
-    public Event(String description, LocalDateTime start, LocalDateTime end, EventType eventType) {
-        this.description = description;
-        this.start = start;
-        this.end = end;
-        this.eventType = eventType;
-    }
 
     public Event(EventType eventType) {
         this.eventType = eventType;
@@ -74,22 +63,6 @@ public class Event {
         this.teacher = teacher;
     }
 
-    public LocalDate getStartReservations() {
-        return startReservations;
-    }
-
-    public void setStartReservations(LocalDate startReservations) {
-        this.startReservations = startReservations;
-    }
-
-    public LocalDate getEndReservations() {
-        return endReservations;
-    }
-
-    public void setEndReservations(LocalDate endReservations) {
-        this.endReservations = endReservations;
-    }
-
     public LocalDateTime getEnd() {
         return end;
     }
@@ -104,14 +77,6 @@ public class Event {
 
     public void setWhere(String where) {
         this.where = where;
-    }
-
-    public LocalDate getExamDate() {
-        return examDate;
-    }
-
-    public void setExamDate(LocalDate examDate) {
-        this.examDate = examDate;
     }
 
     public ExamReservation getReservation() {
@@ -155,9 +120,6 @@ public class Event {
                 ", where='" + where + '\'' +
                 ", start=" + start +
                 ", end=" + end +
-                ", startReservations=" + startReservations +
-                ", endReservations=" + endReservations +
-                ", examDate=" + examDate +
                 ", eventType=" + eventType +
                 ", imageUrl=" + imageUrl +
                 ", url=" + url +
@@ -175,9 +137,6 @@ public class Event {
                 Objects.equals(where, event.where) &&
                 Objects.equals(start, event.start) &&
                 Objects.equals(end, event.end) &&
-                Objects.equals(startReservations, event.startReservations) &&
-                Objects.equals(endReservations, event.endReservations) &&
-                Objects.equals(examDate, event.examDate) &&
                 Objects.equals(imageUrl, event.imageUrl) &&
                 Objects.equals(url, event.url) &&
                 Objects.equals(room, event.room) &&
@@ -187,6 +146,6 @@ public class Event {
 
     @Override
     public int hashCode() {
-        return Objects.hash(description, teacher, where, start, end, startReservations, endReservations, examDate, eventType, imageUrl, url, room, title);
+        return Objects.hash(description, teacher, where, start, end, eventType, imageUrl, url, room, title);
     }
 }

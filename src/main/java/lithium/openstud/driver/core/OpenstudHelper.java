@@ -89,7 +89,10 @@ public class OpenstudHelper {
         for (String code : timetable.keySet()) {
             List<Lesson> lessons = timetable.get(code);
             for (Lesson lesson : lessons) {
-                Event ev = new Event(lesson.getName(), lesson.getStart(), lesson.getEnd(), EventType.LESSON);
+                Event ev = new Event(EventType.LESSON);
+                ev.setTitle(lesson.getName());
+                ev.setStart(lesson.getStart());
+                ev.setEnd(lesson.getEnd());
                 ev.setTeacher(lesson.getTeacher());
                 ev.setWhere(lesson.getWhere());
                 events.add(ev);
@@ -101,7 +104,10 @@ public class OpenstudHelper {
     public static List<Event> generateEventsFromTimetable(List<Lesson> timetable) {
         List<Event> events = new LinkedList<>();
         for (Lesson lesson : timetable) {
-            Event ev = new Event(lesson.getName(), lesson.getStart(), lesson.getEnd(), EventType.LESSON);
+            Event ev = new Event(EventType.LESSON);
+            ev.setTitle(lesson.getName());
+            ev.setStart(lesson.getStart());
+            ev.setEnd(lesson.getEnd());
             ev.setTeacher(lesson.getTeacher());
             ev.setWhere(lesson.getWhere());
             events.add(ev);
@@ -113,10 +119,10 @@ public class OpenstudHelper {
                                              List<ExamReservation> avaiableReservations) {
         List<Event> events = new LinkedList<>();
         for (ExamReservation res : reservations) {
-            Event ev = new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), null, EventType.RESERVED);
+            Event ev = new Event(EventType.RESERVED);
+            ev.setTitle(res.getExamSubject());
             ev.setWhere(res.getNote());
             ev.setTeacher(res.getTeacher());
-            ev.setExamDate(res.getExamDate());
             ev.setReservation(res);
             events.add(ev);
         }
@@ -129,12 +135,10 @@ public class OpenstudHelper {
                 }
             }
             if (exist) continue;
-            Event event = new Event(res.getExamSubject(), res.getExamDate().atStartOfDay(), null, EventType.DOABLE);
-            event.setStartReservations(res.getStartDate());
-            event.setEndReservations(res.getEndDate());
+            Event event = new Event(EventType.DOABLE);
+            event.setTitle(res.getExamSubject());
             event.setTeacher(res.getTeacher());
             event.setWhere(res.getNote());
-            event.setExamDate(res.getExamDate());
             event.setReservation(res);
             events.add(event);
         }
