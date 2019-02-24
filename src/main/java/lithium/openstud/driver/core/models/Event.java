@@ -121,9 +121,9 @@ public class Event {
         else return new Timestamp(getReservation().getExamDate().atStartOfDay(zoneId).toInstant().toEpochMilli());
     }
 
-    public LocalDate getEventDate(ZoneId zoneId){
-        if (getEventType() == EventType.LESSON || getEventType() == EventType.THEATRE) return getStart().toLocalDate().atStartOfDay(zoneId).toLocalDate();
-        else return getReservation().getExamDate().atStartOfDay(zoneId).toLocalDate();
+    public LocalDate getEventDate(){
+        if (getEventType() == EventType.LESSON || getEventType() == EventType.THEATRE) return getStart().toLocalDate();
+        else return getReservation().getExamDate();
     }
 
 
