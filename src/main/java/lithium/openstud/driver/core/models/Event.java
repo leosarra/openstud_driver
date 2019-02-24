@@ -1,19 +1,24 @@
 package lithium.openstud.driver.core.models;
 
 
+import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class Event {
-    private String title;
-    private String description;
-    private String teacher;
-    private String where;
-    private LocalDateTime start;
-    private LocalDateTime end;
     private EventType eventType;
-    private ExamReservation res;
+    private String title;
+    private String teacher;
+    private LocalDateTime start; //Only lessons
+    private LocalDateTime end; //Only lessons
+    private ExamReservation res; //Only Doable,Reserved
+    private String where; //Only lessons and theatre
+    //Only Theatre
+    private String description;
     private String url;
     private String imageUrl;
     private String room;
@@ -110,6 +115,17 @@ public class Event {
     public void setRoom(String room) {
         this.room = room;
     }
+
+    public Timestamp getTimestamp(ZoneId zoneId){
+        if (getEventType() == EventType.LESSON || getEventType() == EventType.THEATRE) return new Timestamp(getStart().toLocalDate().atStartOfDay(zoneId).toInstant().toEpochMilli());
+        else return new Timestamp(getReservation().getExamDate().atStartOfDay(zoneId).toInstant().toEpochMilli());
+    }
+
+    public LocalDate getEventDate(ZoneId zoneId){
+        if (getEventType() == EventType.LESSON || getEventType() == EventType.THEATRE) return getStart().toLocalDate().atStartOfDay(zoneId).toLocalDate();
+        else return getReservation().getExamDate().atStartOfDay(zoneId).toLocalDate();
+    }
+
 
     @Override
     public String toString() {

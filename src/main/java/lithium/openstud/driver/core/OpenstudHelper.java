@@ -121,7 +121,6 @@ public class OpenstudHelper {
         for (ExamReservation res : reservations) {
             Event ev = new Event(EventType.RESERVED);
             ev.setTitle(res.getExamSubject());
-            ev.setWhere(res.getNote());
             ev.setTeacher(res.getTeacher());
             ev.setReservation(res);
             events.add(ev);
@@ -138,7 +137,6 @@ public class OpenstudHelper {
             Event event = new Event(EventType.DOABLE);
             event.setTitle(res.getExamSubject());
             event.setTeacher(res.getTeacher());
-            event.setWhere(res.getNote());
             event.setReservation(res);
             events.add(event);
         }
