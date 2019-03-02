@@ -117,13 +117,26 @@ public class Event {
     }
 
     public Timestamp getTimestamp(ZoneId zoneId){
-        if (getEventType() == EventType.LESSON || getEventType() == EventType.THEATRE) return new Timestamp(getStart().toLocalDate().atStartOfDay(zoneId).toInstant().toEpochMilli());
-        else return new Timestamp(getReservation().getExamDate().atStartOfDay(zoneId).toInstant().toEpochMilli());
+        if (getEventType() == EventType.LESSON || getEventType() == EventType.THEATRE) {
+            if (getStart()!=null) return new Timestamp(getStart().toLocalDate().atStartOfDay(zoneId).toInstant().toEpochMilli());
+            else return null;
+        }
+        else {
+            if (getReservation()!=null && getReservation().getExamDate()!=null)
+                return new Timestamp(getReservation().getExamDate().atStartOfDay(zoneId).toInstant().toEpochMilli());
+            else return null;
+        }
     }
 
     public LocalDate getEventDate(){
-        if (getEventType() == EventType.LESSON || getEventType() == EventType.THEATRE) return getStart().toLocalDate();
-        else return getReservation().getExamDate();
+        if (getEventType() == EventType.LESSON || getEventType() == EventType.THEATRE) {
+            if (getStart()!= null) return getStart().toLocalDate();
+            else return null;
+        }
+        else {
+            if (getReservation()!=null) return getReservation().getExamDate();
+            else return null;
+        }
     }
 
 
