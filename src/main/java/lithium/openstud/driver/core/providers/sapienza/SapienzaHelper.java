@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 class SapienzaHelper {
 
-    static Lesson extractLesson(JSONObject response, DateTimeFormatter formatter) {
+    static Lesson extractLesson(JSONObject response, DateTimeFormatter formatter, boolean plusOneHour) {
         Lesson lesson = new Lesson();
         for (String lessonInfo : response.keySet()) {
             if (response.isNull(lessonInfo)) continue;
@@ -41,9 +41,11 @@ class SapienzaHelper {
                     break;
                 case "start":
                     lesson.setStart(LocalDateTime.parse(response.getString(lessonInfo), formatter));
+                    if (plusOneHour) lesson.setStart(lesson.getStart().plusHours(1));
                     break;
                 case "end":
                     lesson.setEnd(LocalDateTime.parse(response.getString(lessonInfo), formatter));
+                    if (plusOneHour) lesson.setEnd(lesson.getEnd().plusHours(1));
                     break;
                 default:
                     break;

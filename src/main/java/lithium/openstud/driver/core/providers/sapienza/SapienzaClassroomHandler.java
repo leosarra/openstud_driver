@@ -170,7 +170,7 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                ret.add(SapienzaHelper.extractLesson(object, formatter));
+                ret.add(SapienzaHelper.extractLesson(object, formatter, false));
             }
             return OpenstudHelper.sortLessonsByStartDate(ret, true);
 
@@ -228,7 +228,7 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
                 LinkedList<Lesson> lessons = new LinkedList<>();
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject object = array.getJSONObject(i);
-                    lessons.add(SapienzaHelper.extractLesson(object, formatter));
+                    lessons.add(SapienzaHelper.extractLesson(object, formatter, true));
                 }
                 ret.put(examCode, lessons);
             }
