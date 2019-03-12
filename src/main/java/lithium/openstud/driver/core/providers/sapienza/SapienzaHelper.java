@@ -8,6 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
@@ -40,11 +42,11 @@ class SapienzaHelper {
                     lesson.setWhere(response.getString(lessonInfo));
                     break;
                 case "start":
-                    lesson.setStart(LocalDateTime.parse(response.getString(lessonInfo), formatter));
+                    lesson.setStart(LocalDateTime.parse(response.getString(lessonInfo), formatter).atOffset(ZoneOffset.of("+1")).atZoneSameInstant(ZoneId.of("Europe/Rome")));
                     if (plusOneHour) lesson.setStart(lesson.getStart().plusHours(1));
                     break;
                 case "end":
-                    lesson.setEnd(LocalDateTime.parse(response.getString(lessonInfo), formatter));
+                    lesson.setEnd(LocalDateTime.parse(response.getString(lessonInfo), formatter).atOffset(ZoneOffset.of("+1")).atZoneSameInstant(ZoneId.of("Europe/Rome")));
                     if (plusOneHour) lesson.setEnd(lesson.getEnd().plusHours(1));
                     break;
                 default:

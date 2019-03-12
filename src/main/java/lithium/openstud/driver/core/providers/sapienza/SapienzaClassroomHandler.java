@@ -15,6 +15,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.io.IOException;
@@ -54,7 +56,7 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
             Request req = new Request.Builder().url(String.format("%s/classroom/search?q=%s", os.getEndpointTimetable(), query.replace(" ", "%20"))).build();
             String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
-            LocalDateTime now = LocalDateTime.now();
+            ZonedDateTime now = LocalDateTime.now(ZoneId.of("UTC")).atZone(ZoneId.systemDefault());
             for (int i = 0; i < array.length(); i++) {
                 if (i == os.getLimitSearch()) break;
                 JSONObject object = array.getJSONObject(i);

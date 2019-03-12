@@ -1,13 +1,13 @@
 package lithium.openstud.driver.core.models;
 
 
-import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZonedDateTime;
 
 public class Lesson {
     private String name;
     private String where;
-    private LocalDateTime start;
-    private LocalDateTime end;
+    private ZonedDateTime start;
+    private ZonedDateTime end;
     private String teacher;
 
     public String getName() {
@@ -26,19 +26,19 @@ public class Lesson {
         this.where = where;
     }
 
-    public LocalDateTime getStart() {
+    public ZonedDateTime getStart() {
         return start;
     }
 
-    public void setStart(LocalDateTime start) {
+    public void setStart(ZonedDateTime start) {
         this.start = start;
     }
 
-    public LocalDateTime getEnd() {
+    public ZonedDateTime getEnd() {
         return end;
     }
 
-    public void setEnd(LocalDateTime end) {
+    public void setEnd(ZonedDateTime end) {
         this.end = end;
     }
 
