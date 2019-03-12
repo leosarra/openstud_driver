@@ -72,7 +72,6 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
                         }
                     }
                     classroom.setTodayLessons(classLessons);
-                    ret.add(classroom);
                     Thread.sleep(os.getWaitTimeClassroomRequest());
                 }
                 ret.add(classroom);
