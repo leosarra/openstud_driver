@@ -6,7 +6,7 @@
 
 	<groupId>lithium.openstud.driver</groupId>
 	<artifactId>openstud-driver</artifactId>
-	<version>0.52.7</version>
+	<version>0.52.8</version>
 
 	<name>openstud-driver</name>
 
@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>org.threeten</groupId>
 			<artifactId>threetenbp</artifactId>
-			<version>1.3.8</version>
+			<version>1.3.9</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpasyncclient -->
