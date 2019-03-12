@@ -42,11 +42,11 @@ class SapienzaHelper {
                     lesson.setWhere(response.getString(lessonInfo));
                     break;
                 case "start":
-                    lesson.setStart(LocalDateTime.parse(response.getString(lessonInfo), formatter).atOffset(ZoneOffset.of("+1")).atZoneSameInstant(ZoneId.of("Europe/Rome")));
+                    lesson.setStart(LocalDateTime.parse(response.getString(lessonInfo), formatter));
                     if (plusOneHour) lesson.setStart(lesson.getStart().plusHours(1));
                     break;
                 case "end":
-                    lesson.setEnd(LocalDateTime.parse(response.getString(lessonInfo), formatter).atOffset(ZoneOffset.of("+1")).atZoneSameInstant(ZoneId.of("Europe/Rome")));
+                    lesson.setEnd(LocalDateTime.parse(response.getString(lessonInfo), formatter));
                     if (plusOneHour) lesson.setEnd(lesson.getEnd().plusHours(1));
                     break;
                 default:

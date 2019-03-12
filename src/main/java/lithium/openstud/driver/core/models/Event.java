@@ -2,6 +2,7 @@ package lithium.openstud.driver.core.models;
 
 
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
 
@@ -12,8 +13,8 @@ public class Event {
     private EventType eventType;
     private String title;
     private String teacher;
-    private ZonedDateTime start; //Only lessons
-    private ZonedDateTime end; //Only lessons
+    private LocalDateTime start; //Only lessons
+    private LocalDateTime end; //Only lessons
     private ExamReservation res; //Only Doable,Reserved
     private String where; //Only lessons and theatre
     //Only Theatre
@@ -43,11 +44,11 @@ public class Event {
         this.description = description;
     }
 
-    public ZonedDateTime getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
-    public void setStart(ZonedDateTime when) {
+    public void setStart(LocalDateTime when) {
         this.start = when;
     }
 
@@ -67,11 +68,11 @@ public class Event {
         this.teacher = teacher;
     }
 
-    public ZonedDateTime getEnd() {
+    public LocalDateTime getEnd() {
         return end;
     }
 
-    public void setEnd(ZonedDateTime end) {
+    public void setEnd(LocalDateTime end) {
         this.end = end;
     }
 

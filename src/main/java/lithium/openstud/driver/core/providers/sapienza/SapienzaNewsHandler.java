@@ -151,7 +151,7 @@ public class SapienzaNewsHandler implements NewsHandler {
                 String date = views.remove(0).getElementsByTag("a").text().replace(",", "");
                 String time = views.remove(0).getElementsByTag("a").text();
                 try {
-                    ev.setStart(LocalDateTime.parse(date + " " + time, formatter).atOffset(ZoneOffset.of("+1")).atZoneSameInstant(ZoneId.of("Europe/Rome")));
+                    ev.setStart(LocalDateTime.parse(date + " " + time, formatter));
                 } catch (DateTimeParseException e) {
                     failed++;
                     continue;
