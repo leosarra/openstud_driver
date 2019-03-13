@@ -60,6 +60,7 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
                 .connectionSpecs(Collections.singletonList(ConnectionSpec.COMPATIBLE_TLS))
                 .build();
         init();
+        config.addKeys(builder.keyMap);
     }
 
     private void init() {
@@ -112,10 +113,6 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
 
     public String getKey(String keyName){
         return config.getKey(keyName);
-    }
-
-    public void setKeys(Map<String,String> customKeys){
-        config.setKeys(customKeys);
     }
 
     public int getWaitTimeClassroomRequest() {

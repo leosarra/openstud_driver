@@ -24,7 +24,7 @@ public interface ProviderConfig {
 
     String getKey(String key);
 
-    void  setKeys(Map<String, String> customKeys);
+    void  addKeys(Map<String, String> customKeys);
     
     String getKey(OpenstudHelper.Mode mode);
 

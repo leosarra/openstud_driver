@@ -1,5 +1,7 @@
 package lithium.openstud.driver.core;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class OpenstudBuilder {
@@ -15,6 +17,7 @@ public class OpenstudBuilder {
     boolean readyState = false;
     int limitSearchResults = 13;
     int waitTimeClassroomRequest = 200;
+    Map<String,String> keyMap = new HashMap<>();
 
     public void setLimitSearchResults(int limitSearchResults) {
         this.limitSearchResults = limitSearchResults;
@@ -72,6 +75,11 @@ public class OpenstudBuilder {
 
     public OpenstudBuilder setProvider(OpenstudHelper.Provider provider) {
         this.provider = provider;
+        return this;
+    }
+
+    public OpenstudBuilder setKeys(Map<String,String> keyMap) {
+        this.keyMap = keyMap;
         return this;
     }
 
