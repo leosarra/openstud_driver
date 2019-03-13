@@ -52,8 +52,9 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
     private List<Classroom> _getClassroom(String query, boolean withTimetable) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Classroom> ret = new LinkedList<>();
         try {
-            Request req = new Request.Builder().url(String.format("%s/classroom/search?q=%s", os.getEndpointTimetable(), query.replace(" ", "%20")))
-            .addHeader("X-API-Key",os.getCustomKey("gomp")).build();
+            Request.Builder builder = new Request.Builder().url(String.format("%s/classroom/search?q=%s", os.getEndpointTimetable(), query.replace(" ", "%20")));
+            if (os.getCustomKey("gomp") != null) builder.addHeader("X-API-Key",os.getCustomKey("gomp"));
+            Request req = builder.build();
             String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
             LocalDateTime now = LocalDateTime.now();
@@ -165,8 +166,9 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
     private List<Lesson> _getClassroomTimetable(int id, LocalDate date) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Lesson> ret = new LinkedList<>();
         try {
-            Request req = new Request.Builder().url(String.format("%s/events/%s/%s/%s/%s", os.getEndpointTimetable(), date.getYear(), date.getMonthValue(), date.getDayOfMonth(), id))
-            .addHeader("X-API-Key",os.getCustomKey("gomp")).build();
+            Request.Builder builder = new Request.Builder().url(String.format("%s/events/%s/%s/%s/%s", os.getEndpointTimetable(), date.getYear(), date.getMonthValue(), date.getDayOfMonth(), id));
+            if (os.getCustomKey("gomp") != null) builder.addHeader("X-API-Key",os.getCustomKey("gomp"));
+            Request req = builder.build();
             String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
@@ -211,17 +213,18 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
         Map<String, List<Lesson>> ret = new HashMap<>();
         if (exams.isEmpty()) return ret;
         try {
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builderExams = new StringBuilder();
             boolean first = true;
             for (ExamDoable exam : exams) {
                 if (!first)
-                    builder.append(",");
+                    builderExams.append(",");
                 first = false;
-                builder.append(exam.getExamCode());
+                builderExams.append(exam.getExamCode());
             }
-            String codes = builder.toString();
-            Request req = new Request.Builder().url(String.format("%s/lectures/%s", os.getEndpointTimetable(), builder.toString()))
-            .addHeader("X-API-Key",os.getCustomKey("gomp")).build();
+            String codes = builderExams.toString();
+            Request.Builder builder = new Request.Builder().url(String.format("%s/lectures/%s", os.getEndpointTimetable(), builderExams.toString()));
+            if (os.getCustomKey("gomp") != null) builder.addHeader("X-API-Key",os.getCustomKey("gomp"));
+            Request req = builder.build();
             String body = handleRequest(req);
             JSONObject response = new JSONObject(body);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
