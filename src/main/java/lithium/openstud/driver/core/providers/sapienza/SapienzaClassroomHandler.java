@@ -55,8 +55,8 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
             Request req = new Request.Builder().url(String.format("%s/classroom/search?q=%s", os.getEndpointTimetable(), query.replace(" ", "%20"))).build();
             String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
-            LocalDateTime now1 = LocalDateTime.now(ZoneOffset.UTC);
-            LocalDateTime zonedTime = now1.atOffset(ZoneOffset.UTC).withOffsetSameInstant(ZoneOffset.of("+1")).toLocalDateTime();
+            LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+            LocalDateTime zonedTime = now.atOffset(ZoneOffset.UTC).withOffsetSameInstant(ZoneOffset.of("+1")).toLocalDateTime();
             for (int i = 0; i < array.length(); i++) {
                 if (i == os.getLimitSearch()) break;
                 JSONObject object = array.getJSONObject(i);
