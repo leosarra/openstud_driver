@@ -22,9 +22,9 @@ public interface ProviderConfig {
 
     boolean isRefreshEnabled();
 
-    String getCustomKey(String key);
+    String getKey(String key);
 
-    void  setCustomKeys(Map<String, String> customKeys);
+    void  setKeys(Map<String, String> customKeys);
     
     String getKey(OpenstudHelper.Mode mode);
 

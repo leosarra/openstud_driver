@@ -58,11 +58,11 @@ public class SapienzaConfig implements ProviderConfig {
         else return "r4g4zz3tt1";
     }
 
-    public synchronized String getCustomKey(String key){
+    public synchronized String getKey(String key){
         return CUSTOM_KEY_MAP.getOrDefault(key, null);
     }
 
-    public synchronized void setCustomKeys(Map<String,String> customKeys){
+    public synchronized void setKeys(Map<String,String> customKeys){
         CUSTOM_KEY_MAP.putAll(customKeys);
     }
 }
