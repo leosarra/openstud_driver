@@ -1,9 +1,7 @@
 package lithium.openstud.driver.core.models;
 
 
-import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.ZonedDateTime;
 
 public class Lesson {
     private String name;
