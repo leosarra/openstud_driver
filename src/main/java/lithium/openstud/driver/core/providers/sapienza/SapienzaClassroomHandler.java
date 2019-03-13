@@ -53,7 +53,7 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
         List<Classroom> ret = new LinkedList<>();
         try {
             Request.Builder builder = new Request.Builder().url(String.format("%s/classroom/search?q=%s", os.getEndpointTimetable(), query.replace(" ", "%20")));
-            if (os.getCustomKey("gomp") != null) builder.addHeader("X-API-Key",os.getCustomKey("gomp"));
+            if (os.getKey("gomp") != null) builder.addHeader("X-API-Key",os.getKey("gomp"));
             Request req = builder.build();
             String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
@@ -167,7 +167,7 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
         List<Lesson> ret = new LinkedList<>();
         try {
             Request.Builder builder = new Request.Builder().url(String.format("%s/events/%s/%s/%s/%s", os.getEndpointTimetable(), date.getYear(), date.getMonthValue(), date.getDayOfMonth(), id));
-            if (os.getCustomKey("gomp") != null) builder.addHeader("X-API-Key",os.getCustomKey("gomp"));
+            if (os.getKey("gomp") != null) builder.addHeader("X-API-Key",os.getKey("gomp"));
             Request req = builder.build();
             String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
@@ -223,7 +223,7 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
             }
             String codes = builderExams.toString();
             Request.Builder builder = new Request.Builder().url(String.format("%s/lectures/%s", os.getEndpointTimetable(), builderExams.toString()));
-            if (os.getCustomKey("gomp") != null) builder.addHeader("X-API-Key",os.getCustomKey("gomp"));
+            if (os.getKey("gomp") != null) builder.addHeader("X-API-Key",os.getKey("gomp"));
             Request req = builder.build();
             String body = handleRequest(req);
             JSONObject response = new JSONObject(body);
