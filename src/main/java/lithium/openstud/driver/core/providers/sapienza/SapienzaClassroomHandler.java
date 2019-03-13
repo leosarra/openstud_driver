@@ -2,6 +2,7 @@ package lithium.openstud.driver.core.providers.sapienza;
 
 import lithium.openstud.driver.core.Openstud;
 import lithium.openstud.driver.core.OpenstudHelper;
+import lithium.openstud.driver.core.OpenstudHelper.Mode;
 import lithium.openstud.driver.core.internals.ClassroomHandler;
 import lithium.openstud.driver.core.models.Classroom;
 import lithium.openstud.driver.core.models.ExamDoable;
@@ -51,7 +52,8 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
     private List<Classroom> _getClassroom(String query, boolean withTimetable) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Classroom> ret = new LinkedList<>();
         try {
-            Request req = new Request.Builder().url(String.format("%s/classroom/search?q=%s", os.getEndpointTimetable(), query.replace(" ", "%20"))).build();
+            Request req = new Request.Builder().url(String.format("%s/classroom/search?q=%s", os.getEndpointTimetable(), query.replace(" ", "%20")))
+            .addHeader("X-API-Key",os.getCustomKey("gomp")).build();
             String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
             LocalDateTime now = LocalDateTime.now();
@@ -163,7 +165,8 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
     private List<Lesson> _getClassroomTimetable(int id, LocalDate date) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Lesson> ret = new LinkedList<>();
         try {
-            Request req = new Request.Builder().url(String.format("%s/events/%s/%s/%s/%s", os.getEndpointTimetable(), date.getYear(), date.getMonthValue(), date.getDayOfMonth(), id)).build();
+            Request req = new Request.Builder().url(String.format("%s/events/%s/%s/%s/%s", os.getEndpointTimetable(), date.getYear(), date.getMonthValue(), date.getDayOfMonth(), id))
+            .addHeader("X-API-Key",os.getCustomKey("gomp")).build();
             String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
@@ -217,7 +220,8 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
                 builder.append(exam.getExamCode());
             }
             String codes = builder.toString();
-            Request req = new Request.Builder().url(String.format("%s/lectures/%s", os.getEndpointTimetable(), builder.toString())).build();
+            Request req = new Request.Builder().url(String.format("%s/lectures/%s", os.getEndpointTimetable(), builder.toString()))
+            .addHeader("X-API-Key",os.getCustomKey("gomp")).build();
             String body = handleRequest(req);
             JSONObject response = new JSONObject(body);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
