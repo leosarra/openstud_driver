@@ -1,5 +1,6 @@
 package lithium.openstud.driver.core.providers.sapienza;
-
+import java.util.HashMap;
+import java.util.Map;
 import lithium.openstud.driver.core.OpenstudHelper;
 import lithium.openstud.driver.core.internals.ProviderConfig;
 
@@ -11,7 +12,7 @@ public class SapienzaConfig implements ProviderConfig {
     private final boolean NEWS_ENABLED = true;
     private final boolean TAX_ENABLED = true;
     private final boolean REFRESH_ENABLED = true;
-
+    private final Map<String,String> CUSTOM_KEY_MAP = initKeyMap();
     @Override
     public String getEndpointAPI(OpenstudHelper.Mode mode) {
         if (mode == OpenstudHelper.Mode.MOBILE) return "https://www.studenti.uniroma1.it/phxdroidws";
@@ -55,5 +56,19 @@ public class SapienzaConfig implements ProviderConfig {
     public String getKey(OpenstudHelper.Mode mode) {
         if (mode == OpenstudHelper.Mode.WEB) return "1nf0r1cc1";
         else return "r4g4zz3tt1";
+    }
+
+    public String getCustomKey(String key){
+        if (CUSTOM_KEY_MAP.containsKey(key)) return CUSTOM_KEY_MAP.get(key);
+        else return null;
+    }
+
+    public void setCustomKeys(Map<String,String> customKeys){
+        CUSTOM_KEY_MAP.putAll(customKeys);
+    }
+
+    private Map<String,String>  initKeyMap(){
+        Map<String,String> map = new HashMap<>();
+        return map;
     }
 }
