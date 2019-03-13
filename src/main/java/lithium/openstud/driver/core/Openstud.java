@@ -114,6 +114,10 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
         return config.getCustomKey(keyName);
     }
 
+    public void setCustomKeys(Map<String,String> customKeys){
+        config.setCustomKeys(customKeys);
+    }
+
     public int getWaitTimeClassroomRequest() {
         return waitTimeClassroomRequest;
     }
