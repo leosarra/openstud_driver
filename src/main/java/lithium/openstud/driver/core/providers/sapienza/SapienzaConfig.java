@@ -59,7 +59,8 @@ public class SapienzaConfig implements ProviderConfig {
     }
 
     public synchronized String getKey(String key){
-        return CUSTOM_KEY_MAP.getOrDefault(key, null);
+        if (CUSTOM_KEY_MAP.containsKey(key)) return CUSTOM_KEY_MAP.get(key);
+        else return null;
     }
 
     public synchronized void addKeys(Map<String,String> customKeys){
