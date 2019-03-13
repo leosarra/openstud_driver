@@ -12,7 +12,7 @@ public class SapienzaConfig implements ProviderConfig {
     private final boolean NEWS_ENABLED = true;
     private final boolean TAX_ENABLED = true;
     private final boolean REFRESH_ENABLED = true;
-    private final Map<String,String> CUSTOM_KEY_MAP = initKeyMap();
+    private final Map<String,String> CUSTOM_KEY_MAP = new HashMap<>();
     @Override
     public String getEndpointAPI(OpenstudHelper.Mode mode) {
         if (mode == OpenstudHelper.Mode.MOBILE) return "https://www.studenti.uniroma1.it/phxdroidws";
@@ -58,17 +58,11 @@ public class SapienzaConfig implements ProviderConfig {
         else return "r4g4zz3tt1";
     }
 
-    public String getCustomKey(String key){
-        if (CUSTOM_KEY_MAP.containsKey(key)) return CUSTOM_KEY_MAP.get(key);
-        else return "";
+    public synchronized String getCustomKey(String key){
+        return CUSTOM_KEY_MAP.getOrDefault(key, null);
     }
 
-    public void setCustomKeys(Map<String,String> customKeys){
+    public synchronized void setCustomKeys(Map<String,String> customKeys){
         CUSTOM_KEY_MAP.putAll(customKeys);
-    }
-
-    private Map<String,String>  initKeyMap(){
-        Map<String,String> map = new HashMap<>();
-        return map;
     }
 }
