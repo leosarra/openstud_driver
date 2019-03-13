@@ -60,7 +60,7 @@ public class SapienzaConfig implements ProviderConfig {
 
     public String getCustomKey(String key){
         if (CUSTOM_KEY_MAP.containsKey(key)) return CUSTOM_KEY_MAP.get(key);
-        else return null;
+        else return "";
     }
 
     public void setCustomKeys(Map<String,String> customKeys){
