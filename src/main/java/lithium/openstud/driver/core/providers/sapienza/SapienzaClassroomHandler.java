@@ -16,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.io.IOException;
@@ -55,7 +56,8 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
             Request req = new Request.Builder().url(String.format("%s/classroom/search?q=%s", os.getEndpointTimetable(), query.replace(" ", "%20"))).build();
             String body = handleRequest(req);
             JSONArray array = new JSONArray(body);
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+            LocalDateTime zonedTime = now.atOffset(ZoneOffset.UTC).withOffsetSameInstant(ZoneOffset.of("+1")).toLocalDateTime();
             for (int i = 0; i < array.length(); i++) {
                 if (i == os.getLimitSearch()) break;
                 JSONObject object = array.getJSONObject(i);
@@ -63,9 +65,9 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
                 if (withTimetable) {
                     List<Lesson> classLessons = getClassroomTimetable(classroom.getInternalId(), LocalDate.now());
                     for (Lesson lesson : classLessons) {
-                        if (lesson.getStart().isBefore(now) && lesson.getEnd().isAfter(now))
+                        if (lesson.getStart().isBefore(zonedTime) && lesson.getEnd().isAfter(zonedTime))
                             classroom.setLessonNow(lesson);
-                        else if (lesson.getStart().isAfter(now)) {
+                        else if (lesson.getStart().isAfter(zonedTime)) {
                             classroom.setNextLesson(lesson);
                             break;
                         }

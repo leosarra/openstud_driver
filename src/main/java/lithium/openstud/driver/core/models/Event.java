@@ -5,7 +5,6 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -116,25 +115,24 @@ public class Event {
         this.room = room;
     }
 
-    public Timestamp getTimestamp(ZoneId zoneId){
+    public Timestamp getTimestamp(ZoneId zoneId) {
         if (getEventType() == EventType.LESSON || getEventType() == EventType.THEATRE) {
-            if (getStart()!=null) return new Timestamp(getStart().toLocalDate().atStartOfDay(zoneId).toInstant().toEpochMilli());
+            if (getStart() != null)
+                return new Timestamp(getStart().toLocalDate().atStartOfDay(zoneId).toInstant().toEpochMilli());
             else return null;
-        }
-        else {
-            if (getReservation()!=null && getReservation().getExamDate()!=null)
+        } else {
+            if (getReservation() != null && getReservation().getExamDate() != null)
                 return new Timestamp(getReservation().getExamDate().atStartOfDay(zoneId).toInstant().toEpochMilli());
             else return null;
         }
     }
 
-    public LocalDate getEventDate(){
+    public LocalDate getEventDate() {
         if (getEventType() == EventType.LESSON || getEventType() == EventType.THEATRE) {
-            if (getStart()!= null) return getStart().toLocalDate();
+            if (getStart() != null) return getStart().toLocalDate();
             else return null;
-        }
-        else {
-            if (getReservation()!=null) return getReservation().getExamDate();
+        } else {
+            if (getReservation() != null) return getReservation().getExamDate();
             else return null;
         }
     }
