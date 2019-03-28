@@ -258,10 +258,10 @@ class SapienzaHelper {
                     st.setCF(response.getString("codiceFiscale"));
                     break;
                 case "cognome":
-                    st.setLastName(StringUtils.capitalize(response.getString("cognome").toLowerCase()));
+                    st.setLastName(response.getString("cognome"));
                     break;
                 case "nome":
-                    st.setFirstName(StringUtils.capitalize(response.getString("nome").toLowerCase()));
+                    st.setFirstName(response.getString("nome"));
                     break;
                 case "dataDiNascita":
                     String dateBirth = response.getString("dataDiNascita");
