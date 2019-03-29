@@ -1,5 +1,8 @@
 package lithium.openstud.driver.core.providers.sapienza;
 
+import lithium.kapitalize.Kapitalize;
+import lithium.kapitalize.languages.EnglishLanguage;
+import lithium.kapitalize.languages.SpecialRules;
 import lithium.openstud.driver.core.Openstud;
 import lithium.openstud.driver.core.models.*;
 import org.apache.commons.lang3.StringUtils;
@@ -251,6 +254,9 @@ class SapienzaHelper {
         Student st = new Student();
         st.setStudentID(os.getStudentID());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        EnglishLanguage lang = new EnglishLanguage(SpecialRules.ITALIAN);
+        lang.setCapitalizePostNominalsInitials(false);
+        Kapitalize kapitalize = new Kapitalize(lang);
         for (String element : response.keySet()) {
             if (response.isNull(element)) continue;
             switch (element) {
@@ -258,10 +264,10 @@ class SapienzaHelper {
                     st.setCF(response.getString("codiceFiscale"));
                     break;
                 case "cognome":
-                    st.setLastName(response.getString("cognome"));
+                    st.setLastName(kapitalize.capitalize(response.getString("cognome")));
                     break;
                 case "nome":
-                    st.setFirstName(response.getString("nome"));
+                    st.setLastName(kapitalize.capitalize(response.getString("nome")));
                     break;
                 case "dataDiNascita":
                     String dateBirth = response.getString("dataDiNascita");
