@@ -267,7 +267,7 @@ class SapienzaHelper {
                     st.setLastName(kapitalize.capitalize(response.getString("cognome")));
                     break;
                 case "nome":
-                    st.setLastName(kapitalize.capitalize(response.getString("nome")));
+                    st.setFirstName(kapitalize.capitalize(response.getString("nome")));
                     break;
                 case "dataDiNascita":
                     String dateBirth = response.getString("dataDiNascita");
