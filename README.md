@@ -25,7 +25,7 @@ OpenStud Driver can be easily added to your existing project through Maven or Gr
 <repositories>
 	<repository>
 	    <id>jitpack.io</id>
-		<url>https://jitpack.io</url>
+	    <url>https://jitpack.io</url>
 	</repository>
 </repositories>
 ```
@@ -34,7 +34,7 @@ OpenStud Driver can be easily added to your existing project through Maven or Gr
 <dependency>
     <groupId>com.github.LithiumSR</groupId>
     <artifactId>openstud_driver</artifactId>
-    <version>0.54.1</version>
+    <version>0.55.0</version>
 </dependency>
 ```
 
@@ -51,7 +51,7 @@ allprojects {
 2) Add the dependency
 ```
 dependencies {
-    implementation 'com.github.LithiumSR:openstud_driver:0.54.1
+    implementation 'com.github.LithiumSR:openstud_driver:0.55.0
 }
 ```
 
