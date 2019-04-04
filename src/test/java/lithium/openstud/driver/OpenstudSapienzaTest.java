@@ -1,6 +1,8 @@
 package lithium.openstud.driver;
 
-import lithium.openstud.driver.core.*;
+import lithium.openstud.driver.core.Openstud;
+import lithium.openstud.driver.core.OpenstudBuilder;
+import lithium.openstud.driver.core.OpenstudValidator;
 import lithium.openstud.driver.core.models.*;
 import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidCredentialsException;
@@ -10,12 +12,11 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
 
-public class OpenstudTest
+public class OpenstudSapienzaTest
 {
 
     @Test
