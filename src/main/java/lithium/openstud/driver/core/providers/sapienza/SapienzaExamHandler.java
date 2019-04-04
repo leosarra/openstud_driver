@@ -489,4 +489,45 @@ public class SapienzaExamHandler implements ExamHandler {
             }
         }
     }
+
+    @Override
+    public String getCourseSurvey(String surveyCode) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!os.isReady()) return null;
+        int count = 0;
+        while (true) {
+            try {
+                if (count > 0) os.refreshToken();
+                return _getCourseSurvey(surveyCode);
+            } catch (OpenstudInvalidResponseException e) {
+                if (++count == os.getMaxTries()) {
+                    if (e.isMaintenance()) throw e;
+                    os.log(Level.SEVERE, e);
+                    throw e;
+                }
+            } catch (OpenstudRefreshException e) {
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                os.log(Level.SEVERE, invalidCredentials);
+                throw invalidCredentials;
+            }
+        }
+    }
+
+    private String _getCourseSurvey(String surveyCode) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        try {
+            Request req = new Request.Builder().url(String.format("%s/opis/token/info/%s/%s?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), surveyCode,os.getToken())).build();
+            JSONObject response = checkResponse(req);
+            if (!response.has("risultato"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            if (response.isNull("risultato")) return null;
+            return response.getString("risultato");
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            os.log(Level.SEVERE, connectionException);
+            throw connectionException;
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
+            os.log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
 }
