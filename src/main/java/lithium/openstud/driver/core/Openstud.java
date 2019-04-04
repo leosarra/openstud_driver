@@ -111,7 +111,7 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
         return key;
     }
 
-    public String getKey(String keyName){
+    public String getKey(String keyName) {
         return config.getKey(keyName);
     }
 

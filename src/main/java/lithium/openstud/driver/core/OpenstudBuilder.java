@@ -17,7 +17,7 @@ public class OpenstudBuilder {
     boolean readyState = false;
     int limitSearchResults = 13;
     int waitTimeClassroomRequest = 200;
-    Map<String,String> keyMap = new HashMap<>();
+    Map<String, String> keyMap = new HashMap<>();
 
     public void setLimitSearchResults(int limitSearchResults) {
         this.limitSearchResults = limitSearchResults;
@@ -78,7 +78,7 @@ public class OpenstudBuilder {
         return this;
     }
 
-    public OpenstudBuilder setKeys(Map<String,String> keyMap) {
+    public OpenstudBuilder setKeys(Map<String, String> keyMap) {
         this.keyMap = keyMap;
         return this;
     }

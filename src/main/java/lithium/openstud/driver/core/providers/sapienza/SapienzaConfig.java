@@ -1,8 +1,10 @@
 package lithium.openstud.driver.core.providers.sapienza;
-import java.util.HashMap;
-import java.util.Map;
+
 import lithium.openstud.driver.core.OpenstudHelper;
 import lithium.openstud.driver.core.internals.ProviderConfig;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SapienzaConfig implements ProviderConfig {
     private final boolean AUTH_ENABLED = true;
@@ -13,7 +15,8 @@ public class SapienzaConfig implements ProviderConfig {
     private final boolean TAX_ENABLED = true;
     private final boolean REFRESH_ENABLED = true;
     private final boolean SURVEY_ENABLED = true;
-    private final Map<String,String> CUSTOM_KEY_MAP = new HashMap<>();
+    private final Map<String, String> CUSTOM_KEY_MAP = new HashMap<>();
+
     @Override
     public String getEndpointAPI(OpenstudHelper.Mode mode) {
         if (mode == OpenstudHelper.Mode.MOBILE) return "https://www.studenti.uniroma1.it/phxdroidws";
@@ -50,7 +53,9 @@ public class SapienzaConfig implements ProviderConfig {
     }
 
     @Override
-    public boolean isSurveyEnabled() { return SURVEY_ENABLED; }
+    public boolean isSurveyEnabled() {
+        return SURVEY_ENABLED;
+    }
 
     public boolean isRefreshEnabled() {
         return REFRESH_ENABLED;
@@ -62,12 +67,12 @@ public class SapienzaConfig implements ProviderConfig {
         else return "r4g4zz3tt1";
     }
 
-    public synchronized String getKey(String key){
+    public synchronized String getKey(String key) {
         if (CUSTOM_KEY_MAP.containsKey(key)) return CUSTOM_KEY_MAP.get(key);
         else return null;
     }
 
-    public synchronized void addKeys(Map<String,String> customKeys){
+    public synchronized void addKeys(Map<String, String> customKeys) {
         CUSTOM_KEY_MAP.putAll(customKeys);
     }
 }

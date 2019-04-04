@@ -1,6 +1,7 @@
 package lithium.openstud.driver.core.internals;
 
 import lithium.openstud.driver.core.OpenstudHelper;
+
 import java.util.Map;
 
 public interface ProviderConfig {
@@ -26,8 +27,8 @@ public interface ProviderConfig {
 
     String getKey(String key);
 
-    void  addKeys(Map<String, String> customKeys);
-    
+    void addKeys(Map<String, String> customKeys);
+
     String getKey(OpenstudHelper.Mode mode);
 
 }

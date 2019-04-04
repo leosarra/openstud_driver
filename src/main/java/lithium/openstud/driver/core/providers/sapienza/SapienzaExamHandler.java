@@ -514,7 +514,7 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private String _getCourseSurvey(String surveyCode) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
-            Request req = new Request.Builder().url(String.format("%s/opis/token/info/%s/%s?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), surveyCode,os.getToken())).build();
+            Request req = new Request.Builder().url(String.format("%s/opis/token/info/%s/%s?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), surveyCode, os.getToken())).build();
             JSONObject response = checkResponse(req);
             if (!response.has("risultato"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");

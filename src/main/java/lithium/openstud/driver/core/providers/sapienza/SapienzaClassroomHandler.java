@@ -2,7 +2,6 @@ package lithium.openstud.driver.core.providers.sapienza;
 
 import lithium.openstud.driver.core.Openstud;
 import lithium.openstud.driver.core.OpenstudHelper;
-import lithium.openstud.driver.core.OpenstudHelper.Mode;
 import lithium.openstud.driver.core.internals.ClassroomHandler;
 import lithium.openstud.driver.core.models.Classroom;
 import lithium.openstud.driver.core.models.ExamDoable;
