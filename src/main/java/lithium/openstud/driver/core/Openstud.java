@@ -271,6 +271,12 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
     }
 
     @Override
+    public String getCourseSurvey(String surveyCode) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!config.isSurveyEnabled()) throw new IllegalStateException("Provider doesn't support this feature");
+        return examHandler.getCourseSurvey(surveyCode);
+    }
+
+    @Override
     public List<ExamReservation> getActiveReservations() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!config.isExamEnabled()) throw new IllegalStateException("Provider doesn't support this feature");
         return examHandler.getActiveReservations();

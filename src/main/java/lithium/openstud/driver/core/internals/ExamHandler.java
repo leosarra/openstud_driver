@@ -33,4 +33,6 @@ public interface ExamHandler {
     List<Event> getCalendarEvents(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;
 
+    String getCourseSurvey(String surveyCode) throws OpenstudConnectionException, OpenstudInvalidResponseException,
+            OpenstudInvalidCredentialsException;
 }
