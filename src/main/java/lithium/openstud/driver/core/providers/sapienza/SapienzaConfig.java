@@ -12,6 +12,7 @@ public class SapienzaConfig implements ProviderConfig {
     private final boolean NEWS_ENABLED = true;
     private final boolean TAX_ENABLED = true;
     private final boolean REFRESH_ENABLED = true;
+    private final boolean SURVEY_ENABLED = true;
     private final Map<String,String> CUSTOM_KEY_MAP = new HashMap<>();
     @Override
     public String getEndpointAPI(OpenstudHelper.Mode mode) {
@@ -47,6 +48,9 @@ public class SapienzaConfig implements ProviderConfig {
     public boolean isBioEnabled() {
         return BIO_ENABLED;
     }
+
+    @Override
+    public boolean isSurveyEnabled() { return SURVEY_ENABLED; }
 
     public boolean isRefreshEnabled() {
         return REFRESH_ENABLED;

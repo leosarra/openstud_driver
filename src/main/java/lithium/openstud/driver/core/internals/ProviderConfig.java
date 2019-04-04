@@ -20,6 +20,8 @@ public interface ProviderConfig {
 
     boolean isBioEnabled();
 
+    boolean isSurveyEnabled();
+
     boolean isRefreshEnabled();
 
     String getKey(String key);
