@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
@@ -202,5 +203,12 @@ public class OpenstudTest
         osb.login();
         List<Tax> list=osb.getUnpaidTaxes();
         assertNotNull(list);
+    }
+
+    @Test
+    public void testGetSurvey() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
+        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
+        osb.login();
+        osb.getCourseSurvey("82WQLAN9");
     }
 }
