@@ -7,7 +7,7 @@
 
 	<groupId>lithium.openstud.driver</groupId>
 	<artifactId>openstud-driver</artifactId>
-	<version>0.55.0</version>
+	<version>0.55.1</version>
 
 	<name>openstud-driver</name>
 
