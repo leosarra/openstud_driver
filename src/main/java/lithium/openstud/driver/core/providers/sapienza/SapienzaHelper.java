@@ -1,8 +1,8 @@
 package lithium.openstud.driver.core.providers.sapienza;
 
-import lithium.kapitalize.Kapitalize;
-import lithium.kapitalize.languages.EnglishLanguage;
-import lithium.kapitalize.languages.SpecialRules;
+import com.lithium.kapitalize.Kapitalize;
+import com.lithium.kapitalize.languages.EnglishLanguage;
+import com.lithium.kapitalize.languages.SpecialRules;
 import lithium.openstud.driver.core.Openstud;
 import lithium.openstud.driver.core.models.*;
 import org.apache.commons.lang3.math.NumberUtils;
