@@ -229,7 +229,7 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
                 LinkedList<Lesson> lessons = new LinkedList<>();
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject object = array.getJSONObject(i);
-                    lessons.add(SapienzaHelper.extractLesson(object, formatter, true));
+                    lessons.add(SapienzaHelper.extractLesson(object, formatter, false));
                 }
                 ret.put(examCode, lessons);
             }
