@@ -141,16 +141,17 @@ public class Event {
     @Override
     public String toString() {
         return "Event{" +
-                "title='" + title + '\'' +
-                "description='" + description + '\'' +
+                "eventType=" + eventType +
+                ", title='" + title + '\'' +
                 ", teacher='" + teacher + '\'' +
-                ", where='" + where + '\'' +
                 ", start=" + start +
                 ", end=" + end +
-                ", eventType=" + eventType +
-                ", imageUrl=" + imageUrl +
-                ", url=" + url +
-                ", room=" + room +
+                ", res=" + res +
+                ", where='" + where + '\'' +
+                ", description='" + description + '\'' +
+                ", url='" + url + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", room='" + room + '\'' +
                 '}';
     }
 
@@ -159,20 +160,21 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Objects.equals(description, event.description) &&
+        return eventType == event.eventType &&
+                Objects.equals(title, event.title) &&
                 Objects.equals(teacher, event.teacher) &&
-                Objects.equals(where, event.where) &&
                 Objects.equals(start, event.start) &&
                 Objects.equals(end, event.end) &&
-                Objects.equals(imageUrl, event.imageUrl) &&
+                Objects.equals(res, event.res) &&
+                Objects.equals(where, event.where) &&
+                Objects.equals(description, event.description) &&
                 Objects.equals(url, event.url) &&
-                Objects.equals(room, event.room) &&
-                Objects.equals(title, event.title) &&
-                eventType == event.eventType;
+                Objects.equals(imageUrl, event.imageUrl) &&
+                Objects.equals(room, event.room);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(description, teacher, where, start, end, eventType, imageUrl, url, room, title);
+        return Objects.hash(eventType, title, teacher, start, end, res, where, description, url, imageUrl, room);
     }
 }
