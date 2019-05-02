@@ -1,6 +1,6 @@
 package lithium.openstud.driver.core.internals;
 
-import lithium.openstud.driver.core.models.Careeer;
+import lithium.openstud.driver.core.models.Career;
 import lithium.openstud.driver.core.models.CertificateType;
 import lithium.openstud.driver.core.models.Student;
 import lithium.openstud.driver.exceptions.OpenstudConnectionException;
@@ -14,6 +14,6 @@ public interface BioHandler {
     Student getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;
 
-    List<Careeer> getCareersChoichesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException;
-    byte[] getCertificatePDF(Student student, Careeer careeer, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException;
+    List<Career> getCareersChoichesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException;
+    byte[] getCertificatePDF(Student student, Career career, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException;
 }

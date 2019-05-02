@@ -2,7 +2,7 @@ package lithium.openstud.driver.core.models;
 
 import java.util.Objects;
 
-public class Careeer {
+public class Career {
     private int index;
     private String registrationCode;
     private String codeCourse;
@@ -80,15 +80,15 @@ public class Careeer {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Careeer careeer = (Careeer) o;
-        return index == careeer.index &&
-                Objects.equals(registrationCode, careeer.registrationCode) &&
-                Objects.equals(codeCourse, careeer.codeCourse) &&
-                Objects.equals(description, careeer.description) &&
-                Objects.equals(descriptionComplete, careeer.descriptionComplete) &&
-                Objects.equals(organization, careeer.organization) &&
-                Objects.equals(type, careeer.type) &&
-                Objects.equals(teachingCode, careeer.teachingCode);
+        Career career = (Career) o;
+        return index == career.index &&
+                Objects.equals(registrationCode, career.registrationCode) &&
+                Objects.equals(codeCourse, career.codeCourse) &&
+                Objects.equals(description, career.description) &&
+                Objects.equals(descriptionComplete, career.descriptionComplete) &&
+                Objects.equals(organization, career.organization) &&
+                Objects.equals(type, career.type) &&
+                Objects.equals(teachingCode, career.teachingCode);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class Careeer {
 
     @Override
     public String toString() {
-        return "Careeer{" +
+        return "Career{" +
                 "index=" + index +
                 ", registrationCode='" + registrationCode + '\'' +
                 ", codeCourse='" + codeCourse + '\'' +

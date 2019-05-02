@@ -2,7 +2,7 @@ package lithium.openstud.driver.core.providers.sapienza;
 
 import lithium.openstud.driver.core.Openstud;
 import lithium.openstud.driver.core.internals.BioHandler;
-import lithium.openstud.driver.core.models.Careeer;
+import lithium.openstud.driver.core.models.Career;
 import lithium.openstud.driver.core.models.CertificateType;
 import lithium.openstud.driver.core.models.Student;
 import lithium.openstud.driver.exceptions.OpenstudConnectionException;
@@ -51,14 +51,14 @@ public class SapienzaBioHandler implements BioHandler {
 
 
     @Override
-    public byte[] getCertificatePDF(Student student, Careeer careeer, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    public byte[] getCertificatePDF(Student student, Career career, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
         byte[] ret;
         while (true) {
             try {
                 if (count>0) os.refreshToken();
-                ret = _getCertificatePDF(student, careeer, certificate);
+                ret = _getCertificatePDF(student, career, certificate);
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == os.getMaxTries()) {
@@ -76,13 +76,13 @@ public class SapienzaBioHandler implements BioHandler {
     }
 
 
-    private byte[] _getCertificatePDF(Student student, Careeer careeer, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    private byte[] _getCertificatePDF(Student student, Career career, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         try {
             String lang = "it";
             String teachingCode = "";
             if (certificate == CertificateType.GRADUATION_WITH_EXAMS_ENG || certificate == CertificateType.GRADUATION_WITH_GRADE_ENG || certificate == CertificateType.GRADUATION_WITH_THESIS_ENG  ) lang = "en";
-            if (careeer.getTeachingCode()!=null) teachingCode = careeer.getTeachingCode();
-            Request req = new Request.Builder().url(String.format("%s/certificati/corsodilaurea/%s/%s/%s?ingresso=%s&codiceDidattica=%s&indiceCarriera=%s", os.getEndpointAPI(), student.getStudentID(), SapienzaHelper.getCertificateValue(certificate), lang, os.getToken(), teachingCode, careeer.getIndex())).build();
+            if (career.getTeachingCode()!=null) teachingCode = career.getTeachingCode();
+            Request req = new Request.Builder().url(String.format("%s/certificati/corsodilaurea/%s/%s/%s?ingresso=%s&codiceDidattica=%s&indiceCarriera=%s", os.getEndpointAPI(), student.getStudentID(), SapienzaHelper.getCertificateValue(certificate), lang, os.getToken(), teachingCode, career.getIndex())).build();
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
@@ -117,10 +117,10 @@ public class SapienzaBioHandler implements BioHandler {
     }
 
     @Override
-    public List<Careeer> getCareersChoichesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    public List<Career> getCareersChoichesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
-        List<Careeer> ret;
+        List<Career> ret;
         while (true) {
             try {
                 if (count>0) os.refreshToken();
@@ -141,7 +141,7 @@ public class SapienzaBioHandler implements BioHandler {
         return ret;
     }
 
-    private List<Careeer> _getCareersChoichesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    private List<Career> _getCareersChoichesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         try {
             Request req = new Request.Builder().url(String.format("%s/certificati/corsodilaurea/%s/listaCarriere?ingresso=%s&codiceTipoCertificato=%s", os.getEndpointAPI(), student.getStudentID(), os.getToken(), SapienzaHelper.getCertificateValue(certificate))).build();
             Response resp = os.getClient().newCall(req).execute();
@@ -156,10 +156,10 @@ public class SapienzaBioHandler implements BioHandler {
             if (response == null) return new LinkedList<>();
             JSONArray array = response.getJSONArray("risultati");
             if (array == null) return new LinkedList<>();
-            List<Careeer> ret = new LinkedList<>();
+            List<Career> ret = new LinkedList<>();
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
-                Careeer car = new Careeer();
+                Career car = new Career();
                 car.setIndex(i);
                 for (String element : obj.keySet()) {
                     switch (element) {
