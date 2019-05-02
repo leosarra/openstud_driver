@@ -198,6 +198,18 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
     }
 
     @Override
+    public List<Careeer> getCareersChoichesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!config.isCareerForCertificateEnabled()) throw new IllegalStateException("Provider doesn't support this feature");
+        return personal.getCareersChoichesForCertificate(student,certificate);
+    }
+
+    @Override
+    public byte[] getCertificatePDF(Student student, Careeer careeer, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!config.isCertEnabled()) throw new IllegalStateException("Provider doesn't support this feature");
+        return personal.getCertificatePDF(student,careeer, certificate);
+    }
+
+    @Override
     public List<News> getNews(String locale, boolean withDescription, Integer limit, Integer page, Integer maxPage,
                               String query) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         if (!config.isNewsEnabled()) throw new IllegalStateException("Provider doesn't support this feature");

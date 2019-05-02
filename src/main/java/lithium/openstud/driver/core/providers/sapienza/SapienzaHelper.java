@@ -339,4 +339,26 @@ class SapienzaHelper {
         return st;
     }
 
+
+    static int getCertificateValue(CertificateType certificate){
+        switch (certificate) {
+            case REGISTRATION: return 1;
+            case GRADUATION_WITH_EXAMS:
+            case GRADUATION_WITH_EXAMS_ENG:
+                return 7;
+            case GRADUATION_WITH_THESIS:
+            case GRADUATION_WITH_THESIS_ENG:
+                return 6;
+            case GRADUATION_WITH_GRADE:
+            case GRADUATION_WITH_GRADE_ENG:
+                return 9;
+            case EXAMS_COMPLETED:
+                return 2;
+            case GRADUATION_FOR_RANSOM:
+                return 8;
+            default:
+                return -1;
+        }
+    }
+
 }
