@@ -8,16 +8,31 @@ import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidCredentialsException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 import lithium.openstud.driver.exceptions.OpenstudUserNotEnabledException;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
 
 public class OpenstudSapienzaTest
 {
+
+    private static boolean setUpIsDone = false;
+    private static Openstud os;
+
+    @Before
+    public void setUp() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException, OpenstudInvalidResponseException {
+        if (setUpIsDone) {
+            return;
+        }
+        os = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
+        os.login();
+        setUpIsDone = true;
+    }
 
     @Test
     public void testPasswordValidation() throws OpenstudInvalidCredentialsException {
@@ -50,100 +65,80 @@ public class OpenstudSapienzaTest
 
     @Test
     public void testLogin() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        assertTrue( osb.isReady() );
+        Openstud os = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
+        os.login();
+        assertTrue( os.isReady() );
     }
 
     @Test
     public void testGetSecurityQuestion() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException {
-    Openstud osb = new OpenstudBuilder().setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        assertNotNull(osb.getSecurityQuestion());
+        Openstud os = new OpenstudBuilder().setStudentID(System.getenv("OPENSTUD_TESTID")).build();
+        assertNotNull(os.getSecurityQuestion());
     }
 
     @Test
     public void testGetCalendar() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        Student st = osb.getInfoStudent();
-        osb.getCalendarEvents(st);
+        Student st = os.getInfoStudent();
+        os.getCalendarEvents(st);
     }
 
     @Test
     public void testGetIsee() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        Isee res=osb.getCurrentIsee();
+        Isee res=os.getCurrentIsee();
         assertTrue(res!=null && res.isValid());
     }
 
     @Test
     public void testGetIseeHistory() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        List<Isee> res=osb.getIseeHistory();
+        List<Isee> res=os.getIseeHistory();
         assertTrue(res!=null && res.size()!=0);
     }
 
     @Test
     public void testGetInfoStudent() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        Student st=osb.getInfoStudent();
+        Student st=os.getInfoStudent();
         assertTrue(st!=null && st.getStudentID()!=null);
     }
 
     @Test
     public void testGetExamsDoable() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        List<ExamDoable> list=osb.getExamsDoable();
+        List<ExamDoable> list=os.getExamsDoable();
         assertNotNull(list);
     }
 
     @Test
     public void testGetTimetable() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        List<ExamDoable> list=osb.getExamsDoable();
-        Map<String, List<Lesson>> map = osb.getTimetable(list);
+        List<ExamDoable> list=os.getExamsDoable();
+        Map<String, List<Lesson>> map = os.getTimetable(list);
         assertNotNull(map);
     }
 
 
     @Test
     public void testGetExamsPassed() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        List<ExamDone> list=osb.getExamsDone();
+        List<ExamDone> list=os.getExamsDone();
         assertNotNull(list);
     }
 
     @Test
     public void testGetActiveReservations() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        List<ExamReservation> list=osb.getActiveReservations();
+        List<ExamReservation> list=os.getActiveReservations();
         assertNotNull(list);
     }
 
     @Test
     public void testClassroomInfos() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        List<Classroom> list=osb.getClassRoom("San pietro", true);
+        List<Classroom> list=os.getClassRoom("San pietro", true);
         assertNotNull(list);
     }
 
 
     @Test
     public void testGetAvailableReservations() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        List<ExamDoable> list=osb.getExamsDoable();
-        Student st=osb.getInfoStudent();
+        List<ExamDoable> list=os.getExamsDoable();
+        Student st=os.getInfoStudent();
         if(list.size()>=1) {
-            List<ExamReservation> ret=osb.getAvailableReservations(list.get(0),st);
+            List<ExamReservation> ret=os.getAvailableReservations(list.get(0),st);
             assertNotNull(ret);
         }
         assertTrue(true);
@@ -151,11 +146,9 @@ public class OpenstudSapienzaTest
 
     @Test
     public void testGetPdf() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        List<ExamReservation> list=osb.getActiveReservations();
+        List<ExamReservation> list=os.getActiveReservations();
         if(list.size()>=1) {
-            byte[] pdf = osb.getPdf(list.get(0));
+            byte[] pdf = os.getPdf(list.get(0));
             assertNotNull(pdf);
         }
         assertTrue(true);
@@ -163,28 +156,24 @@ public class OpenstudSapienzaTest
 
     @Test
     public void testGetPaidTaxes() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        List<Tax> list=osb.getPaidTaxes();
+        List<Tax> list=os.getPaidTaxes();
         assertNotNull(list);
         assertFalse(list.isEmpty());
     }
 
     @Test
     public void testGetNewsEnglish() throws OpenstudInvalidResponseException, OpenstudConnectionException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        List<News> list=osb.getNews("en", true, null, 0, null, null);
+        List<News> list=os.getNews("en", true, null, 0, null, null);
         assertNotNull(list);
         assertFalse(list.isEmpty());
     }
 
     @Test
     public void testGetNewsItalian() throws OpenstudInvalidResponseException, OpenstudConnectionException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        List<News> list=osb.getNews("it", true, null, 0, null, null);
+        List<News> list=os.getNews("it", true, null, 0, null, null);
         assertNotNull(list);
         int limit = 5;
-        list=osb.getNews("it", true, limit, null, null, null);
+        list=os.getNews("it", true, limit, null, null, null);
         assertFalse(list.isEmpty());
         assertTrue(list.size() <= limit);
     }
@@ -192,24 +181,27 @@ public class OpenstudSapienzaTest
 
     @Test
     public void testGetNewsEventsEnglish() throws OpenstudInvalidResponseException, OpenstudConnectionException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        List<Event> list=osb.getNewsletterEvents();
+        List<Event> list=os.getNewsletterEvents();
         assertNotNull(list);
         assertFalse(list.isEmpty());
     }
 
     @Test
     public void testGetUnpaidTaxes() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        List<Tax> list=osb.getUnpaidTaxes();
+        List<Tax> list=os.getUnpaidTaxes();
         assertNotNull(list);
     }
 
     @Test
     public void testGetSurvey() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        Openstud osb = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        osb.login();
-        osb.getCourseSurvey("82WQLAN9");
+        assertNotNull(os.getCourseSurvey("82WQLAN9"));
+    }
+
+    @Test
+    public void testGetCertificatePDF() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException {
+        Student student = os.getInfoStudent();
+        List<Career> careers = os.getCareersChoichesForCertificate(student, CertificateType.GRADUATION_WITH_THESIS_ENG);
+        assertNotNull(careers);
+        assertNotNull(os.getCertificatePDF(student,careers.get(0), CertificateType.GRADUATION_WITH_THESIS_ENG));
     }
 }
