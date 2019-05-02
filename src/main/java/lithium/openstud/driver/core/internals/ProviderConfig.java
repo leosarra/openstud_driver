@@ -23,6 +23,10 @@ public interface ProviderConfig {
 
     boolean isSurveyEnabled();
 
+    boolean isCareerForCertificateEnabled();
+
+    boolean isCertEnabled();
+
     boolean isRefreshEnabled();
 
     String getKey(String key);

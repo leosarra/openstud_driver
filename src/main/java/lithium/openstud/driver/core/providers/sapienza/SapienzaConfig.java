@@ -15,6 +15,8 @@ public class SapienzaConfig implements ProviderConfig {
     private final boolean TAX_ENABLED = true;
     private final boolean REFRESH_ENABLED = true;
     private final boolean SURVEY_ENABLED = true;
+    private final boolean CERT_ENABLED = true;
+    private final boolean CAREER_FOR_CERTIFICATE = true;
     private final Map<String, String> CUSTOM_KEY_MAP = new HashMap<>();
 
     @Override
@@ -52,10 +54,17 @@ public class SapienzaConfig implements ProviderConfig {
         return BIO_ENABLED;
     }
 
+    public boolean isCertEnabled() {
+        return CERT_ENABLED;
+    }
+
     @Override
     public boolean isSurveyEnabled() {
         return SURVEY_ENABLED;
     }
+
+    @Override
+    public boolean isCareerForCertificateEnabled() { return CAREER_FOR_CERTIFICATE; }
 
     public boolean isRefreshEnabled() {
         return REFRESH_ENABLED;
