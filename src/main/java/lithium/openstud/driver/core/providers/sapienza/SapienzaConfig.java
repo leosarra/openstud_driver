@@ -2,6 +2,7 @@ package lithium.openstud.driver.core.providers.sapienza;
 
 import lithium.openstud.driver.core.OpenstudHelper;
 import lithium.openstud.driver.core.internals.ProviderConfig;
+import lithium.openstud.driver.core.models.CertificateType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,10 @@ public class SapienzaConfig implements ProviderConfig {
     private final boolean CERT_ENABLED = true;
     private final boolean CAREER_FOR_CERTIFICATE = true;
     private final Map<String, String> CUSTOM_KEY_MAP = new HashMap<>();
+    private final CertificateType[] SUPPORTED_CERTIFICATES = new CertificateType[] {CertificateType.EXAMS_COMPLETED,
+            CertificateType.DEGREE_FOR_RANSOM, CertificateType.DEGREE_WITH_EVALUATION, CertificateType.DEGREE_WITH_EVALUATION_ENG,
+            CertificateType.DEGREE_WITH_EXAMS, CertificateType.DEGREE_WITH_EXAMS_ENG, CertificateType.REGISTRATION,
+            CertificateType.DEGREE_WITH_THESIS, CertificateType.DEGREE_WITH_THESIS_ENG};
 
     @Override
     public String getEndpointAPI(OpenstudHelper.Mode mode) {
@@ -68,6 +73,14 @@ public class SapienzaConfig implements ProviderConfig {
 
     public boolean isRefreshEnabled() {
         return REFRESH_ENABLED;
+    }
+
+    @Override
+    public boolean isCertSupported(CertificateType certificate) {
+        for (CertificateType cert : SUPPORTED_CERTIFICATES) {
+            if (cert == certificate) return true;
+        }
+        return false;
     }
 
     @Override

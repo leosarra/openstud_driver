@@ -1,6 +1,7 @@
 package lithium.openstud.driver.core.internals;
 
 import lithium.openstud.driver.core.OpenstudHelper;
+import lithium.openstud.driver.core.models.CertificateType;
 
 import java.util.Map;
 
@@ -28,6 +29,8 @@ public interface ProviderConfig {
     boolean isCertEnabled();
 
     boolean isRefreshEnabled();
+
+    boolean isCertSupported(CertificateType certificate);
 
     String getKey(String key);
 
