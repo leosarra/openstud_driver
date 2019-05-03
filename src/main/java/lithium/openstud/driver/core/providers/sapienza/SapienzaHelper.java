@@ -343,18 +343,18 @@ class SapienzaHelper {
     static int getCertificateValue(CertificateType certificate){
         switch (certificate) {
             case REGISTRATION: return 1;
-            case GRADUATION_WITH_EXAMS:
-            case GRADUATION_WITH_EXAMS_ENG:
+            case DEGREE_WITH_EXAMS:
+            case DEGREE_WITH_EXAMS_ENG:
                 return 7;
-            case GRADUATION_WITH_THESIS:
-            case GRADUATION_WITH_THESIS_ENG:
+            case DEGREE_WITH_THESIS:
+            case DEGREE_WITH_THESIS_ENG:
                 return 6;
-            case GRADUATION_WITH_GRADE:
-            case GRADUATION_WITH_GRADE_ENG:
+            case DEGREE_WITH_EVALUATION:
+            case DEGREE_WITH_EVALUATION_ENG:
                 return 9;
             case EXAMS_COMPLETED:
                 return 2;
-            case GRADUATION_FOR_RANSOM:
+            case DEGREE_FOR_RANSOM:
                 return 8;
             default:
                 return -1;

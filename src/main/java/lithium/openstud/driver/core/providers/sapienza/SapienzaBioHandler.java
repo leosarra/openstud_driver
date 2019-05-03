@@ -80,7 +80,7 @@ public class SapienzaBioHandler implements BioHandler {
         try {
             String lang = "it";
             String teachingCode = "";
-            if (certificate == CertificateType.GRADUATION_WITH_EXAMS_ENG || certificate == CertificateType.GRADUATION_WITH_GRADE_ENG || certificate == CertificateType.GRADUATION_WITH_THESIS_ENG  ) lang = "en";
+            if (certificate == CertificateType.DEGREE_WITH_EXAMS_ENG || certificate == CertificateType.DEGREE_WITH_EVALUATION_ENG || certificate == CertificateType.DEGREE_WITH_THESIS_ENG  ) lang = "en";
             if (career.getTeachingCode()!=null) teachingCode = career.getTeachingCode();
             Request req = new Request.Builder().url(String.format("%s/certificati/corsodilaurea/%s/%s/%s?ingresso=%s&codiceDidattica=%s&indiceCarriera=%s", os.getEndpointAPI(), student.getStudentID(), SapienzaHelper.getCertificateValue(certificate), lang, os.getToken(), teachingCode, career.getIndex())).build();
             Response resp = os.getClient().newCall(req).execute();
