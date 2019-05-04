@@ -117,14 +117,14 @@ public class SapienzaBioHandler implements BioHandler {
     }
 
     @Override
-    public List<Career> getCareersChoichesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    public List<Career> getCareersChoicesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
         List<Career> ret;
         while (true) {
             try {
                 if (count>0) os.refreshToken();
-                ret = _getCareersChoichesForCertificate(student, certificate);
+                ret = _getCareersChoicesForCertificate(student, certificate);
                 break;
             } catch (OpenstudInvalidResponseException e) {
                 if (++count == os.getMaxTries()) {
@@ -141,7 +141,7 @@ public class SapienzaBioHandler implements BioHandler {
         return ret;
     }
 
-    private List<Career> _getCareersChoichesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    private List<Career> _getCareersChoicesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         try {
             Request req = new Request.Builder().url(String.format("%s/certificati/corsodilaurea/%s/listaCarriere?ingresso=%s&codiceTipoCertificato=%s", os.getEndpointAPI(), student.getStudentID(), os.getToken(), SapienzaHelper.getCertificateValue(certificate))).build();
             Response resp = os.getClient().newCall(req).execute();

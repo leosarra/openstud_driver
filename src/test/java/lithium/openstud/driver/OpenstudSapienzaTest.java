@@ -200,7 +200,7 @@ public class OpenstudSapienzaTest
     @Test
     public void testGetCertificatePDF() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException {
         Student student = os.getInfoStudent();
-        List<Career> careers = os.getCareersChoichesForCertificate(student, CertificateType.DEGREE_WITH_THESIS_ENG);
+        List<Career> careers = os.getCareersChoicesForCertificate(student, CertificateType.DEGREE_WITH_THESIS_ENG);
         assertNotNull(careers);
         assertNotNull(os.getCertificatePDF(student,careers.get(0), CertificateType.DEGREE_WITH_THESIS_ENG));
     }
