@@ -118,6 +118,7 @@ public class SapienzaTaxHandler implements TaxHandler {
                                 double value = Double.parseDouble(obj.getString(element));
                                 tax.setAmount(value);
                             } catch (NumberFormatException e) {
+                                e.printStackTrace();
                                 os.log(Level.SEVERE, e);
                             }
                             break;
@@ -134,6 +135,7 @@ public class SapienzaTaxHandler implements TaxHandler {
                                 double value = Double.parseDouble(obj.getString(element).replace(",", "."));
                                 tax.setAmount(value);
                             } catch (NumberFormatException e) {
+                                e.printStackTrace();
                                 os.log(Level.SEVERE, e);
                             }
                             break;
