@@ -69,11 +69,11 @@ public class Student {
         this.cfu = cfu;
     }
 
-    public String getCF() {
+    public String getSocialSecurityNumber() {
         return CF;
     }
 
-    public void setCF(String CF) {
+    public void setSocialSecurityNumber(String CF) {
         this.CF = CF;
     }
 
