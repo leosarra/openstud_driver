@@ -327,7 +327,7 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private ImmutablePair<Integer, String> _insertReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
-            RequestBody reqbody = RequestBody.create(null, new byte[]{});
+            RequestBody reqbody = RequestBody.create(new byte[]{}, null);
             Request req = new Request.Builder().url(String.format("%s/prenotazione/%s/%s/%s?ingresso=%s", os.getEndpointAPI(), res.getReportID(), res.getSessionID(), res.getCourseCode(), os.getToken())).post(reqbody).build();
             JSONObject response = checkResponse(req);
             String url = null;
