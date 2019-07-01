@@ -16,7 +16,6 @@ import org.threeten.bp.format.DateTimeParseException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 class SapienzaHelper {
 
@@ -56,7 +55,7 @@ class SapienzaHelper {
         return lesson;
     }
 
-    static Isee extractIsee(JSONObject response) {
+    static Isee extractIsee(Openstud os, JSONObject response) {
         Isee res = new Isee();
         for (String element : response.keySet()) {
             switch (element) {
@@ -82,6 +81,7 @@ class SapienzaHelper {
                             res.setDateOperation(LocalDate.parse(response.getString("dataOperazione"), formatterOperation));
                         } catch (DateTimeParseException e) {
                             e.printStackTrace();
+                            os.log(Level.SEVERE, e);
                         }
                     }
                     break;
@@ -94,6 +94,7 @@ class SapienzaHelper {
                             res.setDateDeclaration(LocalDate.parse(response.getString("data"), formatterDateDeclaration));
                         } catch (DateTimeParseException e) {
                             e.printStackTrace();
+                            os.log(Level.SEVERE, e);
                         }
                     }
                     break;
@@ -105,8 +106,7 @@ class SapienzaHelper {
         return res;
     }
 
-    static List<PaymentDescription> extractPaymentDescriptionList(JSONArray array, Logger logger) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    static List<PaymentDescription> extractPaymentDescriptionList(Openstud os, JSONArray array) {
         List<PaymentDescription> list = new LinkedList<>();
         if (array == null) return list;
         for (int i = 0; i < array.length(); i++) {
@@ -122,7 +122,8 @@ class SapienzaHelper {
                             Double value = Double.parseDouble(obj.getString("importo"));
                             pdes.setAmount(value);
                         } catch (NumberFormatException e) {
-                            logger.log(Level.SEVERE, e.toString());
+                            e.printStackTrace();
+                            os.log(Level.SEVERE, e);
                         }
                         break;
                     case "annoAccademicoString":
@@ -130,10 +131,11 @@ class SapienzaHelper {
                         break;
                     case "impoVers":
                         try {
-                            Double value = Double.parseDouble(obj.getString("impoVers"));
-                            pdes.setAmountPaid(value);
+                            Double valueVers = Double.parseDouble(obj.getString("impoVers"));
+                            pdes.setAmountPaid(valueVers);
                         } catch (NumberFormatException e) {
-                            logger.log(Level.SEVERE, e.toString());
+                            e.printStackTrace();
+                            os.log(Level.SEVERE, e);
                         }
                         break;
                     default:
@@ -145,7 +147,7 @@ class SapienzaHelper {
         return list;
     }
 
-    static List<ExamReservation> extractReservations(JSONArray array) {
+    static List<ExamReservation> extractReservations(Openstud os, JSONArray array) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         List<ExamReservation> list = new LinkedList<>();
         for (int i = 0; i < array.length(); i++) {
@@ -199,6 +201,7 @@ class SapienzaHelper {
                                 res.setReservationDate(LocalDate.parse(reservationDate, formatter));
                             } catch (DateTimeParseException e) {
                                 e.printStackTrace();
+                                os.log(Level.SEVERE, e);
                             }
                         }
                         break;
@@ -212,6 +215,7 @@ class SapienzaHelper {
                                 res.setExamDate(LocalDate.parse(examDate, formatter));
                             } catch (DateTimeParseException e) {
                                 e.printStackTrace();
+                                os.log(Level.SEVERE, e);
                             }
                         }
                         break;
@@ -223,6 +227,7 @@ class SapienzaHelper {
                                 res.setStartDate(LocalDate.parse(startDate, formatter));
                             } catch (DateTimeParseException e) {
                                 e.printStackTrace();
+                                os.log(Level.SEVERE, e);
                             }
                         }
                         break;
@@ -234,6 +239,7 @@ class SapienzaHelper {
                                 res.setEndDate(LocalDate.parse(endDate, formatter));
                             } catch (DateTimeParseException e) {
                                 e.printStackTrace();
+                                os.log(Level.SEVERE, e);
                             }
                         }
                         break;
@@ -260,7 +266,7 @@ class SapienzaHelper {
             if (response.isNull(element)) continue;
             switch (element) {
                 case "codiceFiscale":
-                    st.setCF(response.getString("codiceFiscale"));
+                    st.setSocialSecurityNumber(response.getString("codiceFiscale"));
                     break;
                 case "cognome":
                     st.setLastName(kapitalize.capitalize(response.getString("cognome")));
@@ -275,6 +281,7 @@ class SapienzaHelper {
                             st.setBirthDate(LocalDate.parse(response.getString("dataDiNascita"), formatter));
                         } catch (DateTimeParseException e) {
                             e.printStackTrace();
+                            os.log(Level.SEVERE, e);
                         }
                     }
                     break;
@@ -340,9 +347,10 @@ class SapienzaHelper {
     }
 
 
-    static int getCertificateValue(CertificateType certificate){
+    static int getCertificateValue(CertificateType certificate) {
         switch (certificate) {
-            case REGISTRATION: return 1;
+            case REGISTRATION:
+                return 1;
             case DEGREE_WITH_EXAMS:
             case DEGREE_WITH_EXAMS_ENG:
                 return 7;

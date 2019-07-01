@@ -239,7 +239,7 @@ public class SapienzaExamHandler implements ExamHandler {
             if (!response.has("appelli") || response.isNull("appelli"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. Maybe the server is not working");
             JSONArray array = response.getJSONArray("appelli");
-            return OpenstudHelper.sortReservationByDate(SapienzaHelper.extractReservations(array), true);
+            return OpenstudHelper.sortReservationByDate(SapienzaHelper.extractReservations(os, array), true);
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             os.log(Level.SEVERE, connectionException);
@@ -285,7 +285,7 @@ public class SapienzaExamHandler implements ExamHandler {
             response = response.getJSONObject("ritorno");
             if (!response.has("appelli") || response.isNull("appelli")) return new LinkedList<>();
             JSONArray array = response.getJSONArray("appelli");
-            return SapienzaHelper.extractReservations(array);
+            return SapienzaHelper.extractReservations(os, array);
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             os.log(Level.SEVERE, connectionException);

@@ -145,7 +145,7 @@ public class SapienzaTaxHandler implements TaxHandler {
                             break;
                     }
                 }
-                tax.setPaymentDescriptionList(SapienzaHelper.extractPaymentDescriptionList(obj.getJSONArray("causali"), os.getLogger()));
+                tax.setPaymentDescriptionList(SapienzaHelper.extractPaymentDescriptionList(os, obj.getJSONArray("causali")));
                 list.add(tax);
             }
             return list;
@@ -195,7 +195,7 @@ public class SapienzaTaxHandler implements TaxHandler {
             if (!response.has("risultato"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("risultato");
-            return SapienzaHelper.extractIsee(response);
+            return SapienzaHelper.extractIsee(os, response);
         } catch (IOException e) {
             os.log(Level.SEVERE, e);
             throw new OpenstudConnectionException(e);
@@ -245,9 +245,9 @@ public class SapienzaTaxHandler implements TaxHandler {
             if (!response.has("risultati") || response.isNull("risultati")) return new LinkedList<>();
             JSONArray array = response.getJSONArray("risultati");
             for (int i = 0; i < array.length(); i++) {
-                Isee result = SapienzaHelper.extractIsee(array.getJSONObject(i));
+                Isee result = SapienzaHelper.extractIsee(os, array.getJSONObject(i));
                 if (result == null) continue;
-                list.add(SapienzaHelper.extractIsee(array.getJSONObject(i)));
+                list.add(SapienzaHelper.extractIsee(os, array.getJSONObject(i)));
             }
             return list;
         } catch (IOException e) {
