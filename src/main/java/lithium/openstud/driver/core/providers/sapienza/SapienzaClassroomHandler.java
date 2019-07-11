@@ -94,6 +94,7 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
         Response resp = os.getClient().newCall(req).execute();
         if (resp.body() == null) throw new OpenstudInvalidResponseException("GOMP answer is not valid");
         String body = resp.body().string();
+        resp.close();
         if (body.contains("maximum request limit"))
             throw new OpenstudInvalidResponseException("Request rate limit reached").setRateLimitType();
         os.log(Level.INFO, body);

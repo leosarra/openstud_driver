@@ -89,6 +89,7 @@ public class SapienzaBioHandler implements BioHandler {
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            resp.close();
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (!response.has("risultato"))
@@ -150,6 +151,7 @@ public class SapienzaBioHandler implements BioHandler {
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            resp.close();
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.has("descrizioneErrore") && !response.isNull("descrizioneErrore") && response.getString("descrizioneErrore").toLowerCase().contains("non risultano")) return new LinkedList<>();
@@ -210,6 +212,7 @@ public class SapienzaBioHandler implements BioHandler {
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            resp.close();
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (!response.has("ritorno"))

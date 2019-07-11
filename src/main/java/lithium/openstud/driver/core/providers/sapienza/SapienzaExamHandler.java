@@ -60,7 +60,7 @@ public class SapienzaExamHandler implements ExamHandler {
     private List<ExamDoable> _getExamsDoable() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             Request req = new Request.Builder().url(String.format("%s/studente/%s/insegnamentisostenibili?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
-            JSONObject response = checkResponse(req);
+            JSONObject response = handleRequest(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
@@ -136,7 +136,7 @@ public class SapienzaExamHandler implements ExamHandler {
     private List<ExamDone> _getExamsDone() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             Request req = new Request.Builder().url(String.format("%s/studente/%s/esami?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
-            JSONObject response = checkResponse(req);
+            JSONObject response = handleRequest(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
@@ -232,7 +232,7 @@ public class SapienzaExamHandler implements ExamHandler {
     private List<ExamReservation> _getActiveReservations() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             Request req = new Request.Builder().url(String.format("%s/studente/%s/prenotazioni?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
-            JSONObject response = checkResponse(req);
+            JSONObject response = handleRequest(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
@@ -279,7 +279,7 @@ public class SapienzaExamHandler implements ExamHandler {
     private List<ExamReservation> _getAvailableReservations(ExamDoable exam, Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
             Request req = new Request.Builder().url(String.format("%s/appello/ricerca?ingresso=%s&tipoRicerca=%s&criterio=%s&codiceCorso=%s&annoAccaAuto=%s", os.getEndpointAPI(), os.getToken(), 4, exam.getModuleCode(), exam.getCourseCode(), student.getAcademicYearCourse())).build();
-            JSONObject response = checkResponse(req);
+            JSONObject response = handleRequest(req);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("ritorno");
@@ -329,7 +329,7 @@ public class SapienzaExamHandler implements ExamHandler {
         try {
             RequestBody reqbody = RequestBody.create(new byte[]{}, null);
             Request req = new Request.Builder().url(String.format("%s/prenotazione/%s/%s/%s?ingresso=%s", os.getEndpointAPI(), res.getReportID(), res.getSessionID(), res.getCourseCode(), os.getToken())).post(reqbody).build();
-            JSONObject response = checkResponse(req);
+            JSONObject response = handleRequest(req);
             String url = null;
             int flag = -1;
             String nota = null;
@@ -356,10 +356,11 @@ public class SapienzaExamHandler implements ExamHandler {
         }
     }
 
-    private JSONObject checkResponse(Request req) throws IOException, OpenstudInvalidResponseException {
+    private JSONObject handleRequest(Request req) throws IOException, OpenstudInvalidResponseException {
         Response resp = os.getClient().newCall(req).execute();
         if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
         String body = resp.body().string();
+        resp.close();
         os.log(Level.INFO, body);
         return new JSONObject(body);
     }
@@ -393,7 +394,7 @@ public class SapienzaExamHandler implements ExamHandler {
         try {
             Request req = new Request.Builder().url(String.format("%s/prenotazione/%s/%s/%s/%s?ingresso=%s", os.getEndpointAPI(), res.getReportID(), res.getSessionID(),
                     os.getStudentID(), res.getReservationNumber(), os.getToken())).delete().build();
-            JSONObject response = checkResponse(req);
+            JSONObject response = handleRequest(req);
             int flag = -1;
             if (response.has("esito")) {
                 if (response.getJSONObject("esito").has("flagEsito")) {
@@ -440,7 +441,7 @@ public class SapienzaExamHandler implements ExamHandler {
     private byte[] _getPdf(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
             Request req = new Request.Builder().url(String.format("%s/prenotazione/%s/%s/%s/pdf?ingresso=%s", os.getEndpointAPI(), res.getReportID(), res.getSessionID(), os.getStudentID(), os.getToken())).build();
-            JSONObject response = checkResponse(req);
+            JSONObject response = handleRequest(req);
             if (!response.has("risultato") || response.isNull("risultato"))
                 throw new OpenstudInvalidResponseException("Infostud answer is not valid, maybe the token is no longer valid");
             response = response.getJSONObject("risultato");
@@ -515,7 +516,7 @@ public class SapienzaExamHandler implements ExamHandler {
     private String _getCourseSurvey(String surveyCode) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
             Request req = new Request.Builder().url(String.format("%s/opis/token/info/%s/%s?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), surveyCode.trim().toUpperCase(), os.getToken())).build();
-            JSONObject response = checkResponse(req);
+            JSONObject response = handleRequest(req);
             if (!response.has("risultato"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             if (response.isNull("risultato")) return null;

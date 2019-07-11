@@ -58,6 +58,7 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
         Response resp = os.getClient().newCall(req).execute();
         if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
         String body = resp.body().string();
+        resp.close();
         if (body.contains("the page you are looking for is currently unavailable"))
             throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
         return body;
@@ -89,6 +90,7 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            resp.close();
             if (body.contains("the page you are looking for is currently unavailable"))
                 throw new OpenstudInvalidResponseException("InfoStud is in maintenance").setMaintenanceType();
             if (body.contains("Matricola Errata")) throw new OpenstudInvalidCredentialsException("Invalid studentID");
@@ -195,6 +197,7 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            resp.close();
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.isNull("codiceErrore") || response.isNull("risultato"))

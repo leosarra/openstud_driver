@@ -89,6 +89,7 @@ public class SapienzaTaxHandler implements TaxHandler {
             List<Tax> list = new LinkedList<>();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            resp.close();
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (!response.has("risultatoLista"))
@@ -192,6 +193,7 @@ public class SapienzaTaxHandler implements TaxHandler {
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            resp.close();
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (!response.has("risultato"))
@@ -239,6 +241,7 @@ public class SapienzaTaxHandler implements TaxHandler {
             List<Isee> list = new LinkedList<>();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             String body = resp.body().string();
+            resp.close();
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (!response.has("risultatoLista"))
