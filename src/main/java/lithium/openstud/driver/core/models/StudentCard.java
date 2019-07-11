@@ -48,7 +48,7 @@ public class StudentCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StudentCard that = (StudentCard) o;
-        return studentId == that.studentId &&
+        return studentId.equals(that.studentId) &&
                 Objects.equals(code, that.code) &&
                 Objects.equals(issueDate, that.issueDate) &&
                 Objects.equals(imageBase64, that.imageBase64);
