@@ -21,7 +21,7 @@ public class SapienzaConfig implements ProviderConfig {
     private final boolean CARD_ENABLED = true;
     private final boolean PHOTO_ENABLED = true;
     private final Map<String, String> CUSTOM_KEY_MAP = new HashMap<>();
-    private final CertificateType[] SUPPORTED_CERTIFICATES = new CertificateType[] {CertificateType.EXAMS_COMPLETED,
+    private final CertificateType[] SUPPORTED_CERTIFICATES = new CertificateType[]{CertificateType.EXAMS_COMPLETED,
             CertificateType.DEGREE_FOR_RANSOM, CertificateType.DEGREE_WITH_EVALUATION, CertificateType.DEGREE_WITH_EVALUATION_ENG,
             CertificateType.DEGREE_WITH_EXAMS, CertificateType.DEGREE_WITH_EXAMS_ENG, CertificateType.REGISTRATION,
             CertificateType.DEGREE_WITH_THESIS, CertificateType.DEGREE_WITH_THESIS_ENG};
@@ -78,13 +78,19 @@ public class SapienzaConfig implements ProviderConfig {
     }
 
     @Override
-    public boolean isCareerForCertificateEnabled() { return CAREER_FOR_CERTIFICATE_ENABLED; }
+    public boolean isCareerForCertificateEnabled() {
+        return CAREER_FOR_CERTIFICATE_ENABLED;
+    }
 
     @Override
-    public boolean isStudentCardEnabled() { return CARD_ENABLED; }
+    public boolean isStudentCardEnabled() {
+        return CARD_ENABLED;
+    }
 
     @Override
-    public boolean isStudentPhotoEnabled() { return PHOTO_ENABLED; }
+    public boolean isStudentPhotoEnabled() {
+        return PHOTO_ENABLED;
+    }
 
     @Override
     public boolean isRefreshEnabled() {

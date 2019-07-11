@@ -56,7 +56,8 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
         client = new OkHttpClient.Builder()
                 .connectTimeout(builder.connectTimeout, TimeUnit.SECONDS)
                 .writeTimeout(builder.writeTimeout, TimeUnit.SECONDS)
-                .readTimeout(builder.readTimeout, TimeUnit.SECONDS).retryOnConnectionFailure(true)
+                .readTimeout(builder.readTimeout, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
                 .connectionSpecs(Collections.singletonList(ConnectionSpec.COMPATIBLE_TLS))
                 .build();
         init();
@@ -199,13 +200,15 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
 
     @Override
     public List<Career> getCareersChoicesForCertificate(Student student, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
-        if (!config.isCareerForCertificateEnabled() || !config.isCertSupported(certificate)) throw new IllegalStateException("Provider doesn't support this feature");
-        return personal.getCareersChoicesForCertificate(student,certificate);
+        if (!config.isCareerForCertificateEnabled() || !config.isCertSupported(certificate))
+            throw new IllegalStateException("Provider doesn't support this feature");
+        return personal.getCareersChoicesForCertificate(student, certificate);
     }
 
     @Override
     public byte[] getCertificatePDF(Student student, Career career, CertificateType certificate) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
-        if (!config.isCertEnabled() || !config.isCertSupported(certificate)) throw new IllegalStateException("Provider doesn't support this feature");
+        if (!config.isCertEnabled() || !config.isCertSupported(certificate))
+            throw new IllegalStateException("Provider doesn't support this feature");
         return personal.getCertificatePDF(student, career, certificate);
     }
 

@@ -60,7 +60,7 @@ public class SapienzaBioHandler implements BioHandler {
         byte[] ret;
         while (true) {
             try {
-                if (count>0) os.refreshToken();
+                if (count > 0) os.refreshToken();
                 ret = _getCertificatePDF(student, career, certificate);
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -68,8 +68,7 @@ public class SapienzaBioHandler implements BioHandler {
                     os.log(Level.SEVERE, e);
                     throw e;
                 }
-            }
-            catch (OpenstudRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 os.log(Level.SEVERE, invalidCredentials);
                 throw invalidCredentials;
@@ -83,8 +82,9 @@ public class SapienzaBioHandler implements BioHandler {
         try {
             String lang = "it";
             String teachingCode = "";
-            if (certificate == CertificateType.DEGREE_WITH_EXAMS_ENG || certificate == CertificateType.DEGREE_WITH_EVALUATION_ENG || certificate == CertificateType.DEGREE_WITH_THESIS_ENG  ) lang = "en";
-            if (career.getTeachingCode()!=null) teachingCode = career.getTeachingCode();
+            if (certificate == CertificateType.DEGREE_WITH_EXAMS_ENG || certificate == CertificateType.DEGREE_WITH_EVALUATION_ENG || certificate == CertificateType.DEGREE_WITH_THESIS_ENG)
+                lang = "en";
+            if (career.getTeachingCode() != null) teachingCode = career.getTeachingCode();
             Request req = new Request.Builder().url(String.format("%s/certificati/corsodilaurea/%s/%s/%s?ingresso=%s&codiceDidattica=%s&indiceCarriera=%s", os.getEndpointAPI(), student.getStudentID(), SapienzaHelper.getCertificateValue(certificate), lang, os.getToken(), teachingCode, career.getIndex())).build();
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
@@ -105,10 +105,9 @@ public class SapienzaBioHandler implements BioHandler {
                 if (!fileResponse.isSuccessful()) {
                     throw new IOException("Failed to download file: " + response);
                 }
-                if (fileResponse.body()==null) throw new IOException("Error when downloading pdf");
+                if (fileResponse.body() == null) throw new IOException("Error when downloading pdf");
                 return fileResponse.body().bytes();
-            }
-            else return null;
+            } else return null;
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             os.log(Level.SEVERE, connectionException);
@@ -127,7 +126,7 @@ public class SapienzaBioHandler implements BioHandler {
         List<Career> ret;
         while (true) {
             try {
-                if (count>0) os.refreshToken();
+                if (count > 0) os.refreshToken();
                 ret = _getCareersChoicesForCertificate(student, certificate);
                 break;
             } catch (OpenstudInvalidResponseException e) {
@@ -135,8 +134,7 @@ public class SapienzaBioHandler implements BioHandler {
                     os.log(Level.SEVERE, e);
                     throw e;
                 }
-            }
-            catch (OpenstudRefreshException e) {
+            } catch (OpenstudRefreshException e) {
                 OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
                 os.log(Level.SEVERE, invalidCredentials);
                 throw invalidCredentials;
@@ -154,7 +152,8 @@ public class SapienzaBioHandler implements BioHandler {
             resp.close();
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
-            if (response.has("descrizioneErrore") && !response.isNull("descrizioneErrore") && response.getString("descrizioneErrore").toLowerCase().contains("non risultano")) return new LinkedList<>();
+            if (response.has("descrizioneErrore") && !response.isNull("descrizioneErrore") && response.getString("descrizioneErrore").toLowerCase().contains("non risultano"))
+                return new LinkedList<>();
             if (!response.has("risultatoLista"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
             response = response.getJSONObject("risultatoLista");
@@ -238,7 +237,7 @@ public class SapienzaBioHandler implements BioHandler {
             try {
                 if (count > 0) os.refreshToken();
                 byte[] ret = _getStudentPhoto(student);
-                if (ret != null && ret.length==0) return null;
+                if (ret != null && ret.length == 0) return null;
                 return ret;
             } catch (OpenstudInvalidResponseException e) {
                 if (e.isMaintenance()) throw e;
