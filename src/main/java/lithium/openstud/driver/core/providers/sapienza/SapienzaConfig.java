@@ -17,7 +17,9 @@ public class SapienzaConfig implements ProviderConfig {
     private final boolean REFRESH_ENABLED = true;
     private final boolean SURVEY_ENABLED = true;
     private final boolean CERT_ENABLED = true;
-    private final boolean CAREER_FOR_CERTIFICATE = true;
+    private final boolean CAREER_FOR_CERTIFICATE_ENABLED = true;
+    private final boolean CARD_ENABLED = true;
+    private final boolean PHOTO_ENABLED = true;
     private final Map<String, String> CUSTOM_KEY_MAP = new HashMap<>();
     private final CertificateType[] SUPPORTED_CERTIFICATES = new CertificateType[] {CertificateType.EXAMS_COMPLETED,
             CertificateType.DEGREE_FOR_RANSOM, CertificateType.DEGREE_WITH_EVALUATION, CertificateType.DEGREE_WITH_EVALUATION_ENG,
@@ -35,30 +37,37 @@ public class SapienzaConfig implements ProviderConfig {
         return "https://gomp.sapienzaapps.it";
     }
 
+    @Override
     public boolean isAuthEnabled() {
         return AUTH_ENABLED;
     }
 
+    @Override
     public boolean isClassroomEnabled() {
         return CLASSROOM_ENABLED;
     }
 
+    @Override
     public boolean isExamEnabled() {
         return EXAM_ENABLED;
     }
 
+    @Override
     public boolean isNewsEnabled() {
         return NEWS_ENABLED;
     }
 
+    @Override
     public boolean isTaxEnabled() {
         return TAX_ENABLED;
     }
 
+    @Override
     public boolean isBioEnabled() {
         return BIO_ENABLED;
     }
 
+    @Override
     public boolean isCertEnabled() {
         return CERT_ENABLED;
     }
@@ -69,8 +78,15 @@ public class SapienzaConfig implements ProviderConfig {
     }
 
     @Override
-    public boolean isCareerForCertificateEnabled() { return CAREER_FOR_CERTIFICATE; }
+    public boolean isCareerForCertificateEnabled() { return CAREER_FOR_CERTIFICATE_ENABLED; }
 
+    @Override
+    public boolean isStudentCardEnabled() { return CARD_ENABLED; }
+
+    @Override
+    public boolean isStudentPhotoEnabled() { return PHOTO_ENABLED; }
+
+    @Override
     public boolean isRefreshEnabled() {
         return REFRESH_ENABLED;
     }
