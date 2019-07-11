@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
@@ -203,5 +202,11 @@ public class OpenstudSapienzaTest
         List<Career> careers = os.getCareersChoicesForCertificate(student, CertificateType.DEGREE_WITH_THESIS_ENG);
         assertNotNull(careers);
         assertNotNull(os.getCertificatePDF(student,careers.get(0), CertificateType.DEGREE_WITH_THESIS_ENG));
+    }
+
+    @Test
+    public void testGetPhoto() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException {
+        Student student = os.getInfoStudent();
+        os.getStudentPhoto(student);
     }
 }
