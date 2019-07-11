@@ -11,11 +11,14 @@ import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
 import lithium.openstud.driver.exceptions.OpenstudRefreshException;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -203,7 +206,15 @@ public class SapienzaBioHandler implements BioHandler {
 
     private Student _getInfoStudent() throws OpenstudConnectionException, OpenstudInvalidResponseException {
         try {
-            JSONObject response = getResponse();
+            Request req = new Request.Builder().url(String.format("%s/studente/%s?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
+            Response resp = os.getClient().newCall(req).execute();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            String body = resp.body().string();
+            os.log(Level.INFO, body);
+            JSONObject response = new JSONObject(body);
+            if (!response.has("ritorno"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            response = response.getJSONObject("ritorno");
             return SapienzaHelper.extractStudent(os, response);
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
@@ -216,15 +227,45 @@ public class SapienzaBioHandler implements BioHandler {
         }
     }
 
-    private JSONObject getResponse() throws IOException, OpenstudInvalidResponseException {
-        Request req = new Request.Builder().url(String.format("%s/studente/%s?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).build();
-        Response resp = os.getClient().newCall(req).execute();
-        if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-        String body = resp.body().string();
-        os.log(Level.INFO, body);
-        JSONObject response = new JSONObject(body);
-        if (!response.has("ritorno"))
-            throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
-        return response.getJSONObject("ritorno");
+
+    public byte[] getStudentPhoto(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!os.isReady() || student == null) return null;
+        int count = 0;
+        while (true) {
+            try {
+                if (count > 0) os.refreshToken();
+                byte[] ret = _getStudentPhoto(student);
+                if (ret != null && ret.length==0) return null;
+                return ret;
+            } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
+                if (++count == os.getMaxTries()) {
+                    os.log(Level.SEVERE, e);
+                    throw e;
+                }
+            } catch (OpenstudRefreshException e) {
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                os.log(Level.SEVERE, invalidCredentials);
+                throw invalidCredentials;
+            }
+        }
+    }
+
+    private byte[] _getStudentPhoto(Student student) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        try {
+            Request req = new Request.Builder().url(String.format("%s/cartastudente/%s/foto?ingresso=%s", os.getEndpointAPI(), student.getStudentID(), os.getToken())).build();
+            Response resp = os.getClient().newCall(req).execute();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            ResponseBody body = resp.body();
+            os.log(Level.INFO, body);
+            if (body == null) return null;
+            InputStream inputStream = body.byteStream();
+            return IOUtils.toByteArray(inputStream);
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            os.log(Level.SEVERE, connectionException);
+            throw connectionException;
+        }
+
     }
 }
