@@ -260,7 +260,9 @@ public class SapienzaBioHandler implements BioHandler {
             os.log(Level.INFO, body);
             if (body == null) return null;
             InputStream inputStream = body.byteStream();
-            return IOUtils.toByteArray(inputStream);
+            byte[] ret = IOUtils.toByteArray(inputStream);
+            inputStream.close();
+            return ret;
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             os.log(Level.SEVERE, connectionException);
