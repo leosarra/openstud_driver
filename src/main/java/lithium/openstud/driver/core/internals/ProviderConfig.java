@@ -32,6 +32,10 @@ public interface ProviderConfig {
 
     boolean isCertSupported(CertificateType certificate);
 
+    boolean isStudentCardEnabled();
+
+    boolean isStudentPhotoEnabled();
+
     String getKey(String key);
 
     void addKeys(Map<String, String> customKeys);
