@@ -5,6 +5,7 @@ import lithium.openstud.driver.core.internals.BioHandler;
 import lithium.openstud.driver.core.models.Career;
 import lithium.openstud.driver.core.models.CertificateType;
 import lithium.openstud.driver.core.models.Student;
+import lithium.openstud.driver.core.models.StudentCard;
 import lithium.openstud.driver.exceptions.OpenstudConnectionException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidCredentialsException;
 import lithium.openstud.driver.exceptions.OpenstudInvalidResponseException;
@@ -16,6 +17,8 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -272,4 +275,91 @@ public class SapienzaBioHandler implements BioHandler {
         }
 
     }
+
+
+    public StudentCard getStudentCard(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!os.isReady() || student == null) return null;
+        int count = 0;
+        while (true) {
+            try {
+                if (count > 0) os.refreshToken();
+                StudentCard card = _getStudentCard(student);
+                if (card != null) {
+                    byte[] image = _getStudentPhoto(student);
+                    if (image != null && image.length == 0) card.setImage(image);
+                }
+                return card;
+            } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
+                if (++count == os.getMaxTries()) {
+                    os.log(Level.SEVERE, e);
+                    throw e;
+                }
+            } catch (OpenstudRefreshException e) {
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                os.log(Level.SEVERE, invalidCredentials);
+                throw invalidCredentials;
+            }
+        }
+    }
+
+    private StudentCard _getStudentCard(Student student) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        try {
+            Request req = new Request.Builder().url(String.format("%s/cartastudente/%s/info?ingresso=%s", os.getEndpointAPI(), student.getStudentID(), os.getToken())).build();
+            Response resp = os.getClient().newCall(req).execute();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            ResponseBody body = resp.body();
+            os.log(Level.INFO, body);
+            if (body == null) return null;
+            String stringBody = body.string();
+            JSONObject response = new JSONObject(stringBody);
+            if (!response.has("ritorno"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            response = response.getJSONObject("ritorno");
+            if (!response.has("carte"))
+                throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            JSONArray array = response.getJSONArray("carte");
+            List<StudentCard> cards = new LinkedList<>();
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                StudentCard card = new StudentCard();
+                for (String element : obj.keySet()) {
+                    switch (element) {
+                        case "codice":
+                            card.setCode(obj.getString(element));
+                            break;
+                        case "matricola":
+                            card.setStudentId(String.valueOf(obj.getInt(element)));
+                            break;
+                        case "stato":
+                            if (obj.getString(element).toLowerCase().equals("attiva")) card.setEnabled(true);
+                            break;
+                        case "dataRichiesta":
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                            card.setIssueDate(LocalDateTime.parse(obj.getString(element), formatter));
+                            break;
+                    }
+                }
+                cards.add(card);
+            }
+            StudentCard ret = null;
+            for (StudentCard card: cards){
+                if (card.getCode()!=null && card.isEnabled()) {
+                    if (ret == null) ret = card;
+                    else {
+                        if (ret.getIssueDate()!= null && card.getIssueDate() != null && ret.getIssueDate().isBefore(card.getIssueDate())) {
+                            ret = card;
+                        }
+                    }
+                }
+            }
+            return ret;
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            os.log(Level.SEVERE, connectionException);
+            throw connectionException;
+        }
+
+    }
+
 }
