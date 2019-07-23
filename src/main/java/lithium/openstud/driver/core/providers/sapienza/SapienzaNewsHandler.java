@@ -168,7 +168,8 @@ public class SapienzaNewsHandler implements NewsHandler {
                 if (description != null) ev.setDescription(description.text());
                 ret.add(ev);
             }
-            if (failed == events.size()) {
+
+            if (failed == events.size() && !events.isEmpty()) {
                 OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException("invalid HTML").setHTMLType();
                 os.log(Level.SEVERE, invalidResponse);
                 throw invalidResponse;
