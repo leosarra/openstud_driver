@@ -332,4 +332,10 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
         if (!config.isStudentPhotoEnabled()) throw new IllegalStateException("Provider doesn't support this feature");
         return personal.getStudentPhoto(student);
     }
+
+    @Override
+    public StudentCard getStudentCard(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!config.isStudentCardEnabled()) throw new IllegalStateException("Provider doesn't support this feature");
+        return personal.getStudentCard(student);
+    }
 }
