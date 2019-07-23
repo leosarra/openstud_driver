@@ -1,14 +1,25 @@
 package lithium.openstud.driver.core.models;
 
-import java.time.LocalDate;
+import org.threeten.bp.LocalDateTime;
+
 import java.util.Base64;
 import java.util.Objects;
 
 public class StudentCard {
     private String code;
-    private LocalDate issueDate;
+    private LocalDateTime issueDate;
     private String studentId;
     private String imageBase64;
+    private boolean isEnabled;
+
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
 
     public String getStudentId() {
         return studentId;
@@ -27,11 +38,11 @@ public class StudentCard {
     }
 
 
-    public LocalDate getIssueDate() {
+    public LocalDateTime getIssueDate() {
         return issueDate;
     }
 
-    public void setIssueDate(LocalDate issueDate) {
+    public void setIssueDate(LocalDateTime issueDate) {
         this.issueDate = issueDate;
     }
 
@@ -48,23 +59,25 @@ public class StudentCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StudentCard that = (StudentCard) o;
-        return studentId.equals(that.studentId) &&
+        return isEnabled == that.isEnabled &&
                 Objects.equals(code, that.code) &&
                 Objects.equals(issueDate, that.issueDate) &&
+                Objects.equals(studentId, that.studentId) &&
                 Objects.equals(imageBase64, that.imageBase64);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, studentId, issueDate, imageBase64);
+        return Objects.hash(code, issueDate, studentId, imageBase64, isEnabled);
     }
 
     @Override
     public String toString() {
         return "StudentCard{" +
                 "code='" + code + '\'' +
-                ", studentId=" + studentId +
                 ", issueDate=" + issueDate +
+                ", studentId='" + studentId + '\'' +
+                ", isEnabled=" + isEnabled +
                 '}';
     }
 }
