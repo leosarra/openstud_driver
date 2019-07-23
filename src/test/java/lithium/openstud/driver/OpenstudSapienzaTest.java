@@ -182,7 +182,6 @@ public class OpenstudSapienzaTest
     public void testGetNewsEventsEnglish() throws OpenstudInvalidResponseException, OpenstudConnectionException {
         List<Event> list=os.getNewsletterEvents();
         assertNotNull(list);
-        assertFalse(list.isEmpty());
     }
 
     @Test
@@ -208,5 +207,11 @@ public class OpenstudSapienzaTest
     public void testGetPhoto() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException {
         Student student = os.getInfoStudent();
         os.getStudentPhoto(student);
+    }
+
+    @Test
+    public void testGetCard() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException {
+        Student student = os.getInfoStudent();
+        os.getStudentCard(student);
     }
 }
