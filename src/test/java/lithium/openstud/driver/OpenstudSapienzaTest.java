@@ -81,7 +81,7 @@ public class OpenstudSapienzaTest
         os.getCalendarEvents(st);
     }
 
-    @Test
+
     public void testGetIsee() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         Isee res=os.getCurrentIsee();
         assertTrue(res!=null && res.isValid());
