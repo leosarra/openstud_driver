@@ -1,8 +1,8 @@
 package lithium.openstud.driver.core.models;
 
+import org.apache.commons.codec.binary.Base64;
 import org.threeten.bp.LocalDateTime;
 
-import java.util.Base64;
 import java.util.Objects;
 
 public class StudentCard {
@@ -47,11 +47,11 @@ public class StudentCard {
     }
 
     public byte[] getImage() {
-        return Base64.getDecoder().decode(imageBase64);
+        return Base64.decodeBase64(imageBase64);
     }
 
     public void setImage(byte[] image) {
-        this.imageBase64 = Base64.getEncoder().encodeToString(image);
+        imageBase64 =  Base64.encodeBase64String(image);
     }
 
     @Override
