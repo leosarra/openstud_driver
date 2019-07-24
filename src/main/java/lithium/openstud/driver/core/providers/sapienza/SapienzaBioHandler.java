@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
+import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
@@ -269,6 +270,12 @@ public class SapienzaBioHandler implements BioHandler {
             inputStream.close();
             return ret;
         } catch (IOException e) {
+            if (e instanceof SSLException) {
+                OpenstudInvalidResponseException invalidResponseException = new OpenstudInvalidResponseException(e);
+                invalidResponseException.setSSLType();
+                os.log(Level.SEVERE, invalidResponseException);
+                throw invalidResponseException;
+            }
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
             os.log(Level.SEVERE, connectionException);
             throw connectionException;
