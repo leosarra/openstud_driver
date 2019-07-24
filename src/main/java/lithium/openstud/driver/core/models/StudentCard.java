@@ -47,11 +47,13 @@ public class StudentCard {
     }
 
     public byte[] getImage() {
+        if (imageBase64 == null) return null;
         return Base64.decodeBase64(imageBase64.getBytes());
     }
 
     public void setImage(byte[] image) {
-        imageBase64 =  new String(Base64.encodeBase64(image));
+        if (image == null) imageBase64 = null;
+        else imageBase64 =  new String(Base64.encodeBase64(image));
     }
 
     @Override
