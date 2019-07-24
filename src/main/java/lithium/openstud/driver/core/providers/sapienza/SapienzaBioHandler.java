@@ -286,7 +286,7 @@ public class SapienzaBioHandler implements BioHandler {
                 StudentCard card = _getStudentCard(student);
                 if (card != null) {
                     byte[] image = _getStudentPhoto(student);
-                    if (image != null && image.length == 0) card.setImage(image);
+                    if (image != null && image.length != 0) card.setImage(image);
                 }
                 return card;
             } catch (OpenstudInvalidResponseException e) {
