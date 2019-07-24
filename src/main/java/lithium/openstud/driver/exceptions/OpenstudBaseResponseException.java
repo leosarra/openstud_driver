@@ -2,7 +2,7 @@ package lithium.openstud.driver.exceptions;
 
 public abstract class OpenstudBaseResponseException extends Exception {
     public enum Type {
-        JSON_ERROR, MAINTENANCE, RATE_LIMIT, HTML_ERROR, GENERIC
+        JSON_ERROR, MAINTENANCE, RATE_LIMIT, HTML_ERROR, SSL_ERROR, GENERIC
     }
 
     Type type;
@@ -39,6 +39,10 @@ public abstract class OpenstudBaseResponseException extends Exception {
         return type == Type.HTML_ERROR;
     }
 
+    public boolean isSSLType() {
+        return type == Type.SSL_ERROR;
+    }
+
 
     Exception setMaintenanceType() {
         type = Type.MAINTENANCE;
@@ -57,6 +61,11 @@ public abstract class OpenstudBaseResponseException extends Exception {
 
     Exception setHTMLType() {
         type = Type.HTML_ERROR;
+        return this;
+    }
+
+    Exception setSSLType() {
+        type = Type.SSL_ERROR;
         return this;
     }
 

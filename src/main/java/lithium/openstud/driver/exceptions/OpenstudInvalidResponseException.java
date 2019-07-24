@@ -30,4 +30,9 @@ public class OpenstudInvalidResponseException extends OpenstudBaseResponseExcept
         return this;
     }
 
+    public OpenstudInvalidResponseException setSSLType() {
+        super.setSSLType();
+        return this;
+    }
+
 }
