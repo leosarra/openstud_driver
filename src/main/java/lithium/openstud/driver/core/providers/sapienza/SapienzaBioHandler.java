@@ -13,7 +13,6 @@ import lithium.openstud.driver.exceptions.OpenstudRefreshException;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,7 +21,6 @@ import org.threeten.bp.format.DateTimeFormatter;
 
 import javax.net.ssl.SSLException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -263,12 +261,8 @@ public class SapienzaBioHandler implements BioHandler {
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             ResponseBody body = resp.body();
-            os.log(Level.INFO, body);
             if (body == null) return null;
-            InputStream inputStream = body.byteStream();
-            byte[] ret = IOUtils.toByteArray(inputStream);
-            inputStream.close();
-            return ret;
+            return body.string().getBytes();
         } catch (IOException e) {
             if (e instanceof SSLException) {
                 OpenstudInvalidResponseException invalidResponseException = new OpenstudInvalidResponseException(e);
@@ -316,9 +310,9 @@ public class SapienzaBioHandler implements BioHandler {
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             ResponseBody body = resp.body();
-            os.log(Level.INFO, body);
             if (body == null) return null;
             String stringBody = body.string();
+            os.log(Level.INFO, stringBody);
             JSONObject response = new JSONObject(stringBody);
             if (!response.has("ritorno"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
