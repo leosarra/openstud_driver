@@ -13,6 +13,8 @@ import lithium.openstud.driver.exceptions.OpenstudRefreshException;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.BufferedSink;
+import okio.Okio;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +22,11 @@ import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import javax.net.ssl.SSLException;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -257,14 +263,17 @@ public class SapienzaBioHandler implements BioHandler {
 
     private byte[] _getStudentPhoto(Student student) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
-            Request req = new Request.Builder().url(String.format("%s/cartastudente/%s/foto?ingresso=%s", os.getEndpointAPI(), student.getStudentID(), os.getToken())).build();
+            Request req = new Request.Builder().url(String.format("%s/cartastudente/%s/foto?ingresso=%s", os.getEndpointAPI(), student.getStudentID(), os.getToken()))
+                    .addHeader("Accept", "application/json, text/plain, */*")
+                    .addHeader("Connection", "keep-alive").build();
             Response resp = os.getClient().newCall(req).execute();
-            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            ResponseBody body = resp.body();
-            if (body == null) return null;
-            return body.string().getBytes();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            BufferedSink bs = Okio.buffer(Okio.sink(outputStream));
+            bs.writeAll(resp.body().source());
+            bs.close();
+            return outputStream.toByteArray();
         } catch (IOException e) {
-            if (e instanceof SSLException) {
+            if (e instanceof SSLException || e.getMessage().contains("reset")) {
                 OpenstudInvalidResponseException invalidResponseException = new OpenstudInvalidResponseException(e);
                 invalidResponseException.setSSLType();
                 os.log(Level.SEVERE, invalidResponseException);
@@ -274,7 +283,6 @@ public class SapienzaBioHandler implements BioHandler {
             os.log(Level.SEVERE, connectionException);
             throw connectionException;
         }
-
     }
 
 
