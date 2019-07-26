@@ -15,6 +15,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -263,15 +266,10 @@ public class SapienzaBioHandler implements BioHandler {
 
     private byte[] _getStudentPhoto(Student student) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
-            Request req = new Request.Builder().url(String.format("%s/cartastudente/%s/foto?ingresso=%s", os.getEndpointAPI(), student.getStudentID(), os.getToken()))
-                    .addHeader("Accept", "application/json, text/plain, */*")
-                    .addHeader("Connection", "keep-alive").build();
-            Response resp = os.getClient().newCall(req).execute();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            BufferedSink bs = Okio.buffer(Okio.sink(outputStream));
-            bs.writeAll(resp.body().source());
-            bs.close();
-            return outputStream.toByteArray();
+            URL url = new URL(String.format("%s/cartastudente/%s/foto?ingresso=%s", os.getEndpointAPI(), student.getStudentID(), os.getToken()));
+            URLConnection conn = url.openConnection();
+            conn.setRequestProperty("User-Agent", "Firefox");
+            return IOUtils.toByteArray(conn.getInputStream());
         } catch (IOException e) {
             if (e instanceof SSLException || e.getMessage().contains("reset")) {
                 OpenstudInvalidResponseException invalidResponseException = new OpenstudInvalidResponseException(e);
