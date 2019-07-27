@@ -8,7 +8,6 @@ import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.tuple.Pair;
 import org.threeten.bp.LocalDate;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -334,8 +333,8 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
     }
 
     @Override
-    public StudentCard getStudentCard(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    public StudentCard getStudentCard(Student student, boolean withPhoto) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!config.isStudentCardEnabled()) throw new IllegalStateException("Provider doesn't support this feature");
-        return personal.getStudentCard(student);
+        return personal.getStudentCard(student, withPhoto);
     }
 }

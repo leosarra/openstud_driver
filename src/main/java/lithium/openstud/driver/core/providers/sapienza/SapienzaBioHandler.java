@@ -276,7 +276,7 @@ public class SapienzaBioHandler implements BioHandler {
     }
 
 
-    public StudentCard getStudentCard(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    public StudentCard getStudentCard(Student student, boolean withPhoto) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady() || student == null) return null;
         int count = 0;
         StudentCard card;
@@ -297,7 +297,7 @@ public class SapienzaBioHandler implements BioHandler {
                 throw invalidCredentials;
             }
         }
-        if (card != null) {
+        if (card != null && withPhoto) {
             byte[] image = _getStudentPhoto(student);
             if (image != null && image.length != 0) card.setImage(image);
         }
