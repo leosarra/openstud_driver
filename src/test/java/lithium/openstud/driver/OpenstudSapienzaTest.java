@@ -212,6 +212,6 @@ public class OpenstudSapienzaTest
     @Test
     public void testGetCard() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException {
         Student student = os.getInfoStudent();
-        os.getStudentCard(student);
+        StudentCard card = os.getStudentCard(student, false);
     }
 }
