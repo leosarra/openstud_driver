@@ -55,6 +55,34 @@ dependencies {
 }
 ```
 
+## Functionalities
+**Authentication**
+- [x] Login
+- [x] Security question and password recovery
+- [x] Passsword reset
+
+**Profile**
+- [x] Student infos
+- [x] Certificates
+- [x] Photo and student card
+
+**Classroom**
+- [x] Classroom and timetable
+
+**Exams**
+- [x] Doable and done exams
+- [x] Active and available reservations
+- [x] Insert and delete reservations
+- [x] Pdf reservation
+- [x] Calendar events
+- [x] Course surveys (OPIS)
+
+**Taxes**
+- [x] Paid and unpaid taxes
+- [x] Current ISEE and ISEE history
+
+**News**
+- [x] News and newsletter events
 
 ## Documentation
 
