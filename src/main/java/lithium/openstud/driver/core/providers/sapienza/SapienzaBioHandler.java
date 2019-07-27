@@ -13,9 +13,6 @@ import lithium.openstud.driver.exceptions.OpenstudRefreshException;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okio.BufferedSink;
-import okio.Okio;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,13 +20,7 @@ import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import javax.net.ssl.SSLException;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.SocketException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -266,12 +257,13 @@ public class SapienzaBioHandler implements BioHandler {
 
     private byte[] _getStudentPhoto(Student student) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
-            URL url = new URL(String.format("%s/cartastudente/%s/foto?ingresso=%s", os.getEndpointAPI(), student.getStudentID(), os.getToken()));
-            URLConnection conn = url.openConnection();
-            conn.setRequestProperty("User-Agent", "Firefox");
-            return IOUtils.toByteArray(conn.getInputStream());
+            Request req = new Request.Builder().url(String.format("%s/cartastudente/%s/foto?ingresso=%s", "https://www.studenti.uniroma1.it/phoenixws", student.getStudentID(), os.getToken())).build();
+            Response resp = os.getClient().newCall(req).execute();
+            byte[] ret = resp.body().bytes();
+            resp.close();
+            return ret;
         } catch (IOException e) {
-            if (e instanceof SSLException || e.getMessage().contains("reset")) {
+            if (e instanceof SSLException) {
                 OpenstudInvalidResponseException invalidResponseException = new OpenstudInvalidResponseException(e);
                 invalidResponseException.setSSLType();
                 os.log(Level.SEVERE, invalidResponseException);
@@ -287,15 +279,12 @@ public class SapienzaBioHandler implements BioHandler {
     public StudentCard getStudentCard(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady() || student == null) return null;
         int count = 0;
+        StudentCard card;
         while (true) {
             try {
                 if (count > 0) os.refreshToken();
-                StudentCard card = _getStudentCard(student);
-                if (card != null) {
-                    byte[] image = _getStudentPhoto(student);
-                    if (image != null && image.length != 0) card.setImage(image);
-                }
-                return card;
+                card = _getStudentCard(student);
+                break;
             } catch (OpenstudInvalidResponseException e) {
                 if (e.isMaintenance()) throw e;
                 if (++count == os.getMaxTries()) {
@@ -308,6 +297,11 @@ public class SapienzaBioHandler implements BioHandler {
                 throw invalidCredentials;
             }
         }
+        if (card != null) {
+            byte[] image = _getStudentPhoto(student);
+            if (image != null && image.length != 0) card.setImage(image);
+        }
+        return card;
     }
 
     private StudentCard _getStudentCard(Student student) throws OpenstudInvalidResponseException, OpenstudConnectionException {
@@ -366,7 +360,5 @@ public class SapienzaBioHandler implements BioHandler {
             os.log(Level.SEVERE, connectionException);
             throw connectionException;
         }
-
     }
-
 }
