@@ -79,8 +79,12 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
         key = config.getKey(mode);
     }
 
-    String getPassword() {
-        return studentPassword;
+    public ProviderConfig getConfig() {
+        return config;
+    }
+
+    public OpenstudHelper.Provider getProvider(){
+        return provider;
     }
 
     public String getStudentID() {
