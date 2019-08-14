@@ -10,6 +10,8 @@ public interface ProviderConfig {
 
     String getEndpointTimetable(OpenstudHelper.Mode mode);
 
+    String getEmailURL();
+
     boolean isAuthEnabled();
 
     boolean isClassroomEnabled();
