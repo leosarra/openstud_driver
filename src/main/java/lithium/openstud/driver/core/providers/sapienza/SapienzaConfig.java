@@ -39,7 +39,7 @@ public class SapienzaConfig implements ProviderConfig {
 
     @Override
     public String getEmailURL() {
-        return "http://mail.studenti.uniroma1.it/";
+        return "https://mail.google.com/a/studenti.uniroma1.it";
     }
 
     @Override
