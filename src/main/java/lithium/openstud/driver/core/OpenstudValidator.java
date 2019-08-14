@@ -5,7 +5,7 @@ import lithium.openstud.driver.exceptions.OpenstudInvalidCredentialsException;
 public class OpenstudValidator {
 
     public static boolean validatePassword(Openstud os) {
-        return validatePassword(os.getPassword());
+        return validatePassword(os.getStudentPassword());
     }
 
     public static boolean validatePassword(String password) {
