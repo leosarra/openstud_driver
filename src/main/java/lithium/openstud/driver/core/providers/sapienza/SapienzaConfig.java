@@ -38,6 +38,11 @@ public class SapienzaConfig implements ProviderConfig {
     }
 
     @Override
+    public String getEmailURL() {
+        return "http://mail.studenti.uniroma1.it/";
+    }
+
+    @Override
     public boolean isAuthEnabled() {
         return AUTH_ENABLED;
     }
