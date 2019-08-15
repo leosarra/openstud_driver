@@ -37,12 +37,28 @@ public class OpenstudHelper {
                 cfu += exam.getCfu();
             }
         }
-        if (cfu == 0 || sum == 0) return 0;
+        if (cfu == 0 || sum == 0) return -1;
         return sum / cfu;
     }
 
-    public static int computeBaseGraduation(List<ExamDone> list, int laude) {
-        double result = (computeWeightedAverage(list, laude) * 110) / 30;
+    public static int computeBaseGraduation(List<ExamDone> list, int laude, boolean removeMaxMin) {
+        if (list.size() == 0 || (removeMaxMin && list.size()<=2)) return -1;
+        List<ExamDone> tmp = new LinkedList<>(list);
+        if (removeMaxMin) {
+            ExamDone max = null;
+            ExamDone min = null;
+            for (ExamDone exam:tmp) {
+                if (max == null) max = exam;
+                else if (exam.getResult()>max.getResult()) max = exam;
+            }
+            tmp.remove(max);
+            for (ExamDone exam:tmp) {
+                if (min == null) min = exam;
+                else if (exam.getResult()<min.getResult()) min = exam;
+            }
+            tmp.remove(min);
+        }
+        double result = (computeWeightedAverage(tmp, laude) * 110) / 30;
         return (int) Math.ceil(result);
     }
 
