@@ -7,7 +7,7 @@
 
 	<groupId>lithium.openstud.driver</groupId>
 	<artifactId>openstud-driver</artifactId>
-	<version>0.58.12</version>
+	<version>0.58.13</version>
 
 	<name>openstud-driver</name>
 
@@ -23,6 +23,14 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub LithiumSR Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/LithiumSR/openstud_driver</url>
+		</repository>
+	</distributionManagement>
 
 	<dependencies>
 		<dependency>
