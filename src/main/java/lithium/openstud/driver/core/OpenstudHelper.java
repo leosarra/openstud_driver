@@ -59,7 +59,7 @@ public class OpenstudHelper {
             tmp.remove(min);
         }
         double result = (computeWeightedAverage(tmp, laude) * 110) / 30;
-        return (int) Math.ceil(result);
+        return (int) Math.round(result);
     }
 
     public static double computeArithmeticAverage(List<ExamDone> list, int laude) {
