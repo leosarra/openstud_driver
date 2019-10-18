@@ -64,8 +64,10 @@ public class SapienzaClassroomHandler implements ClassroomHandler {
                 if (withTimetable) {
                     List<Lesson> classLessons = getClassroomTimetable(classroom.getInternalId(), LocalDate.now());
                     for (Lesson lesson : classLessons) {
-                        if (lesson.getStart().isBefore(zonedTime) && lesson.getEnd().isAfter(zonedTime))
+                        if (lesson.getStart().isBefore(zonedTime) && lesson.getEnd().isAfter(zonedTime)) {
                             classroom.setLessonNow(lesson);
+                            classroom.setOccupied(true);
+                        }
                         else if (lesson.getStart().isAfter(zonedTime)) {
                             classroom.setNextLesson(lesson);
                             break;
