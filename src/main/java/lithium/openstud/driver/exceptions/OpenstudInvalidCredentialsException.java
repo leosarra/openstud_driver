@@ -20,4 +20,9 @@ public class OpenstudInvalidCredentialsException extends OpenstudBaseLoginExcept
         return this;
     }
 
+    public OpenstudInvalidCredentialsException setAccountBlockedType() {
+        super.setAccountBlockedType();
+        return this;
+    }
+
 }

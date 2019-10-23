@@ -2,7 +2,7 @@ package lithium.openstud.driver.exceptions;
 
 public abstract class OpenstudBaseLoginException extends Exception {
     public enum Type {
-        INVALID_PASSWORD, EXPIRED_PASSWORD
+        INVALID_PASSWORD, EXPIRED_PASSWORD, ACCOUNT_BLOCKED
     }
 
     Type type;
@@ -41,5 +41,9 @@ public abstract class OpenstudBaseLoginException extends Exception {
         return this;
     }
 
+    Exception setAccountBlockedType() {
+        type = Type.ACCOUNT_BLOCKED;
+        return this;
+    }
 
 }
