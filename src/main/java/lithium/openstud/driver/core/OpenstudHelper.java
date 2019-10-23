@@ -11,14 +11,6 @@ import java.util.Map;
 
 public class OpenstudHelper {
 
-    public enum Mode {
-        MOBILE, WEB
-    }
-
-    public enum Provider {
-        SAPIENZA
-    }
-
     public static boolean isValidUrl(String url) {
         if (url == null) return false;
         String[] schemes = {"http", "https"};
@@ -42,19 +34,19 @@ public class OpenstudHelper {
     }
 
     public static int computeBaseGraduation(List<ExamDone> list, int laude, boolean removeMaxMin) {
-        if (list.size() == 0 || (removeMaxMin && list.size()<=2)) return -1;
+        if (list.size() == 0 || (removeMaxMin && list.size() <= 2)) return -1;
         List<ExamDone> tmp = new LinkedList<>(list);
         if (removeMaxMin) {
             ExamDone max = null;
             ExamDone min = null;
-            for (ExamDone exam:tmp) {
+            for (ExamDone exam : tmp) {
                 if (max == null) max = exam;
-                else if (exam.getResult()>max.getResult()) max = exam;
+                else if (exam.getResult() > max.getResult()) max = exam;
             }
             tmp.remove(max);
-            for (ExamDone exam:tmp) {
+            for (ExamDone exam : tmp) {
                 if (min == null) min = exam;
-                else if (exam.getResult()<min.getResult()) min = exam;
+                else if (exam.getResult() < min.getResult()) min = exam;
             }
             tmp.remove(min);
         }
@@ -95,8 +87,7 @@ public class OpenstudHelper {
         done.setCfu(cfu);
         done.setDate(LocalDate.now());
         done.setDescription(description);
-        if (grade >= 31) done.setResult(31);
-        else done.setResult(grade);
+        done.setResult(Math.min(grade, 31));
         return done;
     }
 
@@ -104,15 +95,7 @@ public class OpenstudHelper {
         List<Event> events = new LinkedList<>();
         for (String code : timetable.keySet()) {
             List<Lesson> lessons = timetable.get(code);
-            for (Lesson lesson : lessons) {
-                Event ev = new Event(EventType.LESSON);
-                ev.setTitle(lesson.getName());
-                ev.setStart(lesson.getStart());
-                ev.setEnd(lesson.getEnd());
-                ev.setTeacher(lesson.getTeacher());
-                ev.setWhere(lesson.getWhere());
-                events.add(ev);
-            }
+            events.addAll(generateEventsFromTimetable(lessons));
         }
         return events;
     }
@@ -216,6 +199,14 @@ public class OpenstudHelper {
             }
         });
         return list;
+    }
+
+    public enum Mode {
+        MOBILE, WEB
+    }
+
+    public enum Provider {
+        SAPIENZA
     }
 
 }
