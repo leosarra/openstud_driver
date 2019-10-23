@@ -192,7 +192,7 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
                     .add("confermaPwd", new_password)
                     .build();
 
-            Request req = new Request.Builder().url(String.format("%s/pwd/%s/reset", os.getEndpointAPI(), os.getStudentID())).header("Accept", "application/json")
+            Request req = new Request.Builder().url(String.format("%s/pwd/%s/reset?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), os.getToken())).header("Accept", "application/json")
                     .header("Content-EventType", "application/x-www-form-urlencoded").post(formBody).build();
             Response resp = os.getClient().newCall(req).execute();
             if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
@@ -293,8 +293,10 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
             String body = executeLoginRequest();
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
-            if (body.contains("Matricola Errata"))
+            if (body.toLowerCase().contains("matricola Errata"))
                 throw new OpenstudInvalidCredentialsException("Student ID is not valid");
+            else if (body.toLowerCase().contains("password errata"))
+                throw new OpenstudInvalidCredentialsException("Password not valid");
             else if (!response.has("output"))
                 throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             os.setToken(response.getString("output"));
