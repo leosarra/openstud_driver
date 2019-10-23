@@ -21,15 +21,21 @@ public class OpenstudSapienzaTest
 {
 
     private static boolean setUpIsDone = false;
+    private static boolean invalidCredentials = false;
     private static Openstud os;
 
     @Before
-    public void setUp() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException, OpenstudInvalidResponseException {
-        if (setUpIsDone) {
+    public void setUp() throws OpenstudConnectionException, OpenstudUserNotEnabledException, OpenstudInvalidResponseException {
+        if (setUpIsDone || invalidCredentials) {
             return;
         }
         os = new OpenstudBuilder().setPassword(System.getenv("OPENSTUD_TESTPWD")).setStudentID(System.getenv("OPENSTUD_TESTID")).build();
-        os.login();
+        try {
+            os.login();
+        } catch (OpenstudInvalidCredentialsException e) {
+            e.printStackTrace();
+            invalidCredentials = true;
+        }
         setUpIsDone = true;
     }
 
@@ -81,7 +87,7 @@ public class OpenstudSapienzaTest
         os.getCalendarEvents(st);
     }
 
-
+    @Test
     public void testGetIsee() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudUserNotEnabledException {
         Isee res=os.getCurrentIsee();
         assertTrue(res!=null && res.isValid());
