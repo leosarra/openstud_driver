@@ -293,13 +293,11 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
             String body = executeLoginRequest();
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
-            if (body.toLowerCase().contains("matricola Errata"))
-                throw new OpenstudInvalidCredentialsException("Student ID is not valid");
-            else if (body.toLowerCase().contains("password errata"))
-                throw new OpenstudInvalidCredentialsException("Password not valid");
-            else if (!response.has("output"))
-                throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            os.setToken(response.getString("output"));
+            if (response.has("output") && !response.isNull("output")) os.setToken(response.getString("output"));
+            if (body.toLowerCase().contains("password errata")) throw new OpenstudInvalidCredentialsException("Credentials are not valid");
+            else if (body.toLowerCase().contains("utenza bloccata")) throw new OpenstudInvalidCredentialsException("Account is blocked").setAccountBlockedType();
+            if (response.has("output")) os.setToken(response.getString("output"));
+            else if (!response.has("output")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             if (response.has("esito")) {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
                     case -4:
