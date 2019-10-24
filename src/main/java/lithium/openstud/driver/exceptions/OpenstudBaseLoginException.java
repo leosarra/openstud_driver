@@ -5,8 +5,9 @@ public abstract class OpenstudBaseLoginException extends Exception {
         INVALID_PASSWORD, EXPIRED_PASSWORD, ACCOUNT_BLOCKED
     }
 
-    Type type;
-
+    private Type type;
+    private int attemptNumber = -1;
+    private int maxAttempts = -1;
     OpenstudBaseLoginException(String message) {
         super(message);
         type = Type.INVALID_PASSWORD;
@@ -33,6 +34,22 @@ public abstract class OpenstudBaseLoginException extends Exception {
 
     public boolean isAccountBlocked() {
         return type == Type.ACCOUNT_BLOCKED;
+    }
+
+    public int getAttemptNumber(){
+        return attemptNumber;
+    }
+
+    public int getMaxAttempts(){
+        return maxAttempts;
+    }
+
+    public void setAttemptNumber(int attemptNumber){
+        this.attemptNumber = attemptNumber;
+    }
+
+    public void setMaxAttempts(int maxAttempts){
+        this.maxAttempts = maxAttempts;
     }
 
     Exception setPasswordExpiredType() {
