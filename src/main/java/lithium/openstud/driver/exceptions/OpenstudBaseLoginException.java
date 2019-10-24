@@ -31,6 +31,10 @@ public abstract class OpenstudBaseLoginException extends Exception {
         return type == Type.INVALID_PASSWORD;
     }
 
+    public boolean isAccountBlocked() {
+        return type == Type.ACCOUNT_BLOCKED;
+    }
+
     Exception setPasswordExpiredType() {
         type = Type.EXPIRED_PASSWORD;
         return this;
