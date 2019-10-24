@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 public class SapienzaAuthenticationHandler implements AuthenticationHandler {
     private Openstud os;
@@ -294,7 +295,22 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
             os.log(Level.INFO, body);
             JSONObject response = new JSONObject(body);
             if (response.has("output") && !response.isNull("output")) os.setToken(response.getString("output"));
-            if (body.toLowerCase().contains("password errata")) throw new OpenstudInvalidCredentialsException("Credentials are not valid");
+            if (body.toLowerCase().contains("password errata")) {
+                OpenstudInvalidCredentialsException e =  new OpenstudInvalidCredentialsException("Credentials are not valid");
+                String out = StringUtils.substringBetween(body.toLowerCase(), "tentativo", "effettuato").trim();
+                if (out.contains("/")) {
+                    String[] elements = out.split("/");
+                    try {
+                        if (elements.length == 2) {
+                            e.setAttemptNumber(Integer.parseInt(elements[0]));
+                            e.setMaxAttempts(Integer.parseInt(elements[1]));
+                        }
+                    } catch (NumberFormatException ignored) {
+
+                    }
+                }
+                throw e;
+            }
             else if (body.toLowerCase().contains("utenza bloccata")) throw new OpenstudInvalidCredentialsException("Account is blocked").setAccountBlockedType();
             if (response.has("output")) os.setToken(response.getString("output"));
             else if (!response.has("output")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
