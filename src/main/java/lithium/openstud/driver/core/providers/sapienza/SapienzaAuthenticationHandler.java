@@ -29,7 +29,7 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
                 throw new OpenstudRefreshException("Student ID is not valid");
             String body = executeLoginRequest();
             JSONObject response = new JSONObject(body);
-            if (!response.has("output") || response.getString("output").isEmpty()) return;
+            if (!response.has("output") || response.isNull("output") || response.getString("output").isEmpty()) return;
             os.setToken(response.getString("output"));
             if (response.has("esito")) {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
