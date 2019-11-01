@@ -172,8 +172,7 @@ public class SapienzaTaxHandler implements TaxHandler {
                         case "impoVers":
                             try {
                                 String content = obj.getString(element);
-                                if (content.isEmpty()) tax.setAmount(0);
-                                else tax.setAmount(Double.parseDouble(obj.getString(element)));
+                                if (!content.isEmpty()) tax.setAmount(Double.parseDouble(obj.getString(element)));
                             } catch (NumberFormatException e) {
                                 e.printStackTrace();
                                 os.log(Level.SEVERE, e);
