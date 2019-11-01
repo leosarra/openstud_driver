@@ -241,6 +241,13 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
     }
 
     @Override
+    public byte[] getPaymentSlip(Tax unpaidTax) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!config.isTaxEnabled()) throw new IllegalStateException("Provider doesn't support this feature");
+        if (unpaidTax.getStatus() == Tax.TaxStatus.PAID) throw new IllegalStateException("Provider doesn't support printing of paid slips");
+        return taxHandler.getPaymentSlip(unpaidTax);
+    }
+
+    @Override
     public Isee getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!config.isTaxEnabled()) throw new IllegalStateException("Provider doesn't support this feature");
         return taxHandler.getCurrentIsee();
