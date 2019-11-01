@@ -218,4 +218,13 @@ public class OpenstudSapienzaTest
         Student student = os.getInfoStudent();
         StudentCard card = os.getStudentCard(student, false);
     }
+
+    @Test
+    public void testGetPaymentSlip() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException {
+        List<Tax> unpaidTaxes = os.getUnpaidTaxes();
+        if (unpaidTaxes.size()>0) {
+            byte[] pdf = os.getPaymentSlip(unpaidTaxes.get(0));
+            assert(pdf.length > 0);
+        }
+    }
 }
