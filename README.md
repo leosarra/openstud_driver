@@ -34,7 +34,7 @@ OpenStud Driver can be easily added to your existing project through Maven or Gr
 <dependency>
     <groupId>com.github.LithiumSR</groupId>
     <artifactId>openstud_driver</artifactId>
-    <version>0.58.20</version>
+    <version>0.59.0</version>
 </dependency>
 ```
 
@@ -51,7 +51,7 @@ allprojects {
 2) Add the dependency
 ```
 dependencies {
-    implementation 'com.github.LithiumSR:openstud_driver:0.58.20
+    implementation 'com.github.LithiumSR:openstud_driver:0.59.0
 }
 ```
 
