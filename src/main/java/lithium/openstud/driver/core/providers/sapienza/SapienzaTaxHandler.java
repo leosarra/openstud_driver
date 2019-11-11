@@ -53,6 +53,61 @@ public class SapienzaTaxHandler implements TaxHandler {
         return taxes;
     }
 
+    @Override
+    public byte[] getPaymentSlip(Tax unpaidTax) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+        if (!os.isReady() || unpaidTax == null) return null;
+        int count = 0;
+        byte[] pdf;
+        while (true) {
+            try {
+                if (count > 0) os.refreshToken();
+                pdf = _getPaymentSlip(unpaidTax);
+                break;
+            } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
+                if (++count == os.getMaxTries()) {
+                    os.log(Level.SEVERE, e);
+                    throw e;
+                }
+            } catch (OpenstudRefreshException e) {
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                os.log(Level.SEVERE, invalidCredentials);
+                throw invalidCredentials;
+            }
+        }
+        return pdf;
+    }
+
+    private byte[] _getPaymentSlip(Tax unpaidTax) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        try {
+            Request req = new Request.Builder().url(String.format("%s/contabilita/%s/%s/ristampa?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), unpaidTax.getCode(), os.getToken())).build();
+            Response resp = os.getClient().newCall(req).execute();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            String body = resp.body().string();
+            resp.close();
+            os.log(Level.INFO, body);
+            JSONObject response = new JSONObject(body);
+            if (!response.has("risultato") || response.isNull("risultato"))
+                throw new OpenstudInvalidResponseException("Infostud answer is not valid, maybe the token is no longer valid");
+            response = response.getJSONObject("risultato");
+            if (!response.has("byte") || response.isNull("byte"))
+                throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            JSONArray byteArray = response.getJSONArray("byte");
+            byte[] pdf = new byte[byteArray.length()];
+            for (int i = 0; i < byteArray.length(); i++) pdf[i] = (byte) byteArray.getInt(i);
+            os.log(Level.INFO, "Found PDF made of " + pdf.length + " bytes \n");
+            return pdf;
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            os.log(Level.SEVERE, connectionException);
+            throw connectionException;
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
+            os.log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
+
 
     @Override
     public List<Tax> getUnpaidTaxes() throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
@@ -116,8 +171,8 @@ public class SapienzaTaxHandler implements TaxHandler {
                             break;
                         case "impoVers":
                             try {
-                                double value = Double.parseDouble(obj.getString(element));
-                                tax.setAmount(value);
+                                String content = obj.getString(element);
+                                if (!content.isEmpty()) tax.setAmount(Double.parseDouble(obj.getString(element)));
                             } catch (NumberFormatException e) {
                                 e.printStackTrace();
                                 os.log(Level.SEVERE, e);
@@ -149,6 +204,8 @@ public class SapienzaTaxHandler implements TaxHandler {
                     }
                 }
                 tax.setPaymentDescriptionList(SapienzaHelper.extractPaymentDescriptionList(os, obj.getJSONArray("causali")));
+                if (paid) tax.setStatus(Tax.TaxStatus.PAID);
+                else tax.setStatus(Tax.TaxStatus.UNPAID);
                 list.add(tax);
             }
             return list;

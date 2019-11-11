@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Tax {
+    private TaxStatus status;
     private String code;
     private String codeCourse;
     private String descriptionCourse;
@@ -84,6 +85,14 @@ public class Tax {
         this.academicYear = academicYear;
     }
 
+    public TaxStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaxStatus status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -118,6 +127,8 @@ public class Tax {
                 '}';
     }
 
-
+    public enum TaxStatus{
+        UNPAID,PAID
+    }
 }
 
