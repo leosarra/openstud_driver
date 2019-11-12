@@ -27,7 +27,7 @@ public interface ExamHandler {
     int deleteReservation(ExamReservation res) throws OpenstudInvalidResponseException, OpenstudConnectionException,
             OpenstudInvalidCredentialsException;
 
-    byte[] getPdf(ExamReservation reservation) throws OpenstudConnectionException, OpenstudInvalidResponseException,
+    byte[] getExamReservationPDF(ExamReservation reservation) throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;
 
     List<Event> getCalendarEvents(Student student) throws OpenstudConnectionException, OpenstudInvalidResponseException,

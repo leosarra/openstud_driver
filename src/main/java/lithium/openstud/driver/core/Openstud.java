@@ -326,9 +326,9 @@ public class Openstud implements AuthenticationHandler, BioHandler, NewsHandler,
     }
 
     @Override
-    public byte[] getPdf(ExamReservation reservation) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    public byte[] getExamReservationPDF(ExamReservation reservation) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!config.isExamEnabled()) throw new IllegalStateException("Provider doesn't support this feature");
-        return examHandler.getPdf(reservation);
+        return examHandler.getExamReservationPDF(reservation);
     }
 
     @Override

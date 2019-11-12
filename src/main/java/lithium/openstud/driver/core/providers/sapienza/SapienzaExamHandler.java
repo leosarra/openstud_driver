@@ -414,7 +414,7 @@ public class SapienzaExamHandler implements ExamHandler {
     }
 
     @Override
-    public byte[] getPdf(ExamReservation reservation) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    public byte[] getExamReservationPDF(ExamReservation reservation) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady() || reservation == null) return null;
         int count = 0;
         byte[] pdf;
