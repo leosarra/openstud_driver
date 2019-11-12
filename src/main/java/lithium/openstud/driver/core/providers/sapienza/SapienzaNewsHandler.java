@@ -157,10 +157,9 @@ public class SapienzaNewsHandler implements NewsHandler {
                 Elements title = views.remove(0).getElementsByTag("a");
                 ev.setTitle(title.text());
                 ev.setUrl(title.attr("href"));
-                ev.setRoom(views.remove(0).getElementsByTag("a").text());
                 doc = Jsoup.connect(ev.getUrl()).get();
-                ev.setWhere(doc.getElementsByClass("views-field-field-apm-aula").first().text().trim().replaceAll(" ?- ?",", ")+
-                        ". "+doc.getElementsByClass("views-field-field-apm-edificio").first().text().trim());
+                ev.setRoom(doc.getElementsByClass("views-field-field-apm-aula").first().text().trim().replaceAll(" ?- ?",", "));
+                ev.setWhere(doc.getElementsByClass("views-field-field-apm-edificio").first().text().trim());
                 Element image = doc.getElementsByClass("field-type-image").first();
                 if (image != null) {
                     ev.setImageUrl(image.getElementsByTag("img").first().attr("src"));
