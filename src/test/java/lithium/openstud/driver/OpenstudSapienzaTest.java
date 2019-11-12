@@ -140,7 +140,7 @@ public class OpenstudSapienzaTest
     public void testGetAvailableReservations() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
         List<ExamDoable> list=os.getExamsDoable();
         Student st=os.getInfoStudent();
-        if(list.size()>=1) {
+        if(list.size()>0) {
             List<ExamReservation> ret=os.getAvailableReservations(list.get(0),st);
             assertNotNull(ret);
         }
@@ -148,10 +148,10 @@ public class OpenstudSapienzaTest
     }
 
     @Test
-    public void testGetPdf() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
+    public void testGetExamReservationPDF() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
         List<ExamReservation> list=os.getActiveReservations();
         if(list.size()>=1) {
-            byte[] pdf = os.getPdf(list.get(0));
+            byte[] pdf = os.getExamReservationPDF(list.get(0));
             assertNotNull(pdf);
         }
         assertTrue(true);
@@ -220,10 +220,10 @@ public class OpenstudSapienzaTest
     }
 
     @Test
-    public void testGetPaymentSlip() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException {
+    public void testGetPaymentSlipPDF() throws OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudInvalidResponseException {
         List<Tax> unpaidTaxes = os.getUnpaidTaxes();
         if (unpaidTaxes.size()>0) {
-            byte[] pdf = os.getPaymentSlip(unpaidTaxes.get(0));
+            byte[] pdf = os.getPaymentSlipPDF(unpaidTaxes.get(0));
             assert(pdf.length > 0);
         }
     }
