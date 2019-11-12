@@ -54,7 +54,7 @@ public class SapienzaTaxHandler implements TaxHandler {
     }
 
     @Override
-    public byte[] getPaymentSlip(Tax unpaidTax) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
+    public byte[] getPaymentSlipPDF(Tax unpaidTax) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady() || unpaidTax == null) return null;
         int count = 0;
         byte[] pdf;

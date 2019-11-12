@@ -15,7 +15,7 @@ public interface TaxHandler {
     List<Tax> getPaidTaxes() throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;
 
-    byte[] getPaymentSlip(Tax unpaidTax) throws OpenstudConnectionException, OpenstudInvalidResponseException,
+    byte[] getPaymentSlipPDF(Tax unpaidTax) throws OpenstudConnectionException, OpenstudInvalidResponseException,
             OpenstudInvalidCredentialsException;
 
     Isee getCurrentIsee() throws OpenstudConnectionException, OpenstudInvalidResponseException,
