@@ -7,6 +7,12 @@ public class OpenstudInvalidCredentialsException extends OpenstudBaseLoginExcept
 
     public OpenstudInvalidCredentialsException(Exception e) {
         super(e);
+        if (e instanceof OpenstudBaseLoginException) {
+            OpenstudBaseLoginException obj = (OpenstudBaseLoginException) e;
+            if (obj.isAccountBlocked()) this.setAccountBlockedType();
+            else if (obj.isPasswordExpired()) this.setPasswordExpiredType();
+            else if (obj.isPasswordInvalid()) this.setPasswordInvalidType();
+        }
     }
 
     @Override
