@@ -29,16 +29,17 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
                 throw new OpenstudRefreshException("Student ID is not valid");
             String body = executeLoginRequest();
             JSONObject response = new JSONObject(body);
+            if (body.toLowerCase().contains("utenza bloccata")) throw new OpenstudRefreshException("Account is blocked").setAccountBlockedType();
             if (!response.has("output") || response.isNull("output") || response.getString("output").isEmpty()) return;
             os.setToken(response.getString("output"));
             if (response.has("esito")) {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
                     case -4:
-                        throw new OpenstudRefreshException("Invalid credentials when refreshing token");
+                        throw new OpenstudRefreshException("User is not enabled to use Infostud service");
                     case -2:
                         throw new OpenstudRefreshException("Password expired").setPasswordExpiredType();
                     case -1:
-                        throw new OpenstudRefreshException("Invalid credentials when refreshing token");
+                        throw new OpenstudRefreshException("Invalid credentials when refreshing token").setPasswordInvalidType();
                     case 0:
                         break;
                     default:
@@ -321,7 +322,7 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
                     case -2:
                         throw new OpenstudInvalidCredentialsException("Password expired").setPasswordExpiredType();
                     case -1:
-                        throw new OpenstudInvalidCredentialsException("Password not valid");
+                        throw new OpenstudInvalidCredentialsException("Password not valid").setPasswordInvalidType();
                     case 0:
                         break;
                     default:
