@@ -342,7 +342,8 @@ public class SapienzaExamHandler implements ExamHandler {
                         nota = response.getJSONObject("esito").getString("nota");
                 }
             } else throw new OpenstudInvalidResponseException("Infostud answer is not valid");
-            if (!response.isNull("url") && response.has("url")) url = response.getString("url");
+            if (response.has("urlOpis") && !response.isNull("urlOpis")) url = response.getString("urlOpis");
+            else if (response.has("url") && !response.isNull("url")) url = response.getString("url");
             if (url == null && flag != 0 && (nota == null || !nota.contains("già prenotato"))) return null;
             return new ImmutablePair<>(flag, url);
         } catch (IOException e) {
