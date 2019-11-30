@@ -30,8 +30,7 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
             String body = executeLoginRequest();
             JSONObject response = new JSONObject(body);
             if (body.toLowerCase().contains("utenza bloccata")) throw new OpenstudRefreshException("Account is blocked").setAccountBlockedType();
-            if (!response.has("output") || response.isNull("output") || response.getString("output").isEmpty()) return;
-            os.setToken(response.getString("output"));
+            if (response.has("output") && !response.isNull("output") && !response.getString("output").isEmpty()) os.setToken(response.getString("output"));
             if (response.has("esito")) {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
                     case -4:
