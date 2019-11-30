@@ -496,13 +496,27 @@ public class SapienzaExamHandler implements ExamHandler {
     public String getCourseSurvey(String surveyCode) throws OpenstudConnectionException, OpenstudInvalidResponseException, OpenstudInvalidCredentialsException {
         if (!os.isReady()) return null;
         int count = 0;
+        while (count<os.getMaxTries()) {
+            try {
+                if (count > 0) os.refreshToken();
+                return _getCourseSurveyDeprecated(surveyCode);
+            } catch (OpenstudInvalidResponseException e) {
+                count++;
+                os.log(Level.SEVERE, e);
+            } catch (OpenstudRefreshException e) {
+                OpenstudInvalidCredentialsException invalidCredentials = new OpenstudInvalidCredentialsException(e);
+                os.log(Level.SEVERE, invalidCredentials);
+                throw invalidCredentials;
+            }
+        }
+        count = 0;
         while (true) {
             try {
                 if (count > 0) os.refreshToken();
                 return _getCourseSurvey(surveyCode);
             } catch (OpenstudInvalidResponseException e) {
+                if (e.isMaintenance()) throw e;
                 if (++count == os.getMaxTries()) {
-                    if (e.isMaintenance()) throw e;
                     os.log(Level.SEVERE, e);
                     throw e;
                 }
@@ -516,11 +530,31 @@ public class SapienzaExamHandler implements ExamHandler {
 
     private String _getCourseSurvey(String surveyCode) throws OpenstudInvalidResponseException, OpenstudConnectionException {
         try {
+            Request req = new Request.Builder().url(String.format("%s/opis/survey/init/%s/env/opis_free?ingresso=%s", os.getEndpointAPI(), surveyCode.trim().toUpperCase(), os.getToken())).build();
+            Response resp = os.getClient().newCall(req).execute();
+            if (resp.body() == null) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
+            String body = resp.body().string();
+            resp.close();
+            os.log(Level.INFO, body);
+            if (body.toLowerCase().contains("access denied")) throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
+            return String.format("https://www.studenti.uniroma1.it/opis/app/index.html?token_opis=%s&env=opis_free&ingresso=%s", surveyCode, os.getToken());
+        } catch (IOException e) {
+            OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
+            os.log(Level.SEVERE, connectionException);
+            throw connectionException;
+        } catch (JSONException e) {
+            OpenstudInvalidResponseException invalidResponse = new OpenstudInvalidResponseException(e).setJSONType();
+            os.log(Level.SEVERE, invalidResponse);
+            throw invalidResponse;
+        }
+    }
+
+    private String _getCourseSurveyDeprecated(String surveyCode) throws OpenstudInvalidResponseException, OpenstudConnectionException {
+        try {
             Request req = new Request.Builder().url(String.format("%s/opis/token/info/%s/%s?ingresso=%s", os.getEndpointAPI(), os.getStudentID(), surveyCode.trim().toUpperCase(), os.getToken())).build();
             JSONObject response = handleRequest(req);
-            if (!response.has("risultato"))
+            if (!response.has("risultato") || response.isNull("risultato"))
                 throw new OpenstudInvalidResponseException("Infostud response is not valid. I guess the token is no longer valid");
-            if (response.isNull("risultato")) return null;
             return response.getString("risultato");
         } catch (IOException e) {
             OpenstudConnectionException connectionException = new OpenstudConnectionException(e);
