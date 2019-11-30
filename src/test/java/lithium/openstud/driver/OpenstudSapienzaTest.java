@@ -196,7 +196,7 @@ public class OpenstudSapienzaTest
 
     @Test
     public void testGetSurvey() throws OpenstudInvalidResponseException, OpenstudInvalidCredentialsException, OpenstudConnectionException, OpenstudUserNotEnabledException {
-        assertNotNull(os.getCourseSurvey("82WQLAN9"));
+        assertNotNull(os.getCourseSurvey("42FESHPE"));
     }
 
     @Test
