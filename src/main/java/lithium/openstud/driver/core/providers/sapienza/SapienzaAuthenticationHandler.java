@@ -33,6 +33,9 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
             if (response.has("output") && !response.isNull("output") && !response.getString("output").isEmpty()) os.setToken(response.getString("output"));
             if (response.has("esito")) {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
+                    case -6:
+                        if (response.getJSONObject("esito").getBoolean("captcha")) throw new OpenstudRefreshException("Captcha required");
+                        else throw new OpenstudInvalidResponseException("Infostud is not working as intended");
                     case -4:
                         throw new OpenstudRefreshException("User is not enabled to use Infostud service");
                     case -2:
@@ -316,6 +319,9 @@ public class SapienzaAuthenticationHandler implements AuthenticationHandler {
             else if (!response.has("output")) throw new OpenstudInvalidResponseException("Infostud answer is not valid");
             if (response.has("esito")) {
                 switch (response.getJSONObject("esito").getInt("flagEsito")) {
+                    case -6:
+                        if (response.getJSONObject("esito").getBoolean("captcha")) throw new OpenstudInvalidCredentialsException("Captcha required");
+                        else throw new OpenstudInvalidResponseException("Infostud is not working as intended");
                     case -4:
                         throw new OpenstudUserNotEnabledException("User is not enabled to use Infostud service.");
                     case -2:

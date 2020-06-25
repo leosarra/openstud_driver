@@ -31,4 +31,9 @@ public class OpenstudInvalidCredentialsException extends OpenstudBaseLoginExcept
         return this;
     }
 
+    public OpenstudInvalidCredentialsException setCaptchaRequired() {
+        super.setCaptchaRequired();
+        return this;
+    }
+
 }
