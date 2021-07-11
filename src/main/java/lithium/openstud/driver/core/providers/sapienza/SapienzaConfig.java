@@ -112,8 +112,8 @@ public class SapienzaConfig implements ProviderConfig {
 
     @Override
     public String getKey(OpenstudHelper.Mode mode) {
-        if (mode == OpenstudHelper.Mode.WEB) return "1nf0r1cc1";
-        else return "r4g4zz3tt1";
+        if (mode == OpenstudHelper.Mode.WEB) return "2WsJEe&JcTU";
+        else return "2WsJEe&JcTU";
     }
 
     public synchronized String getKey(String key) {
