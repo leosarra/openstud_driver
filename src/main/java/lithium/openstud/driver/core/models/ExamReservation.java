@@ -237,11 +237,13 @@ public class ExamReservation {
                 Objects.equals(examDate, that.examDate) &&
                 Objects.equals(note, that.note) &&
                 Objects.equals(ssd, that.ssd) &&
-                Objects.equals(module, that.module);
+                Objects.equals(module, that.module) &&
+                attendingModesList.similar(that.attendingModesList) &&
+                Objects.equals(attendingModeType, that.attendingModeType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(reportID, sessionID, courseCode, cfu, reservationNumber, yearCourse, courseDescription, examSubject, teacher, department, channel, endDate, startDate, reservationDate, examDate, note, ssd, module);
+        return Objects.hash(reportID, sessionID, courseCode, cfu, reservationNumber, yearCourse, courseDescription, examSubject, teacher, department, channel, endDate, startDate, reservationDate, examDate, note, ssd, module, attendingModesList.toString(), attendingModeType);
     }
 }
