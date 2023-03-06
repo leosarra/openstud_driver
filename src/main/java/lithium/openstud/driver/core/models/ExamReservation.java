@@ -1,5 +1,6 @@
 package lithium.openstud.driver.core.models;
 
+import org.json.JSONArray;
 import org.threeten.bp.LocalDate;
 
 import java.util.Objects;
@@ -23,6 +24,10 @@ public class ExamReservation {
     private String note;
     private String ssd;
     private String module;
+
+    private JSONArray attendingModesList;
+
+    private String attendingModeType = "0";
 
     public LocalDate getExamDate() {
         return examDate;
@@ -166,6 +171,22 @@ public class ExamReservation {
 
     public void setModule(String module) {
         this.module = module;
+    }
+
+    public JSONArray getAttendingModesList() {
+        return attendingModesList;
+    }
+
+    public void setAttendingModesList(JSONArray attendingModesList) {
+        this.attendingModesList = attendingModesList;
+    }
+
+    public String getAttendingModeType() {
+        return attendingModeType;
+    }
+
+    public void setAttendingModeType(String attendingModeType) {
+        this.attendingModeType = attendingModeType;
     }
 
     @Override

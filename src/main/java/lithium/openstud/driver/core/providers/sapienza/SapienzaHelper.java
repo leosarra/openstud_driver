@@ -248,6 +248,9 @@ class SapienzaHelper {
                     case "SiglaModuloDidattico":
                         if (!obj.isNull("SiglaModuloDidattico")) res.setModule(obj.getString("SiglaModuloDidattico"));
                         break;
+                    case "modalitaSvolgimentoList":
+                        if (!obj.isNull("modalitaSvolgimentoList")) res.setAttendingModesList(obj.getJSONArray("modalitaSvolgimentoList"));
+                        break;
                     default:
                         break;
                 }
