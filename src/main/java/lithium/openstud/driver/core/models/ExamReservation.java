@@ -210,6 +210,8 @@ public class ExamReservation {
                 ", note='" + note + '\'' +
                 ", ssd='" + ssd + '\'' +
                 ", module='" + module + '\'' +
+                ", attendingModesList='" + attendingModesList + '\'' +
+                ", attendingModeType='" + attendingModeType + '\'' +
                 '}';
     }
 
