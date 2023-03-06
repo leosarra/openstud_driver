@@ -1,5 +1,6 @@
 package lithium.openstud.driver.core.models;
 
+import org.json.JSONArray;
 import org.threeten.bp.LocalDate;
 
 import java.util.Objects;
@@ -23,6 +24,10 @@ public class ExamReservation {
     private String note;
     private String ssd;
     private String module;
+
+    private JSONArray attendingModesList;
+
+    private String attendingModeType = "0";
 
     public LocalDate getExamDate() {
         return examDate;
@@ -168,6 +173,22 @@ public class ExamReservation {
         this.module = module;
     }
 
+    public JSONArray getAttendingModesList() {
+        return attendingModesList;
+    }
+
+    public void setAttendingModesList(JSONArray attendingModesList) {
+        this.attendingModesList = attendingModesList;
+    }
+
+    public String getAttendingModeType() {
+        return attendingModeType;
+    }
+
+    public void setAttendingModeType(String attendingModeType) {
+        this.attendingModeType = attendingModeType;
+    }
+
     @Override
     public String toString() {
         return "ExamReservation{" +
@@ -189,6 +210,8 @@ public class ExamReservation {
                 ", note='" + note + '\'' +
                 ", ssd='" + ssd + '\'' +
                 ", module='" + module + '\'' +
+                ", attendingModesList='" + attendingModesList + '\'' +
+                ", attendingModeType='" + attendingModeType + '\'' +
                 '}';
     }
 
@@ -214,11 +237,13 @@ public class ExamReservation {
                 Objects.equals(examDate, that.examDate) &&
                 Objects.equals(note, that.note) &&
                 Objects.equals(ssd, that.ssd) &&
-                Objects.equals(module, that.module);
+                Objects.equals(module, that.module) &&
+                attendingModesList.similar(that.attendingModesList) &&
+                Objects.equals(attendingModeType, that.attendingModeType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(reportID, sessionID, courseCode, cfu, reservationNumber, yearCourse, courseDescription, examSubject, teacher, department, channel, endDate, startDate, reservationDate, examDate, note, ssd, module);
+        return Objects.hash(reportID, sessionID, courseCode, cfu, reservationNumber, yearCourse, courseDescription, examSubject, teacher, department, channel, endDate, startDate, reservationDate, examDate, note, ssd, module, attendingModesList.toString(), attendingModeType);
     }
 }
